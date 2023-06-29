@@ -19,12 +19,13 @@ import Game from '../scenes/Game';
 export default new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game-content',
-  width: 400,
-  height: 250,
+  width: 800,
+  height: 500,
   physics: {
     default: 'arcade',
     arcade: {
       gravity: {y: 0},
+      debug: true,
 
     }
   },

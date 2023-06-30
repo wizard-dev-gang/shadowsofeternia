@@ -1,0 +1,303 @@
+{
+    "frames": {
+      "wizard-walk-down-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "w": 25,
+          "h": 32
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 4,
+          "y": 0,
+          "w": 25,
+          "h": 32
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-up-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 32,
+          "w": 25,
+          "h": 32
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 4,
+          "y": 0,
+          "w": 25,
+          "h": 32
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-left-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 64,
+          "w": 21,
+          "h": 32
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 0,
+          "w": 21,
+          "h": 32
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-right-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 96,
+          "w": 21,
+          "h": 32
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 0,
+          "w": 21,
+          "h": 32
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-up-01.png": {
+        "frame": {
+          "x": 0,
+          "y": 128,
+          "w": 24,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 1,
+          "w": 24,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-up-03.png": {
+        "frame": {
+          "x": 21,
+          "y": 64,
+          "w": 24,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 4,
+          "y": 1,
+          "w": 24,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-down-01.png": {
+        "frame": {
+          "x": 21,
+          "y": 95,
+          "w": 23,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 1,
+          "w": 23,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-down-03.png": {
+        "frame": {
+          "x": 25,
+          "y": 0,
+          "w": 23,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 1,
+          "w": 23,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-left-03.png": {
+        "frame": {
+          "x": 25,
+          "y": 31,
+          "w": 22,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 1,
+          "w": 22,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-right-01.png": {
+        "frame": {
+          "x": 0,
+          "y": 159,
+          "w": 22,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 1,
+          "w": 22,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-left-01.png": {
+        "frame": {
+          "x": 0,
+          "y": 190,
+          "w": 21,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 1,
+          "w": 21,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "wizard-walk-right-03.png": {
+        "frame": {
+          "x": 0,
+          "y": 221,
+          "w": 21,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 1,
+          "w": 21,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      }
+    },
+    "meta": {
+      "app": "http://free-tex-packer.com",
+      "version": "0.6.7",
+      "image": "texture.png",
+      "format": "RGBA8888",
+      "size": {
+        "w": 48,
+        "h": 252
+      },
+      "scale": 1
+    }
+  }

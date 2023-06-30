@@ -7,9 +7,13 @@ export default class Game extends Phaser.Scene
 {
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     private man!: Phaser.Physics.Arcade.Sprite
+    private playerRef!: any;
+    private playerId!: any;
+    private otherPlayers!: Map<any, any>;
     constructor()
     {
         super('game')
+        this.otherPlayers = new Map();
     }
     preload()
     {   
@@ -18,6 +22,36 @@ export default class Game extends Phaser.Scene
     }
     create()
     {
+        onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, get the uid
+        this.playerId = user.uid;
+        const db = getDatabase(); // Get the Firebase database object
+        this.playerRef = ref(db, `players/${this.playerId}`); // Reference to the player in the database
+
+        const otherPlayersRef = ref(db, "players");
+        onValue(otherPlayersRef, (snapshot) => {
+          const playersData = snapshot.val();
+          for (let playerId in playersData) {
+            if (playerId === this.playerId) continue; // Don't create a sprite for the current player
+            const playerData = playersData[playerId];
+            // handle other player sprites here
+            let otherPlayer = this.otherPlayers.get[playerId];
+
+            if (!otherPlayer) {
+              otherPlayer = this.physics.add.sprite(
+                playerData.x,
+                playerData.y,
+                "man",
+                "man-walk-down-02.png"
+              );
+              this.otherPlayers.set(playerId, otherPlayer);
+            }
+            otherPlayer.x = playerData.x;
+            otherPlayer.y = playerData.y;
+          }
+        });
+        
         createCharacterAnims(this.anims)
 
         const map = this.make.tilemap({key: 'testMap'})
@@ -48,7 +82,7 @@ export default class Game extends Phaser.Scene
         if(this.man) 
 		{
 			this.man.update(this.cursors)
-		}
-        
     }
+    update(this.playerRef, { x: this.man.x, y: this.man.y });
+  }
 }

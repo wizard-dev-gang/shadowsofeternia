@@ -11,6 +11,7 @@ import { initializeApp } from "firebase/app";
 
 import "firebase/auth";
 import "firebase/firestore";
+import GameComponent from "./GameComponent";
 
 initializeApp(firebaseConfig);
 
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </AuthRoute>
           }
         />
+        <Route path="/game" element={<GameComponent />} />
         <Route path="/*" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
       </Routes>

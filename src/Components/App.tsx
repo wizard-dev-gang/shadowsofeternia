@@ -172,11 +172,11 @@ function App() {
 
   return (
     <div>
-      {userName && <h1>Welcome, {userName}!</h1>}
-      <h1 className="text-6xl font-extrabold text-indigo-800">
-        This is a sample text to show the website is running and Tailwind is
-        working.
+      
+      <h1 className="text-6xl font-extrabold text-red-800">
+        Welcome to Shadows of Eternia!
       </h1>
+      {userName && <h1>Welcome, {userName}!</h1>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -184,13 +184,13 @@ function App() {
         }}
       >
         <input type="text" placeholder="Change Display Name" />
-        <button type="submit">Change Name</button>
+        <button type="submit" className="Change-Name-Button">Change Name</button>
       </form>
-      <button onClick={handleSignOut}>
-        Sign out! (Anonymous users will be deleted from the database)
+      <button className="Sign-Out-Button" onClick={handleSignOut}>
+        Sign out!
       </button>
       <br />
-      <Link to="/game">Play Game!</Link>
+      <Link to="/game" className="Play-Game-BUtton">Play Game!</Link>
     </div>
   );
 }

@@ -1,3 +1,68 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+}
+/* Signed in Page*/
+.Sign-Out-Button {
+    float: right;
+    background-color: red;
+    border: none;
+    border-radius: 10px;
+    width: 200px;
+    height: 75px;
+    cursor: pointer;
+}
+
+#root {
+    background-color: black;
+}
+
+.Change-Name-Button {
+    background-color: red;
+    border: none;
+    border-radius: 10px;
+    width: 200px;
+    height: 75px;
+    cursor: pointer;
+}
+.Play-Game-BUtton {
+    background-color: red;
+    border: none;
+    border-radius: 10px;
+    width: 200px;
+    height: 75px;
+    cursor: pointer;
+}
+/* Login page */
+.Login-Wrapper {
+    background-color: white;
+    padding: 20px;
+    margin: 0 auto;
+    width: 300px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+.Login-Wrapper h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+  
+.Login-Wrapper button {
+    background-color: red;
+    border: none;
+    border-radius: 10px;
+    width: 200px;
+    height: 40px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+  

@@ -1,6 +1,5 @@
-import GameComponent from "./GameComponent";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { app as firebaseApp } from "../../lib/firebaseConfig";
 import { getAuth, signOut } from "firebase/auth";
 import {
@@ -119,6 +118,8 @@ function App() {
             level: 2,
             xp: 0,
             hp: 100,
+            x: 0,
+            y: 0,
             mp: 100,
             gold: 0,
             inventory: [],
@@ -188,7 +189,8 @@ function App() {
       <button onClick={handleSignOut}>
         Sign out! (Anonymous users will be deleted from the database)
       </button>
-      <GameComponent />
+      <br />
+      <Link to="/game">Play Game!</Link>
     </div>
   );
 }

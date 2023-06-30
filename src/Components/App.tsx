@@ -1,3 +1,4 @@
+import GameComponent from "./GameComponent";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { app as firebaseApp } from "../../lib/firebaseConfig";
@@ -87,6 +88,7 @@ function createName() {
   return `${prefix} ${suffix}`;
 }
 
+  
 function App() {
   const playerId = useRef<string | null>(null); // Reference to store the player ID
   const playerRef = useRef<DatabaseReference | null>(null); // Reference to the player in the database
@@ -212,6 +214,7 @@ function App() {
         This is a sample text to show the website is running and Tailwind is
         working.
       </h1>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -224,8 +227,10 @@ function App() {
       <button onClick={handleSignOut}>
         Sign out! (Anonymouse users will be deleted from the database)
       </button>
+      <GameComponent/>
     </div>
   );
 }
 
 export default App;
+

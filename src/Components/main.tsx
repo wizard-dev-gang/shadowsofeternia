@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import AuthRoute from "./auth/AuthRoute";
 import Login from "./auth/Login";
+import NotFound from "./NotFound";
 import "../index.css";
 import { firebaseConfig } from "../../lib/firebaseConfig";
 import { initializeApp } from "firebase/app";
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </AuthRoute>
           }
         />
+        <Route path="/*" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>

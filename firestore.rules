@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // By default, disallow read and write
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Players can read their own documents, and write if authenticated
+    match /players/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Any authenticated user can write to coins
+    match /coins/{coinId} {
+      allow write: if request.auth != null;
+    }
+  }
+}

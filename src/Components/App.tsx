@@ -1,3 +1,4 @@
+import GameComponent from "./GameComponent";
 function App() {
   return (
     <div>
@@ -5,8 +6,10 @@ function App() {
         This is a sample text to show the website is running and Tailwind is
         working.
       </h1>
+      <GameComponent/>
     </div>
   );
 }
 
 export default App;
+

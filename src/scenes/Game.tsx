@@ -29,7 +29,7 @@ export default class Game extends Phaser.Scene
         
         const debugGraphics = this.add.graphics().setAlpha(0.7)
 
-        // // Yellow blocks are the ground collision boxes
+        // Yellow blocks are the ground collision boxes
         // groundLayer.renderDebug(debugGraphics, {
         //     tileColor: null,
         //     collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
@@ -77,14 +77,14 @@ export default class Game extends Phaser.Scene
             key: 'man-walk-down',
             frames: this.anims.generateFrameNames('man', { start: 1, end: 3, prefix: 'man-walk-down-0', suffix: '.png' }),
             repeat: -1,
-            frameRate: 5
+            frameRate: 20
         })
 
         this.anims.create({
             key: 'man-walk-left',
             frames: this.anims.generateFrameNames('man', { start: 1, end: 3, prefix: 'man-walk-left-0', suffix: '.png' }),
             repeat: -1,
-            frameRate: 5
+            frameRate: 20
         })
 
         this.anims.create({
@@ -98,7 +98,7 @@ export default class Game extends Phaser.Scene
             key: 'man-walk-up',
             frames: this.anims.generateFrameNames('man', { start: 1, end: 3, prefix: 'man-walk-up-0', suffix: '.png' }),
             repeat: -1,
-            frameRate: 5
+            frameRate: 20
         })
 
         this.man.anims.play('man-walk-up')

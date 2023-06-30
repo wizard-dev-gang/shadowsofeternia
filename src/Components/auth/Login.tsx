@@ -56,14 +56,14 @@ const Login: React.FC<LoginProps> = () => {
   };
 
   return (
-    <div>
+    <div className="Login-Wrapper">
       <h1>Login</h1>
       <button onClick={signInWithGoogle} disabled={authing}>
         Sign in with Google
       </button>
       <br />
       <button onClick={signInAnonymous} disabled={authing}>
-        Sign in Anonymously
+        Sign in As Guest
       </button>
     </div>
   );

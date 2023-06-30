@@ -13,8 +13,8 @@ function GameComponent() {
     phaserGameRef.current = new Phaser.Game({
       type: Phaser.AUTO,
       parent: "game-content",
-      width: 400,
-      height: 250,
+      width: 950,
+      height: 465,
       physics: {
         default: "arcade",
         arcade: {

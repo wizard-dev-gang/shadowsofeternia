@@ -63,7 +63,7 @@ const Login: React.FC<LoginProps> = () => {
       </button>
       <br />
       <button onClick={signInAnonymous} disabled={authing}>
-        Sign in Anonymously
+        Sign in As Guest
       </button>
     </div>
   );

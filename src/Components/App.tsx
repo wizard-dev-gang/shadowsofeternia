@@ -171,25 +171,23 @@ function App() {
   };
 
   return (
-    <div>
-      
-      <h1 className="text-6xl font-extrabold text-red-800">
-        Welcome to Shadows of Eternia!
+    <div className="Sign-In-Wrapper">
+      <h1 className="Header">
+        Welcome to <span className="title">Shadows of Eternia!</span>
       </h1>
-      {userName && <h1>Welcome, {userName}!</h1>}
+      {userName && <h1 className="Username">Welcome, <span>{userName}</span>!</h1>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleChangeName(e.target[0].value);
         }}
       >
-        <input type="text" placeholder="Change Display Name" />
+        <input type="text" placeholder="Change Display Name" className="Change-Name-Input-Box"/>
         <button type="submit" className="Change-Name-Button">Change Name</button>
       </form>
       <button className="Sign-Out-Button" onClick={handleSignOut}>
         Sign out!
       </button>
-      <br />
       <Link to="/game" className="Play-Game-BUtton">Play Game!</Link>
     </div>
   );

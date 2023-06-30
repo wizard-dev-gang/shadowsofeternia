@@ -81,7 +81,7 @@ export default class Game extends Phaser.Scene {
 
     //debugDraw(groundLayer, this)
 
-    this.man = this.add.player(614, 210, "man");
+    this.man = this.add.player(600, 191, "man");
 
     this.physics.add.collider(this.man, waterLayer);
     this.physics.add.collider(this.man, groundLayer);

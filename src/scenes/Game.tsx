@@ -139,7 +139,9 @@ export default class Game extends Phaser.Scene
         }
         else
         {
-            this.man.play('man-idle-down')
+            const parts = this.man.anims.currentAnim.key.split('-')
+            parts[1] = 'idle'
+            this.man.play(parts.join('-'))
             this.man.setVelocity(0,0)
         }
     }

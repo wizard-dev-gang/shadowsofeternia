@@ -9,7 +9,6 @@ import {
   set,
   DatabaseReference,
   onValue,
-  Query,
   update,
 } from "firebase/database";
 
@@ -88,7 +87,6 @@ function createName() {
   return `${prefix} ${suffix}`;
 }
 
-  
 function App() {
   const playerId = useRef<string | null>(null); // Reference to store the player ID
   const playerRef = useRef<DatabaseReference | null>(null); // Reference to the player in the database
@@ -129,49 +127,13 @@ function App() {
               armor: "placeholder",
               accessory: "placeholder",
             },
-          })
-            .then(() => {
-              console.log("Player added to database");
-              isAddedToDatabase.current = true;
-              if (playerRef.current) {
-                const query: Query = playerRef.current; // Convert the playerRef.current to a Query
-                onValue(query, (snapshot) => {
-                  const playerData = snapshot.val();
-                  console.log("Player data:", playerData);
-                  if (playerData) {
-                    setUserName(playerData.name || "");
-                  }
-                });
-              }
-            })
-            .catch((error) => {
-              console.error("Error adding player to database:", error);
-            });
+          });
         }
       });
-
-      // Only set up onDisconnect listener for anonymous users
-      if (user.isAnonymous) {
-        window.onbeforeunload = async () => {
-          if (playerRef.current) {
-            await set(playerRef.current, null); // Delete the user's data
-            console.log("Anonymous player data deleted from database");
-          }
-        };
-      }
     } else {
-      const isAnonymousStr = window.localStorage.getItem("isAnonymous");
-      const isAnonymous = JSON.parse(
-        isAnonymousStr !== null ? isAnonymousStr : "false"
-      );
-      if (isAnonymous) {
-        handleSignOut();
-        window.localStorage.removeItem("isAnonymous");
-        navigate("/login");
-      }
-      console.error("No user is logged in.");
+      console.log("Not logged in.");
     }
-  });
+  }, []);
 
   const handleSignOut = async () => {
     const auth = getAuth(firebaseApp);
@@ -214,7 +176,6 @@ function App() {
         This is a sample text to show the website is running and Tailwind is
         working.
       </h1>
-
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -225,12 +186,11 @@ function App() {
         <button type="submit">Change Name</button>
       </form>
       <button onClick={handleSignOut}>
-        Sign out! (Anonymouse users will be deleted from the database)
+        Sign out! (Anonymous users will be deleted from the database)
       </button>
-      <GameComponent/>
+      <GameComponent />
     </div>
   );
 }
 
 export default App;
-

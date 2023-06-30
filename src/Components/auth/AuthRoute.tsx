@@ -8,7 +8,7 @@ const AuthRoute: React.FC<AuthRouteProps> = (props) => {
   const { children } = props;
   const auth = getAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true); // Start as true while we're checking the auth state
+  const [loading, setLoading] = useState(false); // Start as true while we're checking the auth state
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

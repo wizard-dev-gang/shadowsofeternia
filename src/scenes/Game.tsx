@@ -53,13 +53,21 @@ export default class Game extends Phaser.Scene {
               otherPlayer = this.physics.add.sprite(
                 playerData.x,
                 playerData.y,
-                "man",
-                "man-walk-down-02.png"
+                "man"
               );
               this.otherPlayers.set(playerId, otherPlayer);
             }
             otherPlayer.x = playerData.x;
             otherPlayer.y = playerData.y;
+
+            if (playerData.anim && playerData.frame) {
+              otherPlayer.anims.play(playerData.anim, true);
+              otherPlayer.anims.setCurrentFrame(
+                otherPlayer.anims.currentAnim.frames.find(
+                  (f) => f.frame.name === playerData.frame
+                )
+              );
+            }
           }
         });
 
@@ -81,7 +89,7 @@ export default class Game extends Phaser.Scene {
 
     //debugDraw(groundLayer, this)
 
-    this.man = this.add.sprite(156, 128, "man");
+    this.man = this.add.player(156, 128, "man");
 
     this.physics.add.collider(this.man, waterLayer);
     this.physics.add.collider(this.man, groundLayer);
@@ -93,7 +101,19 @@ export default class Game extends Phaser.Scene {
   update(t: number, dt: number) {
     if (this.man) {
       this.man.update(this.cursors);
-      // update(this.playerRef, { x: this.man.x, y: this.man.y });
+
+      if (this.playerRef) {
+        update(this.playerRef, {
+          x: this.man.x,
+          y: this.man.y,
+          anim: this.man.anims.currentAnim
+            ? this.man.anims.currentAnim.key
+            : null,
+          frame: this.man.anims.currentFrame
+            ? this.man.anims.currentFrame.frame.name
+            : null,
+        });
+      }
     }
   }
 }

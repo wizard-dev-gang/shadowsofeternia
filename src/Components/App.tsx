@@ -116,7 +116,6 @@ function App() {
             id: playerId.current,
             name: createName(),
             level: 2,
-            currentAnim: "idle",
             xp: 0,
             hp: 100,
             x: 0,

@@ -22,6 +22,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite
 {
     private healthState = HealthState.IDLE
     private damageTime = 0
+    public lastMove = 'down'
 
     private _health = 3
 
@@ -96,25 +97,30 @@ export default class Player extends Phaser.Physics.Arcade.Sprite
         {
             this.anims.play('man-walk-left', true)
             this.setVelocity(-speed, 0)
+            this.lastMove = 'left'
         }
         else if(cursors.right?.isDown)
         {
             this.anims.play('man-walk-right', true)
             this.setVelocity(speed, 0)
+            this.lastMove = 'right'
         }
         else if (cursors.up?.isDown)
         {
             this.anims.play('man-walk-up', true)
             this.setVelocity(0, -speed)
+            this.lastMove = 'up'
         }
         else if (cursors.down?.isDown)
         {
             this.anims.play('man-walk-down', true)
             this.setVelocity(0, speed)
+            this.lastMove = 'down'
         }
         else
         {
-            this.play('man-idle-down')
+            const idle = `man-idle-${this.lastMove}`
+            this.play(idle)
             this.setVelocity(0,0)
         }
     }

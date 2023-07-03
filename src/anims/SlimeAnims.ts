@@ -9,19 +9,27 @@ const createSlimeAnims = (anims: Phaser.Animations.AnimationManager) => {
 
     anims.create({
         key: 'slime-walk-down',
-        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-walk-down-001', suffix: '.png'})
+        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-walk-down-00', suffix: '.png'}),
+        repeat: -1,
+        frameRate: 20
     })
     anims.create({
         key: 'slime-walk-up',
-        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-walk-up-001', suffix: '.png'})
+        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-walk-up-00', suffix: '.png'}),
+        repeat: -1,
+        frameRate: 20
     })
     anims.create({
         key: 'slime-right',
-        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-right-001', suffix: '.png'})
+        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-right-00', suffix: '.png'}),
+        repeat: -1,
+        frameRate: 20
     })
     anims.create({
         key: 'slime-left',
-        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-left-001', suffix: '.png'})
+        frames: anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-left-00', suffix: '.png'}),
+        repeat: -1,
+        frameRate: 20
     })
 }
 

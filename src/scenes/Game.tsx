@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
+import { createSlimeAnims } from "../anims/SlimeAnims";
 import { Player } from "../characters/Player";
+import { Slime } from "../characters/Slime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 
@@ -22,7 +24,7 @@ export default class Game extends Phaser.Scene {
 
   create() {
     const auth = getAuth();
-
+    
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.playerId = user.uid;
@@ -58,7 +60,6 @@ export default class Game extends Phaser.Scene {
             }
           }
         });
-
         createCharacterAnims(this.anims);
       }
     });
@@ -76,6 +77,7 @@ export default class Game extends Phaser.Scene {
       objectsLayer?.setCollisionByProperty({ collides: true });
 
       this.man = new Player(this, 600, 191, "man");
+      
       this.physics.world.enableBody(
         this.man,
         Phaser.Physics.Arcade.DYNAMIC_BODY
@@ -92,6 +94,15 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
     }
+    const slime = this.add.sprite(414, 90, "slime", "idle.png") 
+    
+    this.anims.create({
+      key: 'slime-walk-down',
+      frames: this.anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-walk-down-00', suffix: '.png'}),
+      repeat: -1,
+      frameRate: 10
+  })
+  slime.anims.play('slime-walk-down')
   }
 
   update() {

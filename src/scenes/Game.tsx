@@ -10,10 +10,13 @@ export default class Game extends Phaser.Scene {
   private playerRef!: any;
   private playerId!: any;
   private otherPlayers!: Map<any, any>;
+  private playerNames!: Map<any, any>;
+  private playerName?: Phaser.GameObjects.Text;
 
   constructor() {
     super("game");
     this.otherPlayers = new Map();
+    this.playerNames = new Map();
   }
 
   preload() {
@@ -56,6 +59,20 @@ export default class Game extends Phaser.Scene {
                 )
               );
             }
+            let playerName = this.playerNames.get(playerId);
+            if (!playerName) {
+              playerName = this.add
+                .text(0, 0, playerData.name, {
+                  fontSize: "10px",
+                  color: "#ffffff",
+                  stroke: "#000000",
+                  strokeThickness: 2,
+                })
+                .setOrigin(0.5, 0.01);
+              this.playerNames.set(playerId, playerName);
+            }
+            playerName.x = otherPlayer.x;
+            playerName.y = otherPlayer.y - 20;
           }
         });
 
@@ -86,17 +103,32 @@ export default class Game extends Phaser.Scene {
       this.add.existing(this.man);
 
       if (this.man) {
+        //if statements are to satisfy TypeScipt compiler
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
         if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
         this.cameras.main.startFollow(this.man);
+
+        this.playerName = this.add
+          .text(0, 0, "You", {
+            fontSize: "10px",
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 2,
+          })
+          .setOrigin(0.5, 1);
       }
     }
   }
 
   update() {
-    if (this.man) {
+    if (this.man && this.playerName) {
       this.man.update(this.cursors);
+
+      // Update the player's name position horizontally
+      this.playerName.x = this.man.x;
+      // Position of the name above the player
+      this.playerName.y = this.man.y - 10;
 
       if (this.playerRef) {
         update(this.playerRef, {

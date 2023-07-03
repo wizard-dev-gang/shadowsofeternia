@@ -63,13 +63,17 @@ export default class Game extends Phaser.Scene {
       }
     });
 
-    const map = this.make.tilemap({ key: "testMap" });
-    const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
+    // const map = this.make.tilemap({ key: "testMap" });
+    // const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
+
+    const map = this.make.tilemap({key: "caveMap"})
+    const tileset = map.addTilesetImage("cave", "tiles")
 
     if (tileset) {
       const waterLayer = map.createLayer("Water", tileset, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
       const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
+      const cave = map.createLayer("Cave", tileset, 0, 0)
 
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });

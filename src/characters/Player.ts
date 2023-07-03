@@ -172,7 +172,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   handleDamage(dir: Phaser.Math.Vector2) {
     if (this._health <= 0) {
       return;
-      
+    }
     if (this.healthState === HealthState.DAMAGE) {
       return;
     }
@@ -245,7 +245,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
   }
-}
+
 
 Phaser.GameObjects.GameObjectFactory.register(
   "player",

@@ -1,22 +1,12 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import "../characters/Player";
-import { debugDraw } from "../utils/Debug";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  getDatabase,
-  ref,
-  set,
-  child,
-  get,
-  update,
-  onValue,
-  off,
-} from "firebase/database";
+import { getDatabase, ref, update, onValue } from "firebase/database";
 
 export default class Game extends Phaser.Scene {
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private man!: Phaser.Physics.Arcade.Sprite;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private man?: Phaser.Physics.Arcade.Sprite;
   private playerRef!: any;
   private playerId!: any;
   private otherPlayers!: Map<any, any>;
@@ -27,26 +17,24 @@ export default class Game extends Phaser.Scene {
   }
 
   preload() {
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors = this.input.keyboard?.createCursorKeys();
   }
 
   create() {
-    const auth = getAuth(); // Get the Firebase auth object
+    const auth = getAuth();
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, get the uid
         this.playerId = user.uid;
-        const db = getDatabase(); // Get the Firebase database object
-        this.playerRef = ref(db, `players/${this.playerId}`); // Reference to the player in the database
+        const db = getDatabase();
+        this.playerRef = ref(db, `players/${this.playerId}`);
 
         const otherPlayersRef = ref(db, "players");
         onValue(otherPlayersRef, (snapshot) => {
           const playersData = snapshot.val();
           for (const playerId in playersData) {
-            if (playerId === this.playerId) continue; // Don't create a sprite for the current player
+            if (playerId === this.playerId) continue;
             const playerData = playersData[playerId];
-            // handle other player sprites here
             let otherPlayer = this.otherPlayers.get(playerId);
 
             if (!otherPlayer) {
@@ -64,7 +52,7 @@ export default class Game extends Phaser.Scene {
               otherPlayer.anims.play(playerData.anim, true);
               otherPlayer.anims.setCurrentFrame(
                 otherPlayer.anims.currentAnim.frames.find(
-                  (f) => f.frame.name === playerData.frame
+                  (f: any) => f.frame.name === playerData.frame
                 )
               );
             }
@@ -78,27 +66,29 @@ export default class Game extends Phaser.Scene {
     const map = this.make.tilemap({ key: "testMap" });
     const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
 
-    // water layer goes in first to have it behind ground
-    const waterLayer = map.createLayer("Water", tileset, 0, 0);
-    const groundLayer = map.createLayer("Ground", tileset, 0, 0);
-    const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
+    if (tileset) {
+      const waterLayer = map.createLayer("Water", tileset, 0, 0);
+      const groundLayer = map.createLayer("Ground", tileset, 0, 0);
+      const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
 
-    waterLayer.setCollisionByProperty({ collides: true });
-    groundLayer.setCollisionByProperty({ collides: true });
-    objectsLayer.setCollisionByProperty({ collides: true });
+      waterLayer?.setCollisionByProperty({ collides: true });
+      groundLayer?.setCollisionByProperty({ collides: true });
+      objectsLayer?.setCollisionByProperty({ collides: true });
 
-    //debugDraw(groundLayer, this)
+      this.man = this.add.player(600, 191, "man");
 
-    this.man = this.add.player(600, 191, "man");
 
-    this.physics.add.collider(this.man, waterLayer);
-    this.physics.add.collider(this.man, groundLayer);
-    this.physics.add.collider(this.man, objectsLayer);
+      if (this.man) {
+        if (waterLayer) this.physics.add.collider(this.man, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.man, groundLayer);
+        if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
+        this.cameras.main.startFollow(this.man);
+      }
+    }
 
-    this.cameras.main.startFollow(this.man);
   }
 
-  update(t: number, dt: number) {
+  update() {
     if (this.man) {
       this.man.update(this.cursors);
 

@@ -143,91 +143,71 @@
 
 import Phaser from "phaser";
 
-declare global
-{
-    namespace Phaser.GameObjects
-    {
-        interface GameObjectFactory
-        {
-            player(x: number, y: number, texture: string, frame?: string | number): Player
-        }
-    }
+enum HealthState {
+  IDLE,
+  DAMAGE,
+  DEAD,
 }
 
-enum HealthState
-{
-    IDLE,
-    DAMAGE,
-    DEAD
-}
+export default class Player extends Phaser.Physics.Arcade.Sprite {
 
-export default class Player extends Phaser.Physics.Arcade.Sprite
-{
-    private healthState = HealthState.IDLE;
+  private healthState = HealthState.IDLE;
     private damageTime = 0;
     public lastMove = 'down';
     private _health = 3;
     private keys: Phaser.Types.Input.Keyboard.WASD;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number)
-    {
-        super(scene, x, y, texture, frame);
-        //Added WASD to be keyboard inputs
-        this.keys = this.scene.input.keyboard.addKeys('W,A,S,D') as Phaser.Types.Input.Keyboard.WASD;
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    texture: string,
+    frame?: string | number
+  ) {
+    super(scene, x, y, texture, frame);
+    this.keys = this.scene.input.keyboard.addKeys('W,A,S,D') as Phaser.Types.Input.Keyboard.WASD;
+    //this.man.anims.play('man-walk-up')
+  }
+
+  handleDamage(dir: Phaser.Math.Vector2) {
+    if (this._health <= 0) {
+      return;
+      
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
     }
 
-    handleDamage(dir: Phaser.Math.Vector2)
-    {
-        if(this._health <=0)
-        {
-            return
-        }
+    --this._health;
 
-        if (this.healthState === HealthState.DAMAGE)
-        {
-            return
-        }
+    if (this._health <= 0) {
+      this.setVelocity(0, 0);
+      this.healthState = HealthState.DEAD;
+      this.play("man-walk-right");
+    } else {
+      this.setVelocity(dir.x, dir.y);
 
-        --this._health
+      this.setTint(0xff0000);
 
-        if(this._health <= 0)
-        {
-            this.setVelocity(0,0)
-            this.healthState =HealthState.DEAD
-            this.play('man-walk-right')
-            
-        }
-        else 
-        {
-            this.setVelocity(dir.x,dir.y)
+      this.healthState = HealthState.DAMAGE;
+      this.damageTime = 0;
+    }
+  }
 
-            this.setTint(0xFF0000)
+  preUpdate(t: number, dt: number): void {
+    super.preUpdate(t, dt);
 
-            this.healthState = HealthState.DAMAGE
-            this.damageTime = 0
+    switch (this.healthState) {
+      case HealthState.IDLE:
+        break;
+      case HealthState.DAMAGE:
+        this.damageTime += dt;
+        if (this.damageTime >= 250) {
+          this.healthState = HealthState.IDLE;
+          this.setTint(0xffffff);
+          this.damageTime = 0;
         }
     }
-    
-    preUpdate(t: number, dt: number): void 
-    {
-        super.preUpdate(t,dt)
-
-        switch(this.healthState)
-        {
-            case HealthState.IDLE:
-                break
-            case HealthState.DAMAGE:
-                this.damageTime += dt
-                if (this.damageTime >= 250)
-                {
-                    this.healthState = HealthState.IDLE
-                    this.setTint(0xffffff)
-                    this.damageTime = 0
-                }
-            
-        }
-    }
-
+  }
     update()
     {
         //this.play(idle) takes in the idle variable which is the idle position of last move the player made
@@ -264,18 +244,30 @@ export default class Player extends Phaser.Physics.Arcade.Sprite
             this.setVelocity(0,0)
         }
     }
+  }
 }
 
-Phaser.GameObjects.GameObjectFactory.register('player', function(this:Phaser.GameObjects.GameObjectFactory, x: number, y: number, texture: string, frame?: string | number)
-{
-    const sprite = new Player(this.scene, x, y, texture, frame)
+Phaser.GameObjects.GameObjectFactory.register(
+  "player",
+  function (
+    this: Phaser.GameObjects.GameObjectFactory,
+    x: number,
+    y: number,
+    texture: string,
+    frame?: string | number
+  ) {
+    const sprite = new Player(this.scene, x, y, texture, frame);
 
-    this.displayList.add(sprite)
-    this.updateList.add(sprite)
+    this.displayList.add(sprite);
+    this.updateList.add(sprite);
 
-    this.scene.physics.world.enableBody(sprite, Phaser.Physics.Arcade.DYNAMIC_BODY)
+    this.scene.physics.world.enableBody(
+      sprite,
+      Phaser.Physics.Arcade.DYNAMIC_BODY
+    );
 
-    sprite.body.setSize(sprite.width * .8)
+    sprite.body?.setSize(sprite.width * 0.8);
 
-    return sprite
-})
+    return sprite;
+  }
+);

@@ -75,7 +75,8 @@ export default class Game extends Phaser.Scene {
       groundLayer?.setCollisionByProperty({ collides: true });
       objectsLayer?.setCollisionByProperty({ collides: true });
 
-      this.man = this.add.player(158, 126, "man");
+      this.man = this.add.player(600, 191, "man");
+
 
       if (this.man) {
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
@@ -84,6 +85,7 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
     }
+
   }
 
   update() {

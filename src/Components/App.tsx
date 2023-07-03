@@ -117,7 +117,6 @@ function App() {
             id: playerId.current,
             name: createName(),
             level: 2,
-            currentAnim: "idle",
             xp: 0,
             hp: 100,
             x: 0,
@@ -173,31 +172,31 @@ function App() {
   };
 
   return (
-    <div>
-      {userName && <h1>Welcome, {userName}!</h1>}
-      <h1 className="text-6xl font-extrabold text-indigo-800">
-        This is a sample text to show the website is running and Tailwind is
-        working.
+    <div className="Sign-In-Wrapper">
+      <h1 className="Header">
+        Welcome to <span className="title">Shadows of Eternia!</span>
       </h1>
+      {userName && <h1 className="Username">Welcome, <span>{userName}</span>!</h1>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleChangeName(newName);
         }}
       >
+
         <input
           type="text"
           placeholder="Change Display Name"
+          className="Change-Name-Input-Box"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        <button type="submit">Change Name</button>
+        <button type="submit" className="Change-Name-Button">Change Name</button>
       </form>
-      <button onClick={handleSignOut}>
-        Sign out! (Anonymous users will be deleted from the database)
+      <button className="Sign-Out-Button" onClick={handleSignOut}>
+        Sign out!
       </button>
-      <br />
-      <Link to="/game">Play Game!</Link>
+      <Link to="/game" className="Play-Game-BUtton">Play Game!</Link>
     </div>
   );
 }

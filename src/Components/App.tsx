@@ -9,6 +9,8 @@ import {
   DatabaseReference,
   onValue,
   update,
+  onDisconnect,
+  remove,
 } from "firebase/database";
 
 // Helper function to get a random element from an array
@@ -116,7 +118,7 @@ function App() {
           set(playerRef.current!, {
             id: playerId.current,
             name: createName(),
-            level: 2,
+            level: 1,
             xp: 0,
             hp: 100,
             x: 0,
@@ -129,7 +131,28 @@ function App() {
               armor: "placeholder",
               accessory: "placeholder",
             },
+
           });
+        }
+      });
+
+      // Set up onDisconnect event to remove player data when disconnected
+      const playerDisconnectRef = ref(db, `.info/connected`);
+      onValue(playerDisconnectRef, (snapshot) => {
+        if (snapshot.val() === false) {
+          // Player is disconnected
+          if (playerRef.current) {
+            remove(playerRef.current)
+              .then(() => {
+                console.log("Player data removed on disconnect.");
+              })
+              .catch((error) => {
+                console.error(
+                  "Error removing player data on disconnect:",
+                  error
+                );
+              });
+          }
         }
       });
     } else {
@@ -142,7 +165,7 @@ function App() {
     try {
       if (auth.currentUser?.isAnonymous && playerRef.current) {
         // Remove player's data from the database before signing out if the user is anonymous
-        await set(playerRef.current, null);
+        await remove(playerRef.current);
       }
       await signOut(auth);
       navigate("/login"); // Navigate to login page after sign out
@@ -176,14 +199,17 @@ function App() {
       <h1 className="Header">
         Welcome to <span className="title">Shadows of Eternia!</span>
       </h1>
-      {userName && <h1 className="Username">Welcome, <span>{userName}</span>!</h1>}
+      {userName && (
+        <h1 className="Username">
+          Welcome, <span>{userName}</span>!
+        </h1>
+      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleChangeName(newName);
         }}
       >
-
         <input
           type="text"
           placeholder="Change Display Name"
@@ -191,12 +217,16 @@ function App() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        <button type="submit" className="Change-Name-Button">Change Name</button>
+        <button type="submit" className="Change-Name-Button">
+          Change Name
+        </button>
       </form>
       <button className="Sign-Out-Button" onClick={handleSignOut}>
         Sign out!
       </button>
-      <Link to="/game" className="Play-Game-BUtton">Play Game!</Link>
+      <Link to="/game" className="Play-Game-BUtton">
+        Play Game!
+      </Link>
     </div>
   );
 }

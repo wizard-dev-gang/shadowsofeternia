@@ -92,6 +92,7 @@ function App() {
   const isAddedToDatabase = useRef(false);
   const navigate = useNavigate(); // React router hook to navigate between pages
   const [userName, setUserName] = useState<string>(""); // State to store the player's name
+  const [newName, setNewName] = useState<string>(""); // State to store the new name when editing
 
   useEffect(() => {
     const auth = getAuth(firebaseApp); // Get the Firebase authentication object
@@ -112,7 +113,7 @@ function App() {
           isAddedToDatabase.current = true;
         } else {
           // If the player's data doesn't exist in the database, create it
-          set(playerRef.current, {
+          set(playerRef.current!, {
             id: playerId.current,
             name: createName(),
             level: 2,
@@ -181,10 +182,15 @@ function App() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleChangeName(e.target[0].value);
+          handleChangeName(newName);
         }}
       >
-        <input type="text" placeholder="Change Display Name" />
+        <input
+          type="text"
+          placeholder="Change Display Name"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+        />
         <button type="submit">Change Name</button>
       </form>
       <button onClick={handleSignOut}>

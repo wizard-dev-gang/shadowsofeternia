@@ -4,7 +4,7 @@ import Game from "../scenes/Game";
 import Preloader from "../scenes/Preloader";
 
 function GameComponent() {
-  const phaserGameRef = React.useRef(null);
+  const phaserGameRef = React.useRef<Phaser.Game | null>(null);
 
   useEffect(() => {
     if (phaserGameRef.current) {

@@ -1,4 +1,6 @@
 import Phaser from "phaser";
+import { Vector } from "matter";
+
 interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
   A?: Phaser.Input.Keyboard.Key;
@@ -10,6 +12,17 @@ enum HealthState {
   IDLE,
   DAMAGE,
   DEAD,
+}
+
+declare global
+{
+    namespace Phaser.GameObjects
+    {
+        interface GameObjectFactory
+        {
+            player(x: number, y: number, texture: string, frame?: string | number): Player
+        }
+    }
 }
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
@@ -51,7 +64,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    --this._health;
+    //--this._health;
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
@@ -59,7 +72,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.play("man-walk-right");
     } else {
       this.setVelocity(dir.x, dir.y);
-
+        
       this.setTint(0xff0000);
 
       this.healthState = HealthState.DAMAGE;
@@ -85,6 +98,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   update() {
     //this.play(idle) takes in the idle variable which is the idle position of last move the player made
     //set player movement keys to WASD
+
+    if(this.healthState === HealthState.DAMAGE 
+        || this.healthState === HealthState.DEAD
+    )
+    {
+        return
+    }
+
     const speed = 200;
     if (this.keys.A?.isDown) {
       this.anims.play("man-walk-left", true);
@@ -135,4 +156,4 @@ Phaser.GameObjects.GameObjectFactory.register(
   }
 );
 
-export { Player };
+//export { Player };

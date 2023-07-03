@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import "../characters/Player";
+import { Player } from "../characters/Player";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 
@@ -75,8 +75,15 @@ export default class Game extends Phaser.Scene {
       groundLayer?.setCollisionByProperty({ collides: true });
       objectsLayer?.setCollisionByProperty({ collides: true });
 
-      this.man = this.add.player(600, 191, "man");
-
+      this.man = new Player(this, 600, 191, "man");
+      this.physics.world.enableBody(
+        this.man,
+        Phaser.Physics.Arcade.DYNAMIC_BODY
+      );
+      if (this.man.body) {
+        this.man.body.setSize(this.man.width * 0.8);
+      }
+      this.add.existing(this.man);
 
       if (this.man) {
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
@@ -85,7 +92,6 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
     }
-
   }
 
   update() {

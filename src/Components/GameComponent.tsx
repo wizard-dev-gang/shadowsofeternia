@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import Game from "../scenes/Game";
 import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
+import ChooseCharacterScene from "../scenes/ChooseCharacter";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -23,7 +24,7 @@ function GameComponent() {
           debug: true,
         },
       },
-      scene: [Preloader, Game, PlayerUI],
+      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI],
       scale: {
         zoom: 2,
       },

@@ -8,7 +8,7 @@ import "../characters/Player";
 import { Enemy } from "../enemies/Enemy";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
-import { sceneEvents } from '../events/EventsCenter'
+import { sceneEvents } from "../events/EventsCenter";
 
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -231,14 +231,11 @@ export default class Game extends Phaser.Scene {
     const dx = obj1.x - skeleton.x;
     const dy = obj1.y - skeleton.y;
 
-<<<<<<< HEAD
     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
     this.man.setVelocity(dir.x, dir.y);
     this.man.handleDamage(dir);
-=======
-    console.log(this.man._health)
-		sceneEvents.emit('player-health-changed', this.man._health)
->>>>>>> d5a0cb89ead957c5db3997d64d71d5300e1e558c
+    console.log(this.man._health);
+    sceneEvents.emit("player-health-changed", this.man._health);
 
     //sceneEvents.emit('player-health-changed', this.Player.health)
 

@@ -9,8 +9,8 @@ export default class PlayerUI extends Phaser.Scene
     }
     create()
     {
-        const y = 75
-        const x = 75
+        const y = 380
+        const x = 50
         const fullWidth = 100
 
         this.add.text(x, y - 25, "Health", {
@@ -25,27 +25,9 @@ export default class PlayerUI extends Phaser.Scene
             .withRightCap(this.add.image(0, 0, 'healthBar-right-cap'))
 
             .layout()
+            // is used to animate the bar going to 50%
+            // .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {*insert bar.animateToFill})
+           bar.animateToFill(0.5)
 
-
-
-
-
-
-
-
-        // const healthBar = this.add.group({
-        //     classType: Phaser.GameObjects.Image
-        // })
-
-        // healthBar.createMultiple({
-        //     key: "healthBar-full",
-        //     setXY: {
-        //         x: 75,
-        //         y: 10,
-        //         stepX: 16,
-        //     },
-        //     quantity: 1,
-        //     displayWidth: 1000
-        // })
     }
 }

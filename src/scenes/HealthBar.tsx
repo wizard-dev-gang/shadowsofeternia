@@ -34,12 +34,44 @@ export default class healthBar{
 
     layout()
     {
+        if(this.middle)
+        {
+            this.middle.displayWidth = this.width
+        }
+        
+        this.layoutSegments()
+
+        return this
+    }
+
+    animateToFill(fill: number, duration: number = 1000)
+    {
+        if(!this.middle)
+        {
+            return
+        }
+
+        const percent = Math.max(0, Math.min(1, fill))
+
+        this.scene.tweens.add({
+            targets: this.middle,
+            displayWidth: this.width * percent,
+            duration,
+            ease: Phaser.Math.Easing.Sine.Out,
+            onUpdate: () => {
+                this.layoutSegments()
+            }
+
+        })
+    }
+
+    private layoutSegments()
+    {
         if(!this.leftCap || !this.middle || !this.rightCap)
         {
             return this
         }
 
-        this.middle.displayWidth = this.width
         this.leftCap.x = this.x
         this.leftCap.y = this.y
 
@@ -49,17 +81,6 @@ export default class healthBar{
         this.rightCap.x = this.middle.x + this.middle.displayWidth
         this.rightCap.y = this.middle.y 
 
-        return this
-    }
-
-    animateToFill(fill: number)
-    {
-        if(!this.middle)
-        {
-            return
-        }
-
-        const percent = Math.max(0, Math.min(1, fill))
     }
 
 }

@@ -1,7 +1,7 @@
 import Phaser from "phaser"
 import HealthBar from "./HealthBar"
 import { sceneEvents } from "../events/EventsCenter";
-import { sceneEvents } from "../events/EventsCenter"
+
 
 export default class PlayerUI extends Phaser.Scene
 {

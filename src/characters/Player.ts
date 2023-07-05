@@ -29,7 +29,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   public lastMove = "down";
-  private _health = 50;
+  private _health = 10;
+  private knives?: Phaser.Physics.Arcade.Group
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -51,10 +52,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         A: Phaser.Input.Keyboard.KeyCodes.A,
         S: Phaser.Input.Keyboard.KeyCodes.S,
         D: Phaser.Input.Keyboard.KeyCodes.D,
+        Space: Phaser.Input.Keyboard.KeyCodes.SPACE
       }) as WASDKeys;
     }
     //this.man.anims.play('man-walk-up')
   }
+  setKnives(knives:Phaser.Physics.Arcade.Group)
+    {
+        this.knives = knives
+    }
 
   handleDamage(dir: Phaser.Math.Vector2) {
     if (this._health <= 0) {
@@ -79,6 +85,59 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.damageTime = 0;
     }
   }
+
+  private throwKnife(direction?:string, xLoc?:string, yLoc?:string, projectile?:string)
+    {
+
+        if (!this.knives) {
+            return
+        }
+        
+        if (direction === undefined) {
+          const parts = this.anims.currentAnim.key.split('-')
+          direction = parts[2]
+          xLoc = this.x
+          yLoc = this.y
+          projectile = 'knife'
+        }
+        
+        const vec = new Phaser.Math.Vector2(0, 0)
+
+
+        switch (direction) {
+            case 'up':
+                vec.y = -1
+                break
+            case 'down':
+                vec.y = 1
+                break
+            case 'left':
+                vec.x = -1
+                break
+            default:
+            case 'right':
+                vec.x = 1
+                break
+                
+        }
+
+        const angle= vec.angle()
+        
+        const knife = this.knives.get(xLoc,yLoc, projectile) as Phaser.Physics.Arcade.Image
+        if (!knife) 
+        {
+            return
+        }
+        knife.setActive(true)
+        knife.setVisible(true)
+
+        knife.setRotation(angle)
+
+        knife.x += vec.x * 16 
+        knife.y += vec.y * 16
+        knife.setVelocity(vec.x * 300, vec.y * 300)
+        console.log(knife.x,knife.y,direction)
+    }
 
   preUpdate(t: number, dt: number): void {
     super.preUpdate(t, dt);
@@ -106,6 +165,23 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         return
     }
 
+    if(this.keys.Space?.isDown)
+        {
+            this.throwKnife()
+            // if (this.activeChest)
+            // {
+            //     const coins = this.activeChest.open()
+            //     this._coins += coins
+                
+            //     sceneEvents.emit('player-coins-changed', this._coins)
+            // }
+            // else 
+            // {
+            //     this.throwKnife()
+            // }
+            // return
+        }
+
     const speed = 200;
     if (this.keys.A?.isDown) {
       this.anims.play("man-walk-left", true);
@@ -130,7 +206,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 }
-
 
 Phaser.GameObjects.GameObjectFactory.register(
   "player",

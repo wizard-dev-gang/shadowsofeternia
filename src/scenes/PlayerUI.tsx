@@ -1,9 +1,12 @@
 import Phaser from "phaser"
 import HealthBar from "./HealthBar"
+import { sceneEvents } from "../events/EventsCenter";
 import { sceneEvents } from "../events/EventsCenter"
 
 export default class PlayerUI extends Phaser.Scene
 {
+    private bar: HealthBar;
+    
     constructor()
     {
         super({ key:'player-ui' })
@@ -20,7 +23,10 @@ export default class PlayerUI extends Phaser.Scene
             stroke: "#000000",
             strokeThickness: 5,
         })
-        const bar = new HealthBar(this, x, y, fullWidth)
+
+        sceneEvents.on('player-health-changed', this.handlePlayerHealthChanged, this)
+
+        this.bar = new HealthBar(this, x, y, fullWidth)
             .withLeftCap(this.add.image(0, 0, 'healthBar-left-cap'))
             .withMiddle(this.add.image(0, 0, 'healthBar-middle'))
             .withRightCap(this.add.image(0, 0, 'healthBar-right-cap'))
@@ -28,9 +34,20 @@ export default class PlayerUI extends Phaser.Scene
             .layout()
             // is used to animate the bar going to 50%
             // .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {*insert bar.animateToFill})
-        //    bar.animateToFill(0.5)
-        sceneEvents.on('player-health-changed', bar.animateToFill(0.25), 1000)
+            //this.bar.animateToFill(0.5)
 
         // private handlePlayerHealthChanged(health: number)
+    }
+
+    private handlePlayerHealthChanged(health: number)
+    {
+        console.log('in player health cahnged', health)
+        this.bar.animateToFill((health/10))
+    }
+
+    private handlePlayerHealthChanged(health: number)
+    {
+        console.log('in player health cahnged', health)
+        this.bar.animateToFill((health/10))
     }
 }

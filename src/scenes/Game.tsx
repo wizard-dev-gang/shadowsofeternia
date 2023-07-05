@@ -6,11 +6,13 @@ import '../characters/Player'
 import { Enemy } from "../enemies/Enemy";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
-import { sceneEvents } from "../events/EventsCenter";
+import { sceneEvents } from '../events/EventsCenter'
+
 
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Phaser.Physics.Arcade.Sprite;
+  private knives!: Phaser.Physics.Arcade.Group
   private playerRef!: any;
   private playerId!: any;
   private otherPlayers!: Map<any, any>;
@@ -106,7 +108,6 @@ export default class Game extends Phaser.Scene {
       objectsLayer?.setCollisionByProperty({ collides: true });
 
       this.man = this.add.player(600, 191, "man");
-      
 
       this.skeletons = this.physics.add.group({
         classType: Enemy,
@@ -117,9 +118,19 @@ export default class Game extends Phaser.Scene {
         }
       })
 
+      this.knives = this.physics.add.group({
+        classType: Phaser.Physics.Arcade.Image,
+        maxSize:3
+      })
+
+      this.man.setKnives(this.knives)
+
       this.skeletons.get(256,256, 'jacked-skeleton' )
 
       this.physics.add.collider(this.skeletons, groundLayer)
+      this.physics.add.collider(this.knives, groundLayer, this.handleKnifeWallCollision, undefined, this)
+		  this.physics.add.collider(this.knives, this.skeletons, this.handleKnifeSkeletonCollision, undefined, this)
+
       this.playerEnemiesCollider =  this.physics.add.collider(this.skeletons, 
                 this.man,
                 this.handlePlayerEnemyCollision, 
@@ -155,9 +166,22 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private handlePlayerEnemyCollision(
-    obj1:Phaser.GameObjects.GameObject , 
-    obj2: Phaser.GameObjects.GameObject) 
+  private handleKnifeWallCollision(obj1:Phaser.GameObjects.GameObject , obj2: Phaser.GameObjects.GameObject) 
+	{
+    console.log(obj1.x,obj1.y)
+		this.knives.killAndHide(obj1)
+		obj1.destroy();
+	}
+
+	private handleKnifeSkeletonCollision(obj1:Phaser.GameObjects.GameObject , obj2: Phaser.GameObjects.GameObject) 
+	{
+		this.knives.killAndHide(obj1)
+		this.skeletons.killAndHide(obj2)
+		obj2.destroy();
+		obj1.destroy();
+	}
+
+  private handlePlayerEnemyCollision(obj1:Phaser.GameObjects.GameObject , obj2: Phaser.GameObjects.GameObject) 
 	{
 		const skeleton = obj2 as Enemy
     
@@ -168,7 +192,8 @@ export default class Game extends Phaser.Scene {
     this.man.setVelocity(dir.x, dir.y)
 		this.man.handleDamage(dir)
 
-    sceneEvents.emit('player-health-changed', this.man.health)
+    console.log(this.man._health)
+		sceneEvents.emit('player-health-changed', this.man._health)
 
 		// if( this.faune.health <= 0)
 		// {

@@ -205,7 +205,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocity(0, 0);
     }
   }
-}
+
 
 Phaser.GameObjects.GameObjectFactory.register(
   "player",
@@ -226,7 +226,7 @@ Phaser.GameObjects.GameObjectFactory.register(
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
 
-    sprite.body?.setSize(sprite.width * 0.8);
+    sprite.body?.setSize(sprite.width * 0.01);
 
     return sprite;
   }

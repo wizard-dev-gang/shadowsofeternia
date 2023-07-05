@@ -7,6 +7,7 @@ import { Enemy } from "../enemies/Enemy";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 
+
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Phaser.Physics.Arcade.Sprite;
@@ -14,10 +15,14 @@ export default class Game extends Phaser.Scene {
   private playerRef!: any;
   private playerId!: any;
   private otherPlayers!: Map<any, any>;
+  private playerNames!: Map<any, any>;
+  private playerName?: Phaser.GameObjects.Text;
+
 
   constructor() {
     super("game");
     this.otherPlayers = new Map();
+    this.playerNames = new Map();
   }
 
   preload() {
@@ -26,6 +31,7 @@ export default class Game extends Phaser.Scene {
 
   create() {
     const auth = getAuth();
+    this.scene.run('player-ui')
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -60,6 +66,20 @@ export default class Game extends Phaser.Scene {
                 )
               );
             }
+            let playerName = this.playerNames.get(playerId);
+            if (!playerName) {
+              playerName = this.add
+                .text(0, 0, playerData.name, {
+                  fontSize: "10px",
+                  color: "#ffffff",
+                  stroke: "#000000",
+                  strokeThickness: 2,
+                })
+                .setOrigin(0.5, 0.01);
+              this.playerNames.set(playerId, playerName);
+            }
+            playerName.x = otherPlayer.x;
+            playerName.y = otherPlayer.y - 20;
           }
         });
 
@@ -73,10 +93,14 @@ export default class Game extends Phaser.Scene {
     const map = this.make.tilemap({ key: "testMap" });
     const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
 
+    // const map = this.make.tilemap({key: "caveMap"})
+    // const tileset = map.addTilesetImage("cave", "tiles")
+
     if (tileset) {
       const waterLayer = map.createLayer("Water", tileset, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
       const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
+      // const cave = map.createLayer("Cave", tileset, 0, 0)
 
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
@@ -123,10 +147,20 @@ export default class Game extends Phaser.Scene {
       // this.add.existing(this.man);
 
       if (this.man) {
+        //if statements are to satisfy TypeScipt compiler
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
         if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
         this.cameras.main.startFollow(this.man);
+
+        this.playerName = this.add
+          .text(0, 0, "You", {
+            fontSize: "10px",
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 2,
+          })
+          .setOrigin(0.5, 1);
       }
     }
   }
@@ -166,8 +200,13 @@ export default class Game extends Phaser.Scene {
 	}
 
   update() {
-    if (this.man) {
+    if (this.man && this.playerName) {
       this.man.update(this.cursors);
+
+      // Update the player's name position horizontally
+      this.playerName.x = this.man.x;
+      // Position of the name above the player
+      this.playerName.y = this.man.y - 10;
 
       if (this.playerRef) {
         update(this.playerRef, {

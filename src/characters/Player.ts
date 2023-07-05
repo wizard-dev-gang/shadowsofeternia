@@ -129,7 +129,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocity(0, 0);
     }
   }
-}
+
 
 Phaser.GameObjects.GameObjectFactory.register(
   "player",

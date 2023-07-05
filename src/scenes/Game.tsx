@@ -1,5 +1,8 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
+import { createSlimeAnims } from "../anims/SlimeAnims";
+import { Player } from "../characters/Player";
+import { Slime } from "../characters/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 //import { Player } from "../characters/Player";
 import '../characters/Player'
@@ -82,7 +85,6 @@ export default class Game extends Phaser.Scene {
             playerName.y = otherPlayer.y - 20;
           }
         });
-
       }
     });
     
@@ -162,7 +164,26 @@ export default class Game extends Phaser.Scene {
           })
           .setOrigin(0.5, 1);
       }
+    
+    createSlimeAnims(this.anims)
+    const slimes = this.physics.add.group({
+      classType: Slime,
+      createCallback: (go)=> {
+        const slimeGo = go as Slime
+        slimeGo.body.onCollide = true
+      }
+    })
+    
+    slimes.get(414, 90, "slime");
+    if (this.man && slimes) {
+      // Add colliders between man and slimes
+      this.physics.add.collider(this.man, slimes);
+  
+      if (waterLayer) this.physics.add.collider(slimes, waterLayer);
+      if (groundLayer) this.physics.add.collider(slimes, groundLayer);
+      if (objectsLayer) this.physics.add.collider(slimes, objectsLayer)
     }
+  }
   }
 
   private handleKnifeWallCollision(obj1:Phaser.GameObjects.GameObject , obj2: Phaser.GameObjects.GameObject) 

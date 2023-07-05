@@ -93,16 +93,26 @@ export default class Game extends Phaser.Scene {
         if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
         this.cameras.main.startFollow(this.man);
       }
-    }
-    const slime = this.add.sprite(414, 90, "slime", "idle.png") 
     
-    this.anims.create({
-      key: 'slime-walk-down',
-      frames: this.anims.generateFrameNames('slime', {start: 1, end: 5, prefix: 'slime-walk-down-00', suffix: '.png'}),
-      repeat: -1,
-      frameRate: 10
-  })
-  slime.anims.play('slime-walk-down')
+    createSlimeAnims(this.anims)
+    const slimes = this.physics.add.group({
+      classType: Slime,
+      createCallback: (go)=> {
+        const slimeGo = go as Slime
+        slimeGo.body.onCollide = true
+      }
+    })
+    
+    slimes.get(414, 90, "slime");
+    if (this.man && slimes) {
+      // Add colliders between man and slimes
+      this.physics.add.collider(this.man, slimes);
+  
+      if (waterLayer) this.physics.add.collider(slimes, waterLayer);
+      if (groundLayer) this.physics.add.collider(slimes, groundLayer);
+      if (objectsLayer) this.physics.add.collider(slimes, objectsLayer)
+    }
+  }
   }
 
   update() {

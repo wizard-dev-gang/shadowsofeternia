@@ -1,45 +1,76 @@
 import Phaser from "phaser";
 
+enum Direction{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+}
+
+const randomDirection = (exclude: Direction) => {
+    let newDirection = Phaser.Math.Between(0, 3)
+    while (newDirection === exclude)
+    {
+        newDirection = Phaser.Math.Between(0, 3)
+    }
+    return newDirection
+}
+
 export default class Slime extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene: Phaser.Scene, x: number, y: number, texture: string) {
-    super(scene, x, y, texture);
+    private direction = Direction.RIGHT
+    private moveEvent: Phaser.Time.TimerEvent
+  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
+    super(scene, x, y, texture, frame);
+    
+    this.anims.play('slime-right')
 
-    // Set up physics properties
-    scene.physics.world.enable(this);
-    if (this.body) {
-      this.body.setSize(this.width * 0.8);
+    scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileCollision, this)
+
+    this.moveEvent = scene.time.addEvent({
+        delay: 2000,
+        callback: () => {
+        this.direction = randomDirection(this.direction)
+        },
+        loop: true,
+    })
     }
 
-    // Add the slime to the scene
-    scene.add.existing(this);
-  }
+    destroy(fromScene?: boolean){
+        this.moveEvent.destroy()
+        super.destroy(fromScene)
+    }
 
-  update(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
-    // Generate a random direction for movement
-    const randomDirection = Math.floor(Math.random() * 4); // 0: up, 1: down, 2: left, 3: right
-  
-    // Set the velocity based on the random direction
-    const speed = 100; // Adjust the speed as desired
-    if (randomDirection === 0) {
-      this.setVelocity(0, -speed); // Up
-    } else if (randomDirection === 1) {
-      this.setVelocity(0, speed); // Down
-    } else if (randomDirection === 2) {
-      this.setVelocity(-speed, 0); // Left
-    } else if (randomDirection === 3) {
-      this.setVelocity(speed, 0); // Right
+    private handleTileCollision(go: Phaser.GameObjects.GameObject, tile: Phaser.Tilemaps.Tile){
+        if (go !== this){
+            return
+        }
+        this.direction = randomDirection(this.direction)
     }
-  
-    // Stop moving if the slime reaches an edge of the screen
-    if (
-      this.x < 0 ||
-      this.x = this.scene.game.config.width ||
-      this.y < 0 ||
-      this.y = this.scene.game.config.height
-    ) {
-      this.setVelocity(0, 0);
+
+    preUpdate(t: number, dt: number){
+        super.preUpdate(t, dt)
+
+        const speed = 50
+
+        switch (this.direction) {
+            case Direction.UP:
+                this.setVelocity(0, -speed)
+                break
+
+            case Direction.DOWN:
+                this.setVelocity(0, speed)
+                break
+
+            case Direction.LEFT:
+                this.setVelocity(-speed, 0)
+                break
+
+            case Direction.RIGHT:
+                this.setVelocity(speed, 0)
+                break
+
+        }
     }
-  }
 }
 
 export { Slime };

@@ -10,7 +10,7 @@ enum Direction
 
 const randomDirection = (exclude: Direction) => {
     let newDirection = Phaser.Math.Between(0,3)
-    while (newDirection === exclude) 
+    while (newDirection === exclude)
     {
         newDirection = Phaser.Math.Between(0,3)
     }
@@ -18,7 +18,7 @@ const randomDirection = (exclude: Direction) => {
     return newDirection
 }
 
-export default class Enemy extends Phaser.Physics.Arcade.Sprite 
+export default class Enemy extends Phaser.Physics.Arcade.Sprite
 {
     private direction =Direction.RIGHT
     private moveEvent: Phaser.Time.TimerEvent
@@ -51,9 +51,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite
         super.destroy(fromScene)
     }
 
-    private handleTileCollision(go:Phaser.GameObjects.GameObject, tile: Phaser.Tilemaps.Tile) 
+    private handleTileCollision(go:Phaser.GameObjects.GameObject)
     {
-        if (go !== this) 
+        if (go !== this)
         {
             return
         }

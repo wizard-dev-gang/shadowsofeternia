@@ -6,7 +6,7 @@ import AuthRoute from "./auth/AuthRoute";
 import Login from "./auth/Login";
 import NotFound from "./NotFound";
 import "../index.css";
-import { firebaseConfig } from "../../lib/firebaseConfig";
+import { firebaseConfig } from "../../functions/lib/firebaseConfig";
 import { initializeApp } from "firebase/app";
 
 import "firebase/auth";

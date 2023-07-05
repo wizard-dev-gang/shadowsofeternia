@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { app as firebaseApp } from "../../lib/firebaseConfig";
+import { app as firebaseApp } from "../../functions/lib/firebaseConfig";
 import { getAuth, signOut } from "firebase/auth";
 import {
   getDatabase,
@@ -9,7 +9,6 @@ import {
   DatabaseReference,
   onValue,
   update,
-  onDisconnect,
   remove,
 } from "firebase/database";
 
@@ -131,7 +130,6 @@ function App() {
               armor: "placeholder",
               accessory: "placeholder",
             },
-
           });
         }
       });

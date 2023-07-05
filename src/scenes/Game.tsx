@@ -24,6 +24,7 @@ export default class Game extends Phaser.Scene {
 
   create() {
     const auth = getAuth();
+    this.scene.run('player-ui')
 
     onAuthStateChanged(auth, (user) => {
       if (user) {

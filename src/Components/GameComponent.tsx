@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Phaser from "phaser";
 import Game from "../scenes/Game";
 import Preloader from "../scenes/Preloader";
+import PlayerUI from "../scenes/PlayerUI";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -22,7 +23,7 @@ function GameComponent() {
           debug: false,
         },
       },
-      scene: [Preloader, Game],
+      scene: [Preloader, Game, PlayerUI],
       scale: {
         zoom: 2,
       },

@@ -1,4 +1,12 @@
 import Phaser from "phaser";
+import { Vector } from "matter";
+
+interface WASDKeys {
+  W?: Phaser.Input.Keyboard.Key;
+  A?: Phaser.Input.Keyboard.Key;
+  S?: Phaser.Input.Keyboard.Key;
+  D?: Phaser.Input.Keyboard.Key;
+}
 
 enum HealthState {
   IDLE,
@@ -6,13 +14,28 @@ enum HealthState {
   DEAD,
 }
 
-export default class Player extends Phaser.Physics.Arcade.Sprite {
+declare global
+{
+    namespace Phaser.GameObjects
+    {
+        interface GameObjectFactory
+        {
+            player(x: number, y: number, texture: string, frame?: string | number): Player
+        }
+    }
+}
 
+export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
-    private damageTime = 0;
-    public lastMove = 'down';
-    private _health = 3;
-    private keys: Phaser.Types.Input.Keyboard.WASD;
+  private damageTime = 0;
+  public lastMove = "down";
+  private _health = 3;
+  private keys: WASDKeys = {
+    W: undefined,
+    A: undefined,
+    S: undefined,
+    D: undefined,
+  }; // Providing a default value to keys
 
   constructor(
     scene: Phaser.Scene,
@@ -22,7 +45,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-    this.keys = this.scene.input.keyboard.addKeys('W,A,S,D') as Phaser.Types.Input.Keyboard.WASD;
+    if (this.scene && this.scene.input && this.scene.input.keyboard) {
+      this.keys = this.scene.input.keyboard.addKeys({
+        W: Phaser.Input.Keyboard.KeyCodes.W,
+        A: Phaser.Input.Keyboard.KeyCodes.A,
+        S: Phaser.Input.Keyboard.KeyCodes.S,
+        D: Phaser.Input.Keyboard.KeyCodes.D,
+      }) as WASDKeys;
+    }
     //this.man.anims.play('man-walk-up')
   }
 
@@ -34,7 +64,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    --this._health;
+    //--this._health;
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
@@ -42,7 +72,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.play("man-walk-right");
     } else {
       this.setVelocity(dir.x, dir.y);
-
+        
       this.setTint(0xff0000);
 
       this.healthState = HealthState.DAMAGE;
@@ -65,41 +95,38 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
   }
-    update()
+  update() {
+    //this.play(idle) takes in the idle variable which is the idle position of last move the player made
+    //set player movement keys to WASD
+
+    if(this.healthState === HealthState.DAMAGE 
+        || this.healthState === HealthState.DEAD
+    )
     {
-        //this.play(idle) takes in the idle variable which is the idle position of last move the player made
-        //set player movement keys to WASD
-        const speed = 200;
-        if (this.keys.A?.isDown)
-        {
-            this.anims.play('man-walk-left', true)
-            this.setVelocity(-speed, 0)
-            this.lastMove = 'left'
-        }
-        else if (this.keys.D?.isDown)
-        {
-            this.anims.play('man-walk-right', true)
-            this.setVelocity(speed, 0)
-            this.lastMove = 'right'
-        }
-        else if (this.keys.W?.isDown)
-        {
-            this.anims.play('man-walk-up', true)
-            this.setVelocity(0, -speed)
-            this.lastMove = 'up'
-        }
-        else if (this.keys.S?.isDown)
-        {
-            this.anims.play('man-walk-down', true)
-            this.setVelocity(0, speed)
-            this.lastMove = 'down'
-        }
-        else
-        {
-            const idle = `man-idle-${this.lastMove}`
-            this.play(idle)
-            this.setVelocity(0,0)
-        }
+        return
+    }
+
+    const speed = 200;
+    if (this.keys.A?.isDown) {
+      this.anims.play("man-walk-left", true);
+      this.setVelocity(-speed, 0);
+      this.lastMove = "left";
+    } else if (this.keys.D?.isDown) {
+      this.anims.play("man-walk-right", true);
+      this.setVelocity(speed, 0);
+      this.lastMove = "right";
+    } else if (this.keys.W?.isDown) {
+      this.anims.play("man-walk-up", true);
+      this.setVelocity(0, -speed);
+      this.lastMove = "up";
+    } else if (this.keys.S?.isDown) {
+      this.anims.play("man-walk-down", true);
+      this.setVelocity(0, speed);
+      this.lastMove = "down";
+    } else {
+      const idle = `man-idle-${this.lastMove}`;
+      this.play(idle);
+      this.setVelocity(0, 0);
     }
   }
 
@@ -123,8 +150,10 @@ Phaser.GameObjects.GameObjectFactory.register(
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
 
-    sprite.body?.setSize(sprite.width * 0.8);
+    sprite.body?.setSize(sprite.width * 0.01);
 
     return sprite;
   }
 );
+
+//export { Player };

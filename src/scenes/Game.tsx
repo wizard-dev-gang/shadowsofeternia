@@ -9,6 +9,7 @@ import '../characters/Player'
 import { Enemy } from "../enemies/Enemy";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
+import { sceneEvents } from '../events/EventsCenter'
 
 
 export default class Game extends Phaser.Scene {
@@ -212,7 +213,8 @@ export default class Game extends Phaser.Scene {
     this.man.setVelocity(dir.x, dir.y)
 		this.man.handleDamage(dir)
 
-		//sceneEvents.emit('player-health-changed', this.Player.health)
+    console.log(this.man._health)
+		sceneEvents.emit('player-health-changed', this.man._health)
 
 		// if( this.faune.health <= 0)
 		// {

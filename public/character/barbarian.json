@@ -1,0 +1,448 @@
+{
+    "frames": {
+      "barb-walk-down-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "w": 26,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 2,
+          "y": 1,
+          "w": 26,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-up-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 31,
+          "w": 25,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 1,
+          "w": 25,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-left-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 62,
+          "w": 24,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 3,
+          "y": 1,
+          "w": 24,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-right-02.png": {
+        "frame": {
+          "x": 0,
+          "y": 93,
+          "w": 22,
+          "h": 31
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 1,
+          "w": 22,
+          "h": 31
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-down-01.png": {
+        "frame": {
+          "x": 0,
+          "y": 124,
+          "w": 28,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 2,
+          "w": 28,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-attack-left-01.png": {
+        "frame": {
+          "x": 22,
+          "y": 93,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-attack-left-02.png": {
+        "frame": {
+          "x": 24,
+          "y": 62,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-attack-left-03.png": {
+        "frame": {
+          "x": 25,
+          "y": 31,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-attack-right-01.png": {
+        "frame": {
+          "x": 26,
+          "y": 0,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-attack-right-02.png": {
+        "frame": {
+          "x": 52,
+          "y": 30,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-attack-right-03.png": {
+        "frame": {
+          "x": 53,
+          "y": 0,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-up-01.png": {
+        "frame": {
+          "x": 52,
+          "y": 60,
+          "w": 27,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 2,
+          "w": 27,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-left-01.png": {
+        "frame": {
+          "x": 0,
+          "y": 154,
+          "w": 26,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 1,
+          "y": 2,
+          "w": 26,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-up-03.png": {
+        "frame": {
+          "x": 0,
+          "y": 184,
+          "w": 24,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 4,
+          "y": 2,
+          "w": 24,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-down-03.png": {
+        "frame": {
+          "x": 0,
+          "y": 214,
+          "w": 23,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 5,
+          "y": 2,
+          "w": 23,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-left-03.png": {
+        "frame": {
+          "x": 0,
+          "y": 244,
+          "w": 23,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 4,
+          "y": 2,
+          "w": 23,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-right-01.png": {
+        "frame": {
+          "x": 0,
+          "y": 274,
+          "w": 22,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 2,
+          "w": 22,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "barb-walk-right-03.png": {
+        "frame": {
+          "x": 0,
+          "y": 304,
+          "w": 22,
+          "h": 30
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 6,
+          "y": 2,
+          "w": 22,
+          "h": 30
+        },
+        "sourceSize": {
+          "w": 32,
+          "h": 32
+        },
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      }
+    },
+    "meta": {
+      "app": "http://free-tex-packer.com",
+      "version": "0.6.7",
+      "image": "texture.png",
+      "format": "RGBA8888",
+      "size": {
+        "w": 80,
+        "h": 334
+      },
+      "scale": 1
+    }
+  }
+  

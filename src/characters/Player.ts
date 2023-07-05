@@ -31,8 +31,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   public lastMove = "down";
+<<<<<<< HEAD
   private _health = 3;
   private knives?: Phaser.Physics.Arcade.Group;
+=======
+  private _health = 10;
+  private knives?: Phaser.Physics.Arcade.Group
+>>>>>>> d5a0cb89ead957c5db3997d64d71d5300e1e558c
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -71,7 +76,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    //--this._health;
+    --this._health;
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);

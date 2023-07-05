@@ -3,7 +3,7 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import { createSlimeAnims } from "../anims/SlimeAnims";
 import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
-//import { Player } from "../characters/Player";
+import { Player } from "../characters/Player";
 import "../characters/Player";
 import { Enemy } from "../enemies/Enemy";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -11,7 +11,7 @@ import { getDatabase, ref, update, onValue } from "firebase/database";
 
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-  private man?: Phaser.Physics.Arcade.Sprite;
+  private man?: Player;
   private knives!: Phaser.Physics.Arcade.Group;
   private playerRef!: any;
   private playerId!: any;
@@ -128,14 +128,16 @@ export default class Game extends Phaser.Scene {
 
       this.skeletons.get(256, 256, "jacked-skeleton");
 
-      this.physics.add.collider(this.skeletons, groundLayer);
-      this.physics.add.collider(
-        this.knives,
-        groundLayer,
-        this.handleKnifeWallCollision,
-        undefined,
-        this
-      );
+      if (this.skeletons && groundLayer) {
+        this.physics.add.collider(this.skeletons, groundLayer);
+        this.physics.add.collider(
+          this.knives,
+          groundLayer,
+          this.handleKnifeWallCollision,
+          undefined,
+          this
+        );
+      }
       this.physics.add.collider(
         this.knives,
         this.skeletons,

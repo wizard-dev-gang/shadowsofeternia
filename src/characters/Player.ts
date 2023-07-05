@@ -236,4 +236,4 @@ Phaser.GameObjects.GameObjectFactory.register(
   }
 );
 
-//export { Player };
+export { Player };

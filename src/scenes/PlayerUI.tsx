@@ -1,5 +1,6 @@
 import Phaser from "phaser"
 import HealthBar from "./HealthBar"
+import { sceneEvents } from "../events/EventsCenter"
 
 export default class PlayerUI extends Phaser.Scene
 {
@@ -27,7 +28,9 @@ export default class PlayerUI extends Phaser.Scene
             .layout()
             // is used to animate the bar going to 50%
             // .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {*insert bar.animateToFill})
-           bar.animateToFill(0.5)
+        //    bar.animateToFill(0.5)
+        sceneEvents.on('player-health-changed', bar.animateToFill(0.25), 1000)
 
+        // private handlePlayerHealthChanged(health: number)
     }
 }

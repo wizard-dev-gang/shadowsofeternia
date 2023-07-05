@@ -29,7 +29,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   public lastMove = "down";
-  private _health = 3;
+  private _health = 50;
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -64,7 +64,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    //--this._health;
+    --this._health;
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
@@ -129,6 +129,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocity(0, 0);
     }
   }
+}
 
 
 Phaser.GameObjects.GameObjectFactory.register(

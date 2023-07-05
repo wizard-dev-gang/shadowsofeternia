@@ -6,7 +6,7 @@ import '../characters/Player'
 import { Enemy } from "../enemies/Enemy";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
-
+import { sceneEvents } from "../events/EventsCenter";
 
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -168,7 +168,7 @@ export default class Game extends Phaser.Scene {
     this.man.setVelocity(dir.x, dir.y)
 		this.man.handleDamage(dir)
 
-		//sceneEvents.emit('player-health-changed', this.Player.health)
+    sceneEvents.emit('player-health-changed', this.man.health)
 
 		// if( this.faune.health <= 0)
 		// {

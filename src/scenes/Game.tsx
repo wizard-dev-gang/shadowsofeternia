@@ -17,6 +17,7 @@ export default class Game extends Phaser.Scene {
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   // private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
+ 
 
   // Firebase variables
   public playerRef!: any; // Reference to the current player in Firebase
@@ -30,10 +31,16 @@ export default class Game extends Phaser.Scene {
     this.otherPlayers = new Map();
     this.playerNames = new Map();
   }
+  init(data)
+	{
+    console.log("init", data)
+		// this.selectedCharacter = data.character
+	}
 
   preload() {
     // this.cursors = this.input.keyboard?.createCursorKeys();
   }
+  
 
   create() {
     this.scene.run("player-ui");
@@ -42,7 +49,7 @@ export default class Game extends Phaser.Scene {
     setupFirebaseAuth(this);
 
     // Create animations for the characters
-    createCharacterAnims(this.anims);
+    // createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
 
     //Create tilemap and tileset

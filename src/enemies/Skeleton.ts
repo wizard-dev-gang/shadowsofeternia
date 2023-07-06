@@ -12,12 +12,14 @@ const randomDirection = (exclude: Direction) => {
   while (newDirection === exclude) {
     newDirection = Phaser.Math.Between(0, 3);
   }
+
   return newDirection;
 };
 
-export default class Slime extends Phaser.Physics.Arcade.Sprite {
+export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
+
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -27,11 +29,7 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
 
-    const hitboxWidth = 2; // Set the desired hitbox width
-    const hitboxHeight = 2; // Set the desired hitbox height
-    this.body?.setSize(hitboxWidth, hitboxHeight);
-
-    this.anims.play("slime-right");
+    this.anims.play("enemy-idle-down");
 
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,
@@ -57,6 +55,7 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
     if (go !== this) {
       return;
     }
+
     this.direction = randomDirection(this.direction);
   }
 
@@ -67,22 +66,22 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
 
     switch (this.direction) {
       case Direction.UP:
+        this.anims.play("enemy-walk-up", true);
         this.setVelocity(0, -speed);
         break;
-
       case Direction.DOWN:
+        this.anims.play("enemy-walk-down", true);
         this.setVelocity(0, speed);
         break;
-
       case Direction.LEFT:
+        this.anims.play("enemy-walk-left", true);
         this.setVelocity(-speed, 0);
         break;
-
       case Direction.RIGHT:
+        this.anims.play("enemy-walk-right", true);
         this.setVelocity(speed, 0);
-        break;
     }
   }
 }
 
-export { Slime };
+export { Skeleton };

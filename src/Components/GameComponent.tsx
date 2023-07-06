@@ -9,19 +9,21 @@ function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
 
   useEffect(() => {
+    // Check if the Phaser game instance already exists
     if (phaserGameRef.current) {
       return;
     }
+    // Create a new Phaser game instance
     phaserGameRef.current = new Phaser.Game({
-      type: Phaser.AUTO,
-      parent: "game-content",
+      type: Phaser.AUTO, // The renderer type (auto-detected)
+      parent: "game-content", // The ID or element where the game canvas will be appended
       width: 500,
       height: 400,
       physics: {
-        default: "arcade",
+        default: "arcade", // The default physics system
         arcade: {
-          gravity: { y: 0 },
-          debug: false,
+          gravity: { y: 0 }, // The gravity configuration (no gravity in this case)
+          debug: true, // Enable physics debugging (collider outlines, etc.)
         },
       },
       scene: [Preloader, ChooseCharacterScene, Game, PlayerUI],

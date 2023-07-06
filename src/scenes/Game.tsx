@@ -9,6 +9,7 @@ import { Skeleton } from "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
+import  { Barb } from "../characters/Barb"
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -17,6 +18,7 @@ export default class Game extends Phaser.Scene {
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   // private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
+  private barb?: Barb;
 
   // Firebase variables
   public playerRef!: any; // Reference to the current player in Firebase
@@ -65,7 +67,11 @@ export default class Game extends Phaser.Scene {
       objectsLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
+      this.barb = this.add.player( 580, 200, "barb")
+      
       this.man = this.add.player(600, 191, "man");
+
+      
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({

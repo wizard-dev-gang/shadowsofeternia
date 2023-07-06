@@ -15,7 +15,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
         this.load.spritesheet('character3', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
         this.load.spritesheet('character4', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
 
-        this.load.bitmapFont('Joystix', '/assets/fonts/Unnamed.png', '/assets/fonts/Unnamed.fnt');
+        this.load.bitmapFont('Joystix', '/assets/fonts/Joystix.png', '/assets/fonts/Joystix.fnt');
     }
 
     create() {

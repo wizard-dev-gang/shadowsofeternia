@@ -222,7 +222,7 @@ export default class Game extends Phaser.Scene {
   //   obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   // ) {
   //   const knife = obj1 as Phaser.Physics.Arcade.Image;
-  //   const skeleton = obj2 as Enemy;
+  //   const skeleton = obj2 as Skeleton;
   //   this.knives.killAndHide(knife);
   //   this.skeletons.killAndHide(skeleton);
   //   skeleton.destroy();

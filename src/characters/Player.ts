@@ -30,8 +30,7 @@ declare global {
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
-  public lastMove = "down";
-  private _health = 10;
+  private _health: number;
   private knives?: Phaser.Physics.Arcade.Group;
   private keys: WASDKeys = {
     W: undefined,
@@ -39,6 +38,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     S: undefined,
     D: undefined,
   }; // Providing a default value to keys
+
+  public lastMove = "down";
 
   constructor(
     scene: Phaser.Scene,
@@ -48,6 +49,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
+    this._health = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -59,6 +61,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
     //this.man.anims.play('man-walk-up')
   }
+
+  getHealth() {
+    return this._health;
+  }
+
   setKnives(knives: Phaser.Physics.Arcade.Group) {
     this.knives = knives;
   }
@@ -159,6 +166,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
   }
+
   update() {
     //this.play(idle) takes in the idle variable which is the idle position of last move the player made
     //set player movement keys to WASD
@@ -230,7 +238,15 @@ Phaser.GameObjects.GameObjectFactory.register(
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
 
-    sprite.body?.setSize(sprite.width * 0.01);
+    // Set the hitbox size
+    const hitboxWidth = sprite.width * 0.42;
+    const hitboxHeight = sprite.height * 0.42;
+    sprite.body?.setSize(hitboxWidth, hitboxHeight);
+
+    // Set the hitbox offset
+    const offsetX = sprite.width / (10 / 3);
+    const offsetY = sprite.height * 0.6;
+    sprite.body?.setOffset(offsetX, offsetY);
 
     return sprite;
   }

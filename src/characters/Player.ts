@@ -1,11 +1,11 @@
 import Phaser from "phaser";
-import { Vector } from "matter";
 
 interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
   A?: Phaser.Input.Keyboard.Key;
   S?: Phaser.Input.Keyboard.Key;
   D?: Phaser.Input.Keyboard.Key;
+  Space?: Phaser.Input.Keyboard.Key;
 }
 
 enum HealthState {
@@ -14,22 +14,25 @@ enum HealthState {
   DEAD,
 }
 
-declare global
-{
-    namespace Phaser.GameObjects
-    {
-        interface GameObjectFactory
-        {
-            player(x: number, y: number, texture: string, frame?: string | number): Player
-        }
+declare global {
+  namespace Phaser.GameObjects {
+    interface GameObjectFactory {
+      player(
+        x: number,
+        y: number,
+        texture: string,
+        frame?: string | number
+      ): Player;
     }
+  }
 }
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   public lastMove = "down";
-  private _health = 3;
+  private _health = 10;
+  private knives?: Phaser.Physics.Arcade.Group;
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -51,9 +54,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         A: Phaser.Input.Keyboard.KeyCodes.A,
         S: Phaser.Input.Keyboard.KeyCodes.S,
         D: Phaser.Input.Keyboard.KeyCodes.D,
+        Space: Phaser.Input.Keyboard.KeyCodes.SPACE,
       }) as WASDKeys;
     }
     //this.man.anims.play('man-walk-up')
+  }
+  setKnives(knives: Phaser.Physics.Arcade.Group) {
+    this.knives = knives;
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {
@@ -64,7 +71,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    //--this._health;
+    --this._health;
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
@@ -72,12 +79,69 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.play("man-walk-right");
     } else {
       this.setVelocity(dir.x, dir.y);
-        
+
       this.setTint(0xff0000);
 
       this.healthState = HealthState.DAMAGE;
       this.damageTime = 0;
     }
+  }
+
+  private throwKnife(
+    direction?: string,
+    xLoc?: number,
+    yLoc?: number,
+    projectile?: string
+  ) {
+    if (!this.knives) {
+      return;
+    }
+
+    if (this.anims.currentAnim) {
+      const parts = this.anims.currentAnim.key.split("-");
+      direction = parts[2];
+      xLoc = this.x;
+      yLoc = this.y;
+      projectile = "knife";
+    }
+
+    const vec = new Phaser.Math.Vector2(0, 0);
+
+    switch (direction) {
+      case "up":
+        vec.y = -1;
+        break;
+      case "down":
+        vec.y = 1;
+        break;
+      case "left":
+        vec.x = -1;
+        break;
+      default:
+      case "right":
+        vec.x = 1;
+        break;
+    }
+
+    const angle = vec.angle();
+
+    const knife = this.knives.get(
+      xLoc,
+      yLoc,
+      projectile
+    ) as Phaser.Physics.Arcade.Image;
+    if (!knife) {
+      return;
+    }
+    knife.setActive(true);
+    knife.setVisible(true);
+
+    knife.setRotation(angle);
+
+    knife.x += vec.x * 16;
+    knife.y += vec.y * 16;
+    knife.setVelocity(vec.x * 300, vec.y * 300);
+    console.log(knife.x, knife.y, direction);
   }
 
   preUpdate(t: number, dt: number): void {
@@ -99,11 +163,27 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     //this.play(idle) takes in the idle variable which is the idle position of last move the player made
     //set player movement keys to WASD
 
-    if(this.healthState === HealthState.DAMAGE 
-        || this.healthState === HealthState.DEAD
-    )
-    {
-        return
+    if (
+      this.healthState === HealthState.DAMAGE ||
+      this.healthState === HealthState.DEAD
+    ) {
+      return;
+    }
+
+    if (this.keys.Space?.isDown) {
+      this.throwKnife();
+      // if (this.activeChest)
+      // {
+      //     const coins = this.activeChest.open()
+      //     this._coins += coins
+
+      //     sceneEvents.emit('player-coins-changed', this._coins)
+      // }
+      // else
+      // {
+      //     this.throwKnife()
+      // }
+      // return
     }
 
     const speed = 200;
@@ -156,4 +236,4 @@ Phaser.GameObjects.GameObjectFactory.register(
   }
 );
 
-//export { Player };
+export { Player };

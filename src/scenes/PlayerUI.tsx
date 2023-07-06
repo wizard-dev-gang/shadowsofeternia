@@ -41,7 +41,7 @@ export default class PlayerUI extends Phaser.Scene
 
     private handlePlayerHealthChanged(health: number)
     {
-        console.log('in player health cahnged', health)
+        console.log('in player health changed', health)
         this.bar.animateToFill((health/10))
     }
 

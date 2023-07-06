@@ -20,6 +20,7 @@ export default class Game extends Phaser.Scene {
   private playerNames!: Map<any, any>;
   private playerName?: Phaser.GameObjects.Text;
   private skeletons!: Phaser.Physics.Arcade.Group;
+  private slimes!: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super("game");
@@ -130,7 +131,9 @@ export default class Game extends Phaser.Scene {
       this.skeletons.get(256, 256, "jacked-skeleton");
 
       if (this.skeletons && groundLayer) {
-        this.physics.add.collider(this.skeletons, groundLayer);
+        if (waterLayer) this.physics.add.collider(this.skeletons, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.skeletons, groundLayer);
+        if (objectsLayer) this.physics.add.collider(this.skeletons, objectsLayer);
         this.physics.add.collider(
           this.knives,
           groundLayer,
@@ -193,15 +196,41 @@ export default class Game extends Phaser.Scene {
 
       slimes.get(414, 90, "slime");
       if (this.man && slimes) {
-        // Add colliders between man and slimes
-        this.physics.add.collider(this.man, slimes);
-
         if (waterLayer) this.physics.add.collider(slimes, waterLayer);
         if (groundLayer) this.physics.add.collider(slimes, groundLayer);
         if (objectsLayer) this.physics.add.collider(slimes, objectsLayer);
+        this.physics.add.collider(slimes, this.man, this.handlePlayerSlimeCollision, undefined, this)
+        this.physics.add.collider(
+          this.knives,
+          this.slimes,
+          this.handleKnifeSlimeCollision,
+          undefined,
+          this
+        );
+        if (groundLayer) this.physics.add.collider(
+          this.knives,
+          groundLayer,
+          this.handleKnifeWallCollision,
+          undefined,
+          this
+        );
       }
     }
   }
+  private handlePlayerSlimeCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject){
+    const slime = obj2 as Slime
+
+    if (this.man){
+      const dx = obj1.x - slime.x;
+      const dy = obj1.y - slime.y;
+
+    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200)
+
+    this.man.setVelocity(dir.x, dir.y);
+    this.man.handleDamage(dir);
+    console.log(this.man._health);
+    sceneEvents.emit("player-health-changed", this.man._health);
+  }}
 
   private handleKnifeWallCollision(
     obj1: Phaser.GameObjects.GameObject,
@@ -211,6 +240,16 @@ export default class Game extends Phaser.Scene {
     this.knives.killAndHide(obj1);
     obj1.destroy();
   }
+
+  // private handleKnifeSlimeCollision(
+  //   obj1: Phaser.GameObjects.GameObject,
+  //   obj2: Phaser.GameObjects.GameObject
+  // ) {
+  //   this.knives.killAndHide(obj1);
+  //   this.slimes.killAndHide(obj2);
+  //   obj2.destroy();
+  //   obj1.destroy();
+  // }
 
   private handleKnifeSkeletonCollision(
     obj1: Phaser.GameObjects.GameObject,

@@ -45,3 +45,4 @@ export default class PlayerUI extends Phaser.Scene {
     this.bar.animateToFill(health / 10, 1000);
   }
 }
+

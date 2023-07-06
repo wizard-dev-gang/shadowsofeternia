@@ -14,22 +14,26 @@ export default class ChooseCharacterScene extends Phaser.Scene {
         this.load.spritesheet('character2', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
         this.load.spritesheet('character3', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
         this.load.spritesheet('character4', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
+
+        this.load.bitmapFont('Joystix', '/assets/fonts/Unnamed.png', '/assets/fonts/Unnamed.fnt');
     }
 
     create() {
-        this.add.image(0, 0, 'pixel-art-night-sky-background').setOrigin(0, 0);
+      // this.textures.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
-        this.add.text(this.sys.game.config.width / 2, 50, "Select a Character", { fontSize: '32px', fontFamily: 'Joystix Monospace', align: 'center' }).setOrigin(0.5);
+        this.add.image(0, 0, 'pixel-art-night-sky-background').setOrigin(0, 0).setScale(0.8);
+
+        this.add.text(this.sys.game.config.width / 2, 36, "Select a Character", { fontSize: '28px', fontFamily: 'Joystix', align: 'center' }).setOrigin(0.5);
         
-        const character1 = this.add.sprite(100, 200, 'character1').setScale(2).setInteractive({ useHandCursor: true });
-        const character2 = this.add.sprite(200, 200, 'character2').setScale(2).setInteractive({ useHandCursor: true });
-        const character3 = this.add.sprite(300, 200, 'character3').setScale(2).setInteractive({ useHandCursor: true });
-        const character4 = this.add.sprite(400, 200, 'character4').setScale(2).setInteractive({ useHandCursor: true });
+        const character1 = this.add.sprite(80, 200, 'character1').setScale(2).setInteractive({ useHandCursor: true });
+        const character2 = this.add.sprite(193.33, 200, 'character2').setScale(2).setInteractive({ useHandCursor: true });
+        const character3 = this.add.sprite(306.66, 200, 'character3').setScale(2).setInteractive({ useHandCursor: true });
+        const character4 = this.add.sprite(420, 200, 'character4').setScale(2).setInteractive({ useHandCursor: true });
 
-        this.add.text(100, 280, 'Character 1', { fontSize: '12px', align: 'center' }).setOrigin(0.5);
-        this.add.text(200, 280, 'Character 2', { fontSize: '12px', align: 'center' }).setOrigin(0.5);
-        this.add.text(300, 280, 'Character 3', { fontSize: '12px', align: 'center' }).setOrigin(0.5);
-        this.add.text(400, 280, 'Character 4', { fontSize: '12px', align: 'center' }).setOrigin(0.5);
+        this.add.text(80, 280, 'Character 1', { fontSize: '10px', fontFamily: 'Joystix', align: 'center' }).setOrigin(0.5);
+        this.add.text(193.33, 280, 'Character 2', { fontSize: '10px', fontFamily: 'Joystix', align: 'center' }).setOrigin(0.5);
+        this.add.text(306.66, 280, 'Character 3', { fontSize: '10px', fontFamily: 'Joystix', align: 'center' }).setOrigin(0.5);
+        this.add.text(420, 280, 'Character 4', { fontSize: '10px', fontFamily: 'Joystix', align: 'center' }).setOrigin(0.5);
 
         createCharacterAnims(this.anims);
         

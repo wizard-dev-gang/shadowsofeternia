@@ -11,7 +11,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
         this.load.image("pixel-art-night-sky-background", "/assets/pixel-art-night-sky-background.png");
         
         this.load.spritesheet('character1', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
-        this.load.spritesheet('barb', '/assets/barbarian.png', { frameWidth: 32, frameHeight: 32 }); 
+        this.load.spritesheet('barb', '/assets/barb.png', { frameWidth: 32, frameHeight: 32 }); 
         this.load.spritesheet('character3', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
         this.load.spritesheet('character4', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
 

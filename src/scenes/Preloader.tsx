@@ -20,7 +20,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.atlas("slime", "character/slime.png", "character/slime.json");
     this.load.atlas("jacked-skeleton", "enemies/jacked-skeleton.png", "enemies/jacked-skeleton.json");
     this.load.image('knife', 'weapons/weapon_knife.png')
-    this.load.atlas("barb", "character/barbarian.png", "character/barbarian.json")
+    this.load.atlas("barb", "character/barb.png", "character/barb.json")
   }
 
   create() {

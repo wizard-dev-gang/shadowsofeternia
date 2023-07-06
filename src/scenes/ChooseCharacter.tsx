@@ -1,6 +1,4 @@
 
-
-
 import Phaser from "phaser";
 import { createCharacterAnims } from '../anims/CharacterAnims'; 
 
@@ -10,18 +8,18 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("pixel-art-night-sky-background", "public/assets/pixel-art-night-sky-background.png");
+        this.load.image("pixel-art-night-sky-background", "/assets/pixel-art-night-sky-background.png");
         
-        this.load.spritesheet('character1', 'public/assets/manAlone.png', { frameWidth: 32, frameHeight: 48 }); 
-        this.load.spritesheet('character2', 'public/assets/manAlone.png', { frameWidth: 32, frameHeight: 48 }); 
-        this.load.spritesheet('character3', 'public/assets/manAlone.png', { frameWidth: 32, frameHeight: 48 }); 
-        this.load.spritesheet('character4', 'public/assets/manAlone.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.spritesheet('character1', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
+        this.load.spritesheet('character2', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
+        this.load.spritesheet('character3', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
+        this.load.spritesheet('character4', '/assets/manAlone.png', { frameWidth: 32, frameHeight: 32 }); 
     }
 
     create() {
         this.add.image(0, 0, 'pixel-art-night-sky-background').setOrigin(0, 0);
 
-        this.add.text(this.sys.game.config.width / 2, 50, "Select a Character", { fontSize: '32px', align: 'center' }).setOrigin(0.5);
+        this.add.text(this.sys.game.config.width / 2, 50, "Select a Character", { fontSize: '32px', fontFamily: 'Joystix Monospace', align: 'center' }).setOrigin(0.5);
         
         const character1 = this.add.sprite(100, 200, 'character1').setScale(2).setInteractive({ useHandCursor: true });
         const character2 = this.add.sprite(200, 200, 'character2').setScale(2).setInteractive({ useHandCursor: true });
@@ -33,23 +31,29 @@ export default class ChooseCharacterScene extends Phaser.Scene {
         this.add.text(300, 280, 'Character 3', { fontSize: '12px', align: 'center' }).setOrigin(0.5);
         this.add.text(400, 280, 'Character 4', { fontSize: '12px', align: 'center' }).setOrigin(0.5);
 
-        // Create character animations
         createCharacterAnims(this.anims);
+        
+        //Created a slow walking animation for this scene
+        this.anims.create({
+          key: 'man-walk-down-slow',
+          frames: this.anims.generateFrameNames('man', { start: 1, end: 3, prefix: 'man-walk-down-0', suffix: '.png' }),
+          repeat: -1,
+          frameRate: 10
+      })
 
         // Start animation on hover
-        character1.on('pointerover', () => { character1.anims.play('man-walk-down', true); });
+        character1.on('pointerover', () => {character1.anims.play('man-walk-down-slow', true); });
         character1.on('pointerout', () => { character1.anims.stop(); });
 
-        character2.on('pointerover', () => { character2.anims.play('man-walk-down', true); });
+        character2.on('pointerover', () => { character2.anims.play('man-walk-down-slow', true); });
         character2.on('pointerout', () => { character2.anims.stop(); });
 
-        character3.on('pointerover', () => { character3.anims.play('man-walk-down', true); });
+        character3.on('pointerover', () => { character3.anims.play('man-walk-down-slow', true); });
         character3.on('pointerout', () => { character3.anims.stop(); });
 
-        character4.on('pointerover', () => { character4.anims.play('man-walk-down', true); });
+        character4.on('pointerover', () => { character4.anims.play('man-walk-down-slow', true); });
         character4.on('pointerout', () => { character4.anims.stop(); });
         
-
         character1.on('pointerdown', () => this.startGame());
         character2.on('pointerdown', () => this.startGame());
         character3.on('pointerdown', () => this.startGame());
@@ -60,6 +64,5 @@ export default class ChooseCharacterScene extends Phaser.Scene {
         this.scene.start('game');
     }
 }
-
 
 

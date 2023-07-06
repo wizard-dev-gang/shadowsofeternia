@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import Game from "../scenes/Game";
 import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
+import ChooseCharacterScene from "../scenes/ChooseCharacter";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -25,7 +26,7 @@ function GameComponent() {
           debug: true, // Enable physics debugging (collider outlines, etc.)
         },
       },
-      scene: [Preloader, Game, PlayerUI], // The array of scene classes to be included in the game
+      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI],
       scale: {
         zoom: 2,
       },

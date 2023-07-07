@@ -1,0 +1,783 @@
+{
+  "frames": {
+    "archer-attack-down-01.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 13,
+        "h": 20
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 4,
+        "w": 13,
+        "h": 20
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-right-01.png": {
+      "frame": {
+        "x": 0,
+        "y": 20,
+        "w": 17,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 4,
+        "w": 17,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-left-01.png": {
+      "frame": {
+        "x": 13,
+        "y": 0,
+        "w": 16,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 7,
+        "y": 4,
+        "w": 16,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-right-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 39,
+        "w": 16,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 4,
+        "w": 16,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-left-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 58,
+        "w": 15,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 4,
+        "w": 15,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-right-02.png": {
+      "frame": {
+        "x": 0,
+        "y": 77,
+        "w": 15,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 4,
+        "w": 15,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-right-03.png": {
+      "frame": {
+        "x": 0,
+        "y": 96,
+        "w": 15,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 5,
+        "w": 15,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-right-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 115,
+        "w": 15,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 5,
+        "w": 15,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-down-03.png": {
+      "frame": {
+        "x": 0,
+        "y": 134,
+        "w": 14,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 4,
+        "w": 14,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-left-02.png": {
+      "frame": {
+        "x": 0,
+        "y": 153,
+        "w": 14,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 4,
+        "w": 14,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-left-03.png": {
+      "frame": {
+        "x": 0,
+        "y": 172,
+        "w": 14,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 14,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-left-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 191,
+        "w": 14,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 14,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-up-02.png": {
+      "frame": {
+        "x": 0,
+        "y": 210,
+        "w": 14,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 4,
+        "w": 14,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-down-02.png": {
+      "frame": {
+        "x": 0,
+        "y": 229,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-down-03.png": {
+      "frame": {
+        "x": 0,
+        "y": 248,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-down-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 267,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 4,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-up-01.png": {
+      "frame": {
+        "x": 0,
+        "y": 286,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 4,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-up-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 305,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 4,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-down-02.png": {
+      "frame": {
+        "x": 0,
+        "y": 324,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-down-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 343,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-up-03.png": {
+      "frame": {
+        "x": 0,
+        "y": 362,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 5,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-up-04.png": {
+      "frame": {
+        "x": 0,
+        "y": 381,
+        "w": 13,
+        "h": 19
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 5,
+        "w": 13,
+        "h": 19
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-right-02.png": {
+      "frame": {
+        "x": 0,
+        "y": 400,
+        "w": 16,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 5,
+        "w": 16,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-left-03.png": {
+      "frame": {
+        "x": 13,
+        "y": 229,
+        "w": 15,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 5,
+        "w": 15,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-right-03.png": {
+      "frame": {
+        "x": 14,
+        "y": 134,
+        "w": 15,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 5,
+        "w": 15,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-right-01.png": {
+      "frame": {
+        "x": 15,
+        "y": 58,
+        "w": 15,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 5,
+        "w": 15,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-left-02.png": {
+      "frame": {
+        "x": 16,
+        "y": 39,
+        "w": 14,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 14,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-down-01.png": {
+      "frame": {
+        "x": 17,
+        "y": 19,
+        "w": 14,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 14,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-left-01.png": {
+      "frame": {
+        "x": 30,
+        "y": 0,
+        "w": 14,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 14,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-walk-up-01.png": {
+      "frame": {
+        "x": 44,
+        "y": 0,
+        "w": 14,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 9,
+        "y": 5,
+        "w": 14,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-up-02.png": {
+      "frame": {
+        "x": 15,
+        "y": 76,
+        "w": 13,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 5,
+        "w": 13,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "archer-attack-up-03.png": {
+      "frame": {
+        "x": 15,
+        "y": 76,
+        "w": 13,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 5,
+        "w": 13,
+        "h": 18
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "texture.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 58,
+      "h": 418
+    },
+    "scale": 1
+  }
+}

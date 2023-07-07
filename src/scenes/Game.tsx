@@ -193,6 +193,7 @@ export default class Game extends Phaser.Scene {
       this.playerEnemiesCollider = this.physics.add.collider(
         this.skeletons,
         this.man,
+        this.wizard,
         this.handlePlayerEnemyCollision,
         undefined,
         this
@@ -201,6 +202,7 @@ export default class Game extends Phaser.Scene {
       this.playerSlimeCollider = this.physics.add.collider(
         this.slimes,
         this.man,
+        this.wizard,
         this.handlePlayerSlimeCollision,
         undefined,
         this
@@ -283,11 +285,11 @@ private handleKnifeSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player && obj2 instanceof Skeleton) {
-      const man = obj1 as Player;
-      const skeleton = obj2 as Skeleton;
+    if (obj1 instanceof Player && obj2 instanceof Skeleton ) {
+      const man = obj1 as Player ;
+      const skeleton = obj2 as Skeleton ;
 
-      const dx = man.x - skeleton.x;
+      const dx = man.x - skeleton.x 
       const dy = man.y - skeleton.y;
 
       const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
@@ -295,21 +297,15 @@ private handleKnifeSlimeCollision(
       man.handleDamage(dir);
       // console.log(man._health);
       sceneEvents.emit("player-health-changed", man.getHealth());
-
-      //sceneEvents.emit('player-health-changed', this.Player.health)
-
-      // if( this.faune.health <= 0)
-      // {
-      // 	this.playerLizardsCollider?.destroy()
-      // }
     }
   }
+
   private handlePlayerSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
     if (obj1 instanceof Player && obj2 instanceof Slime) {
-      const man = obj1 as Player;
+      const man = obj1 as Player ;
       const slime = obj2 as Slime;
   
       const dx = man.x - slime.x;

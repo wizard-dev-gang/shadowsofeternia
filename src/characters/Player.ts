@@ -59,7 +59,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         Space: Phaser.Input.Keyboard.KeyCodes.SPACE,
       }) as WASDKeys;
     }
-    //this.man.anims.play('man-walk-up')
   }
 
   getHealth() {

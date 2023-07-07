@@ -11,6 +11,8 @@ import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
 import  { Barb } from "../characters/Barb"
 import "../characters/Barb"
+import { Wizard } from "../characters/Wizard"
+import "../characters/Wizard"
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -20,6 +22,7 @@ export default class Game extends Phaser.Scene {
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private barb?: Barb;
+  private wizard?: Wizard;
 
   private characterName?: string
 
@@ -81,11 +84,15 @@ export default class Game extends Phaser.Scene {
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb"
+      const wizard = this.characterName === "wizard"
       if(barb){
         this.man = this.add.barb(580,200, "barb")
 
+      } else if(wizard){
+        this.man = this.add.wizard(590, 210, "wizard")
+      
       } else{
-      this.man = this.add.player(600, 191, "man");
+        this.man = this.add.player(600, 191, "man");
       }
 
       

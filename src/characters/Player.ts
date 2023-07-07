@@ -8,7 +8,7 @@ interface WASDKeys {
   Space?: Phaser.Input.Keyboard.Key;
 }
 
-enum HealthState {
+export enum HealthState {
   IDLE,
   DAMAGE,
   DEAD,

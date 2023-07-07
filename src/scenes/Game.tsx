@@ -123,7 +123,7 @@ export default class Game extends Phaser.Scene {
       });
 
       // Set knives for the player character
-      // this.man.setKnives(this.knives);
+      this.man.setKnives(this.knives);
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");

@@ -8,6 +8,7 @@ import {
   update,
   onValue,
   set,
+  get,
   push,
   onDisconnect,
 } from "firebase/database";
@@ -25,7 +26,7 @@ async function writeUserData(character, scene) {
     const db = getDatabase(firebaseApp);
 
     const playerRef = ref(db, "players/" + playerId);
-    const lobbyRef = ref(db, "lobby");
+    const roomsRef = ref(db, "rooms");
 
     await update(playerRef, {
       character: character,
@@ -37,9 +38,65 @@ async function writeUserData(character, scene) {
         console.error("Error choosing character:", error);
       });
 
-    const newPlayerInLobbyRef = push(lobbyRef);
+    let roomId = "";
 
-    onDisconnect(newPlayerInLobbyRef)
+    // Get a reference to the selected characters in the database
+    const selectedCharactersRef = ref(db, "selectedCharacters");
+
+    let isCharacterAvailable = false;
+
+    // Check if the character is already selected
+    await get(selectedCharactersRef).then((snapshot) => {
+      const selectedCharacters = snapshot.val();
+
+      if (!selectedCharacters || !selectedCharacters[character]) {
+        // If the character is not selected yet, mark it as available
+        isCharacterAvailable = true;
+      }
+    });
+
+    if (!isCharacterAvailable) {
+      console.error("Character is already chosen");
+      return;
+    }
+
+    // Mark the character as selected in the database
+    await set(ref(db, `selectedCharacters/${character}`), true);
+
+    // const newPlayerInLobbyRef = push(lobbyRef);
+
+    await get(roomsRef).then((snapshot) => {
+      const rooms = snapshot.val();
+
+      if (rooms) {
+        //Find an open room
+        for (const [id, room] of Object.entries(rooms)) {
+          if (Object.keys(room.players).length < LOBBY_SIZE) {
+            roomId = id;
+            break;
+          }
+        }
+      }
+
+      if (!roomId) {
+        const newRoomRef = push(roomsRef);
+        roomId = newRoomRef.key;
+        set(newRoomRef, {
+          players: {
+            [playerId]: true,
+          },
+        });
+      } else {
+        //Join an open room
+        const roomPlayersRef = ref(db, `rooms/${roomId}/players/${playerId}`);
+        set(roomPlayersRef, true);
+      }
+    });
+
+    const currentRoomRef = ref(db, "rooms/" + roomId);
+
+    onDisconnect(selectedCharactersRef).update({ [character]: false });
+    onDisconnect(currentRoomRef)
       .remove()
       .then(() => {
         console.log("Prepared to remove player from lobby upon disconnect.");
@@ -48,15 +105,16 @@ async function writeUserData(character, scene) {
         console.error("Error setting up onDisconnect:", error);
       });
 
-    set(newPlayerInLobbyRef, playerId).then(() => {
-      onValue(lobbyRef, (snapshot) => {
-        if (snapshot.hasChildren() && snapshot.size === LOBBY_SIZE) {
-          console.log("Game starting soon...");
-          setTimeout(() => {
-            scene.startGame();
-          }, 2000);
-        }
-      });
+    onValue(currentRoomRef, (snapshot) => {
+      if (
+        snapshot.hasChildren() &&
+        Object.keys(snapshot.val().players).length === LOBBY_SIZE
+      ) {
+        console.log("Game starting soon in room " + roomId);
+        setTimeout(() => {
+          scene.startGame();
+        }, 2000);
+      }
     });
   }
 }
@@ -204,21 +262,37 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       character4.anims.stop();
     });
 
-    character1.on("pointerdown", () => {
-      if (!hasChosenCharacter) writeUserData("character1", this);
-      hasChosenCharacter = true;
+    character1.on("pointerdown", async () => {
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("character1", this);
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
-    character2.on("pointerdown", () => {
-      if (!hasChosenCharacter) writeUserData("character2", this);
-      hasChosenCharacter = true;
+    character2.on("pointerdown", async () => {
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("character2", this);
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
-    character3.on("pointerdown", () => {
-      if (!hasChosenCharacter) writeUserData("character3", this);
-      hasChosenCharacter = true;
+    character3.on("pointerdown", async () => {
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("character3", this);
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
-    character4.on("pointerdown", () => {
-      if (!hasChosenCharacter) writeUserData("character4", this);
-      hasChosenCharacter = true;
+    character4.on("pointerdown", async () => {
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("character4", this);
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
   }
 

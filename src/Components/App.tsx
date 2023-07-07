@@ -99,7 +99,6 @@ function App() {
   const auth = getAuth(firebaseApp); // Get the Firebase authentication object
   const user = auth.currentUser;
   const db = getDatabase(firebaseApp); // Get the Firebase database object
-  const lobbyRef = ref(db, "lobby/");
 
   useEffect(() => {
     if (user) {

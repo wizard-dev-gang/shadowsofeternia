@@ -11,6 +11,7 @@ import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
 import  { Barb } from "../characters/Barb"
 import "../characters/Barb"
+import "../characters/Archer"
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -81,12 +82,15 @@ export default class Game extends Phaser.Scene {
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb"
+      const archer = this.characterName === "archer"
       if(barb){
         this.man = this.add.barb(580,200, "barb")
 
-      } else{
-      this.man = this.add.player(600, 191, "man");
-      }
+      } else if (archer){
+      this.man = this.add.archer(600, 191, "archer");
+      } else {
+        this.man = this.add.player(600, 191, "man");
+        }
 
       
 

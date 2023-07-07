@@ -18,6 +18,7 @@ const randomDirection = (exclude: Direction) => {
 export default class Slime extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
+  private isMoving = true;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -63,6 +64,11 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
   preUpdate(t: number, dt: number) {
     super.preUpdate(t, dt);
 
+    if (!this.isMoving) { // Add this line
+      this.setVelocity(0, 0);
+      return;
+    }
+    
     const speed = 50;
 
     switch (this.direction) {

@@ -82,7 +82,7 @@ export default class Game extends Phaser.Scene {
       // Create the player character and define spawn position
       const barbarian = this.characterName === 'barb'
       if (barbarian) {
-        console.log('game barbarian', this.add)
+        console.log('game barbarian', this.add.barbarian)
         this.man = this.add.barbarian(600, 191, 'barb')
       } else {
         this.man = this.add.player(600, 191, 'man');

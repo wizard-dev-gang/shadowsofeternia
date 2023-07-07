@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import Game from "../scenes/Game";
 import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
+import ChooseCharacterScene from "../scenes/ChooseCharacter";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -16,8 +17,8 @@ function GameComponent() {
     phaserGameRef.current = new Phaser.Game({
       type: Phaser.AUTO, // The renderer type (auto-detected)
       parent: "game-content", // The ID or element where the game canvas will be appended
-      width: 500,
-      height: 400,
+      width: 400,
+      height: 300,
       physics: {
         default: "arcade", // The default physics system
         arcade: {
@@ -25,9 +26,9 @@ function GameComponent() {
           debug: true, // Enable physics debugging (collider outlines, etc.)
         },
       },
-      scene: [Preloader, Game, PlayerUI], // The array of scene classes to be included in the game
+      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI],
       scale: {
-        zoom: 2,
+        zoom: 2.69,
       },
     });
   }, []);

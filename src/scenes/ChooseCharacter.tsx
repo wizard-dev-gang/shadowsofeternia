@@ -142,7 +142,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
-    this.load.spritesheet("character4", "/assets/manAlone.png", {
+    this.load.spritesheet("wizard", "/assets/wizard-alone.png", {
       frameWidth: 32,
       frameHeight: 32,
     });
@@ -185,7 +185,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character4 = this.add
-      .sprite(420, 200, "character4")
+      .sprite(420, 200, "wizard")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
 
@@ -211,7 +211,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.add
-      .text(420, 280, "Character 4", {
+      .text(420, 280, "Wizard", {
         fontSize: "10px",
         fontFamily: "Joystix",
         align: "center",
@@ -248,8 +248,20 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       key: "archer-walk-down-slow",
       frames: this.anims.generateFrameNames("archer", {
         start: 1,
-        end: 4,
+        end: 3,
         prefix: "archer-walk-down-0",
+        suffix: ".png",
+      }),
+      repeat: -1,
+      frameRate: 10,
+    });
+
+    this.anims.create({
+      key: "wizard-walk-down-slow",
+      frames: this.anims.generateFrameNames("wizard", {
+        start: 1,
+        end: 3,
+        prefix: "wizard-walk-down-0",
         suffix: ".png",
       }),
       repeat: -1,
@@ -279,7 +291,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
 
     character4.on("pointerover", () => {
-      character4.anims.play("man-walk-down-slow", true);
+      character4.anims.play("wizard-walk-down-slow", true);
     });
     character4.on("pointerout", () => {
       character4.anims.stop();
@@ -312,7 +324,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
     character4.on("pointerdown", async () => {
       if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("character4", this);
+        const isCharacterAvailable = await writeUserData("wizard", this);
         if (isCharacterAvailable) {
           hasChosenCharacter = true;
         }

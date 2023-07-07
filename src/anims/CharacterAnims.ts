@@ -168,7 +168,8 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     key: "archer-walk-down",
     frames: anims.generateFrameNames("archer", {
       start: 1,
-      end: 4,
+      end: 3
+      ,
       prefix: "archer-walk-down-0",
       suffix: ".png",
     }),
@@ -180,7 +181,8 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     key: "archer-walk-left",
     frames: anims.generateFrameNames("archer", {
       start: 1,
-      end: 4,
+      end: 3
+      ,
       prefix: "archer-walk-left-0",
       suffix: ".png",
     }),
@@ -192,7 +194,8 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     key: "archer-walk-right",
     frames: anims.generateFrameNames("archer", {
       start: 1,
-      end: 4,
+      end: 3
+      ,
       prefix: "archer-walk-right-0",
       suffix: ".png",
     }),
@@ -204,8 +207,86 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     key: "archer-walk-up",
     frames: anims.generateFrameNames("archer", {
       start: 1,
-      end: 4,
+      end: 3
+      ,
       prefix: "archer-walk-up-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+
+
+//   wizard anims
+
+anims.create({
+    key: "wizard-idle-down",
+    frames: [{ key: "wizard", frame: "wizard-walk-down-02.png" }],
+  });
+
+  anims.create({
+    key: "wizard-idle-up",
+    frames: [{ key: "wizard", frame: "wizard-walk-up-02.png" }],
+  });
+
+  anims.create({
+    key: "wizard-idle-left",
+    frames: [{ key: "wizard", frame: "wizard-walk-left-02.png" }],
+  });
+
+  anims.create({
+    key: "wizard-idle-right",
+    frames: [{ key: "wizard", frame: "wizard-walk-right-02.png" }],
+  });
+
+
+  anims.create({
+    key: "wizard-walk-down",
+    frames: anims.generateFrameNames("wizard", {
+      start: 1,
+      end: 3
+      ,
+      prefix: "wizard-walk-down-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "wizard-walk-left",
+    frames: anims.generateFrameNames("wizard", {
+      start: 1,
+      end: 3
+      ,
+      prefix: "wizard-walk-left-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "wizard-walk-right",
+    frames: anims.generateFrameNames("wizard", {
+      start: 1,
+      end: 3
+      ,
+      prefix: "wizard-walk-right-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "wizard-walk-up",
+    frames: anims.generateFrameNames("wizard", {
+      start: 1,
+      end: 3
+      ,
+      prefix: "wizard-walk-up-0",
       suffix: ".png",
     }),
     repeat: -1,

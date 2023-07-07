@@ -173,19 +173,19 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const character1 = this.add
-      .sprite(80, 200, "character1")
+      .sprite(90, 200, "character1")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character2 = this.add
-      .sprite(193.33, 200, "barb")
+      .sprite(180, 200, "barb")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character3 = this.add
-      .sprite(306.66, 200, "archer")
+      .sprite(270, 200, "archer")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character4 = this.add
-      .sprite(420, 200, "wizard")
+      .sprite(360, 200, "wizard")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
 
@@ -306,13 +306,13 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       //   }
       // }
     });
-    character2.on("pointerdown", async () => {
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("barb", this);
-        if (isCharacterAvailable) {
-          hasChosenCharacter = true;
-        }
-      }
+    character2.on("pointerdown", async () => {this.startGame('barb')
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("barb", this);
+      //   if (isCharacterAvailable) {
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
     character3.on("pointerdown", async () => {
       if (!hasChosenCharacter) {
@@ -332,7 +332,9 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
   }
 
-  startGame() {
-    this.scene.start("game");
+  startGame(name?: string) {
+    this.scene.start("game", {
+      name
+    });
   }
 }

@@ -7,6 +7,7 @@ import {
   ref,
   set,
   DatabaseReference,
+  onDisconnect,
   onValue,
   update,
   remove,
@@ -95,16 +96,17 @@ function App() {
   const [userName, setUserName] = useState<string>(""); // State to store the player's name
   const [newName, setNewName] = useState<string>(""); // State to store the new name when editing
 
-  useEffect(() => {
-    const auth = getAuth(firebaseApp); // Get the Firebase authentication object
-    const user = auth.currentUser;
+  const auth = getAuth(firebaseApp); // Get the Firebase authentication object
+  const user = auth.currentUser;
+  const db = getDatabase(firebaseApp); // Get the Firebase database object
 
+  useEffect(() => {
     if (user) {
       console.log("Logged in as:", user);
       playerId.current = user.uid; // Store the player ID
-      const db = getDatabase(firebaseApp); // Get the Firebase database object
       playerRef.current = ref(db, `players/${playerId.current}`); // Reference to the player in the database
 
+      // Set up listener for player data in the database
       onValue(playerRef.current, (snapshot) => {
         const playerData = snapshot.val();
         if (playerData) {
@@ -112,6 +114,7 @@ function App() {
           console.log("Player data:", playerData);
           setUserName(playerData.name || "");
           isAddedToDatabase.current = true;
+          update(playerRef.current!, { online: true });
         } else {
           // If the player's data doesn't exist in the database, create it
           set(playerRef.current!, {
@@ -130,28 +133,21 @@ function App() {
               armor: "placeholder",
               accessory: "placeholder",
             },
+            online: true,
           });
         }
-      });
 
-      // Set up onDisconnect event to remove player data when disconnected
-      const playerDisconnectRef = ref(db, `.info/connected`);
-      onValue(playerDisconnectRef, (snapshot) => {
-        if (snapshot.val() === false) {
-          // Player is disconnected
-          if (playerRef.current) {
-            remove(playerRef.current)
-              .then(() => {
-                console.log("Player data removed on disconnect.");
-              })
-              .catch((error) => {
-                console.error(
-                  "Error removing player data on disconnect:",
-                  error
-                );
-              });
-          }
-        }
+        // Set up onDisconnect event to remove player data when disconnected
+        onDisconnect(playerRef.current)
+          .update({ online: false })
+          .then(() => {
+            console.log(
+              "Prepared to remove player from database upon disconnect."
+            );
+          })
+          .catch((error) => {
+            console.error("Error setting up onDisconnect:", error);
+          });
       });
     } else {
       console.log("Not logged in.");

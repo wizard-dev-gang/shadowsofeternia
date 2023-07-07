@@ -10,6 +10,7 @@ import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
 import  { Barb } from "../characters/Barb"
+import "../characters/Barbarian";
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -19,6 +20,8 @@ export default class Game extends Phaser.Scene {
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private barb?: Barb;
+  private characterName?: string
+
 
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   
@@ -35,6 +38,12 @@ export default class Game extends Phaser.Scene {
     this.otherPlayers = new Map();
     this.playerNames = new Map();
   }
+
+  init(data?: {name: string})
+	{
+    // console.log("init", data)
+		this.characterName = data?.name
+	}
 
   preload() {
     // this.cursors = this.input.keyboard?.createCursorKeys();
@@ -71,9 +80,13 @@ export default class Game extends Phaser.Scene {
       objectsLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
-      this.barb = this.add.player( 580, 200, "barb")
-      
-      this.man = this.add.player(600, 191, "man");
+      const barbarian = this.characterName === 'barb'
+      if (barbarian) {
+        console.log('game barbarian', this.add)
+        this.man = this.add.barbarian(600, 191, 'barb')
+      } else {
+        this.man = this.add.player(600, 191, 'man');
+      }
 
       
 

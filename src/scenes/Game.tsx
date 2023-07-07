@@ -24,6 +24,7 @@ export default class Game extends Phaser.Scene {
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
   public playerNames!: Map<any, any>; // Map to store player names
   public playerName?: Phaser.GameObjects.Text; // Text object to display the current player's name
+  public enemies!: Map<any, any>; // Map to store enemies in the game
 
   constructor() {
     super("game");
@@ -275,6 +276,7 @@ export default class Game extends Phaser.Scene {
           frame: this.man.anims.currentFrame
             ? this.man.anims.currentFrame.frame.name
             : null,
+          online: true,
         });
       }
     }

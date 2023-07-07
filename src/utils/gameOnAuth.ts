@@ -13,10 +13,31 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
       const otherPlayersRef = ref(db, "players"); // Reference to other players in Firebase
       onValue(otherPlayersRef, (snapshot) => {
         const playersData = snapshot.val();
+
+        gameInstance.otherPlayers.forEach((otherPlayer, playerId) => {
+          const playerData = playersData[playerId];
+
+          if (!playerData || !playerData.online) {
+            otherPlayer.destroy(); // Remove sprite of other player
+            gameInstance.otherPlayers.delete(playerId); // Remove other player from map
+
+            const playerName = gameInstance.playerNames.get(playerId);
+            if (playerName) {
+              playerName.destroy(); // Remove player name
+              gameInstance.playerNames.delete(playerId); // Remove player name from map
+            }
+          }
+        });
+
+        // Now handle the remaining players in Firebase
         for (const playerId in playersData) {
           if (playerId === gameInstance.playerId) continue; // Skip the current player
 
           const playerData = playersData[playerId];
+
+          // Skip if player is not online
+          if (!playerData.online) continue;
+
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
 
           // Create or update other players

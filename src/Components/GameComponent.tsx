@@ -17,8 +17,8 @@ function GameComponent() {
     phaserGameRef.current = new Phaser.Game({
       type: Phaser.AUTO, // The renderer type (auto-detected)
       parent: "game-content", // The ID or element where the game canvas will be appended
-      width: 500,
-      height: 400,
+      width: 400,
+      height: 300,
       physics: {
         default: "arcade", // The default physics system
         arcade: {
@@ -28,7 +28,7 @@ function GameComponent() {
       },
       scene: [Preloader, ChooseCharacterScene, Game, PlayerUI],
       scale: {
-        zoom: 2,
+        zoom: 2.69,
       },
     });
   }, []);

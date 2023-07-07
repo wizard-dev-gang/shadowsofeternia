@@ -18,13 +18,10 @@ export default class Game extends Phaser.Scene {
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
-<<<<<<< HEAD
   private barb?: Barb;
 
-=======
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   
->>>>>>> 9f7e0506623c93656b88fec14c2fd6a6d3dce188
   // Firebase variables
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player

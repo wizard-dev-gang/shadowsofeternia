@@ -38,9 +38,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     S: undefined,
     D: undefined,
   }; // Providing a default value to keys
-
+  private characterTexture: string
   public lastMove = "down";
-
+  
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -48,7 +48,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     texture: string,
     frame?: string | number
   ) {
+    console.log('player texture', texture)
     super(scene, x, y, texture, frame);
+    this.characterTexture = texture
     this._health = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
@@ -196,23 +198,23 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     const speed = 200;
     if (this.keys.A?.isDown) {
-      this.anims.play("man-walk-left", true);
+      this.anims.play(`${this.characterTexture}-walk-left`, true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
-      this.anims.play("man-walk-right", true);
+      this.anims.play(`${this.characterTexture}-walk-right`, true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
-      this.anims.play("man-walk-up", true);
+      this.anims.play(`${this.characterTexture}-walk-up`, true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
-      this.anims.play("man-walk-down", true);
+      this.anims.play(`${this.characterTexture}-walk-down`, true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
     } else {
-      const idle = `man-idle-${this.lastMove}`;
+      const idle = `${this.characterTexture}-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
     }

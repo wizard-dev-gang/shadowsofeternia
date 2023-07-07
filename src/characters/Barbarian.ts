@@ -38,6 +38,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     texture: string,
     frame?: string | number
   ) {
+    console.log('factory barbarian texture', texture)
     const sprite = new Barbarian(this.scene, x, y, texture, frame);
 
     this.displayList.add(sprite);

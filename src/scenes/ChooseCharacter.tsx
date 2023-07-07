@@ -66,13 +66,15 @@ export default class ChooseCharacterScene extends Phaser.Scene {
         character4.on('pointerout', () => { character4.anims.stop(); });
         
         character1.on('pointerdown', () => this.startGame());
-        character2.on('pointerdown', () => this.startGame());
+        character2.on('pointerdown', () => this.startGame("barb"));
         character3.on('pointerdown', () => this.startGame());
         character4.on('pointerdown', () => this.startGame());
     }
 
-    startGame() {
-        this.scene.start('game');
+    startGame(name?: string) {
+        this.scene.start('game', {
+          name
+        });
     }
 }
 

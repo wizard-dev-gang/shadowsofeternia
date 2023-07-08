@@ -6,6 +6,7 @@ import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
+import "../enemies/Skeleton"
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
@@ -239,6 +240,7 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
+  
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const skeleton = obj2 as Skeleton;
 
@@ -246,9 +248,23 @@ export default class Game extends Phaser.Scene {
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
 
+    const dx = skeleton.x - projectile.x;
+    const dy = skeleton.y - projectile.y;
+
+    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+    skeleton.setVelocity(dir.x, dir.y);
+    skeleton.handleDamage(dir);
+    skeleton.getHealth();
+    if( skeleton.getHealth() <= 0){
+      this.skeletons.killAndHide(skeleton);
+      this.play("death-ghost")
+      // skeleton.destroy();
+    }
+    console.log("skele health", skeleton.getHealth())
     // Kill and hide the skeleton
-    this.skeletons.killAndHide(skeleton);
-    skeleton.destroy();
+    // this.skeletons.handleDamage();
+    // this.skeletons.killAndHide(skeleton);
+    // skeleton.destroy();
   }
 
   private handleProjectileSlimeCollision(
@@ -257,6 +273,7 @@ export default class Game extends Phaser.Scene {
   ) {
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const slime = obj2 as Slime;
+
 
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);

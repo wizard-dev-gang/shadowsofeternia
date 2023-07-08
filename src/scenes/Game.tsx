@@ -26,11 +26,16 @@ export default class Game extends Phaser.Scene {
   public playerNames!: Map<any, any>; // Map to store player names
   public playerName?: Phaser.GameObjects.Text; // Text object to display the current player's name
   public enemies!: Map<any, any>; // Map to store enemies in the game
+  public enemyDB!:any;
+  public dataToSend:any = {}
+	public updateIterations = 0
+  private enemyCount= 0
 
   constructor() {
     super("game");
     this.otherPlayers = new Map();
     this.playerNames = new Map();
+    this.enemies = new Map();
   }
 
   preload() {
@@ -75,7 +80,7 @@ export default class Game extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-
+          this.enemyCount ++
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -89,6 +94,7 @@ export default class Game extends Phaser.Scene {
             const offsetY = 14; // Set the desired Y offset
             skeleGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount,skeleGo)
         },
       });
 
@@ -102,6 +108,8 @@ export default class Game extends Phaser.Scene {
       this.man.setKnives(this.knives);
 
       // Add a skeleton to the group
+      this.skeletons.get(256, 256, "jacked-skeleton");
+      this.skeletons.get(256, 256, "jacked-skeleton");
       this.skeletons.get(256, 256, "jacked-skeleton");
 
       // Handle collisions between skeletons and ground layers
@@ -177,15 +185,6 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );      
-      // this.physics.world.enableBody(
-      //   this.man,
-      //   Phaser.Physics.Arcade.DYNAMIC_BODY
-      // );
-
-      // if (this.man.body) {
-      //   this.man.body.setSize(this.man.width * 0.8);
-      // }
-      // this.add.existing(this.man);
 
       // Handle collisions between player and layers
       if (this.man) {
@@ -295,6 +294,7 @@ private handleKnifeSlimeCollision(
   }
   
   update() {
+    this.updateIterations++
     if (this.man && this.playerName) {
       this.man.update();
 
@@ -332,6 +332,24 @@ private handleKnifeSlimeCollision(
             : null,
           online: true,
         });
+      }
+
+      if (this.updateIterations % 3 === 0) {
+        for (const entry of this.enemies.entries()) {
+          this.dataToSend[entry[0]] = {
+            id:entry[0],
+            x:entry[1].x,
+            y:entry[1].y,
+            anim: entry[1].anims.currentAnim
+              ? entry[1].anims.currentAnim.key
+              : null,
+              frame: entry[1].anims.currentFrame
+              ? entry[1].anims.currentFrame.frame.name
+              : null,
+              alive: true,
+          } 
+        }
+        update(this.enemyDB,this.dataToSend)
       }
     }
   }

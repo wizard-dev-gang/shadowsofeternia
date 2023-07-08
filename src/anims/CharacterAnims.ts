@@ -151,7 +151,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
       suffix: ".png",
     }),
     repeat: -1,
-    frameRate: 7,
+    frameRate: 15,
   });
   anims.create({
     key: "barb-attack-up",
@@ -162,7 +162,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
       suffix: ".png",
     }),
     repeat: -1,
-    frameRate: 7,
+    frameRate: 15,
   });
   anims.create({
     key: "barb-attack-left",
@@ -173,7 +173,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
       suffix: ".png",
     }),
     repeat: -1,
-    frameRate: 7,
+    frameRate: 15,
   });
   anims.create({
     key: "barb-attack-right",
@@ -184,7 +184,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
       suffix: ".png",
     }),
     repeat: -1,
-    frameRate: 7,
+    frameRate: 15,
   });
 
   //   Archer anims

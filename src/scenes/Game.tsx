@@ -243,28 +243,20 @@ export default class Game extends Phaser.Scene {
   
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const skeleton = obj2 as Skeleton;
-
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
-
     const dx = skeleton.x - projectile.x;
     const dy = skeleton.y - projectile.y;
 
     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
     skeleton.setVelocity(dir.x, dir.y);
-    skeleton.handleDamage(dir);
     skeleton.getHealth();
+    skeleton.handleDamage(dir);
     if( skeleton.getHealth() <= 0){
       this.skeletons.killAndHide(skeleton);
-      this.play("death-ghost")
-      // skeleton.destroy();
+      skeleton.destroy();
     }
-    console.log("skele health", skeleton.getHealth())
-    // Kill and hide the skeleton
-    // this.skeletons.handleDamage();
-    // this.skeletons.killAndHide(skeleton);
-    // skeleton.destroy();
   }
 
   private handleProjectileSlimeCollision(
@@ -287,7 +279,7 @@ export default class Game extends Phaser.Scene {
   private handlePlayerEnemyCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
+  ) { 
     if (
       obj1 instanceof Player || Barb || Wizard && obj2 instanceof Skeleton
     ) {

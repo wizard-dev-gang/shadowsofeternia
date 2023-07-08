@@ -60,7 +60,7 @@ export default class Game extends Phaser.Scene {
     // Create animations for the characters
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
-    createSlimeAnims(this.anims);
+    // createSlimeAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "testMap" });
@@ -251,8 +251,8 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  // Method to handle collision between knife and skeleton
-  private handleKnifeSkeletonCollision(
+  // Method to handle collision between projectiles and skeleton
+  private handleProjectileSkeletonCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
@@ -268,7 +268,7 @@ export default class Game extends Phaser.Scene {
     skeleton.destroy();
   }
 
-  private handleKnifeSlimeCollision(
+  private handleProjectileSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
@@ -338,7 +338,7 @@ export default class Game extends Phaser.Scene {
       this.physics.overlap(
         this.projectiles,
         this.skeletons,
-        this.handleKnifeSkeletonCollision,
+        this.handleProjectileSkeletonCollision,
         undefined,
         this
       );
@@ -346,7 +346,7 @@ export default class Game extends Phaser.Scene {
       this.physics.overlap(
         this.projectiles,
         this.slimes,
-        this.handleKnifeSlimeCollision,
+        this.handleProjectileSlimeCollision,
         undefined,
         this
       );

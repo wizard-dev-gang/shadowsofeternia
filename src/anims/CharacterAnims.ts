@@ -326,6 +326,21 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     repeat: -1,
     frameRate: 7,
   });
+// All Character Death anims
+  anims.create({
+    key: "death-ghost",
+    frames: anims.generateFrameNames("death", {
+      start: 1,
+      end: 5,
+      prefix: "death-ghost-0",
+      suffix: ".png",
+    }),
+    // repeat: -1,
+    frameRate: 7,
+  });
+
 };
+
+
 
 export { createCharacterAnims };

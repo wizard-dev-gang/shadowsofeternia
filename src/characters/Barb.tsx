@@ -81,7 +81,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     if (this._health <= 0) {
       this.setVelocity(0, 0);
       this.healthState = HealthState.DEAD;
-      this.play("wizard-walk-right");
+      this.play("death-ghost");
     } else {
       this.setVelocity(dir.x, dir.y);
 

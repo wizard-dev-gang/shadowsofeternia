@@ -7,6 +7,12 @@ enum Direction {
   RIGHT,
 }
 
+enum HealthState {
+  IDLE,
+  DAMAGE,
+  DEAD,
+}
+
 const randomDirection = (exclude: Direction) => {
   let newDirection = Phaser.Math.Between(0, 3);
   while (newDirection === exclude) {
@@ -19,6 +25,9 @@ const randomDirection = (exclude: Direction) => {
 export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
+  private healthState = HealthState.IDLE
+  private _health: number
+  private damageTime = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -28,7 +37,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-
+    this._health = 3;
     this.anims.play("enemy-idle-down");
 
     scene.physics.world.on(
@@ -44,6 +53,34 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
       },
       loop: true,
     });
+  }
+  // Enemies have health, to not die in 1 hit.
+  getHealth() {
+    return this._health;
+  }
+
+  handleDamage(dir: Phaser.Math.Vector2) {
+    if (this._health <= 0) {
+      return;
+    }
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    }
+
+    --this._health;
+
+    if (this._health <= 0) {
+      this.setVelocity(0, 0);
+      this.healthState = HealthState.DEAD;
+      this.play("death-ghost");
+    } else {
+      this.setVelocity(dir.x, dir.y);
+
+      this.setTint(0xff0000);
+
+      this.healthState = HealthState.DAMAGE;
+      this.damageTime = 0;
+    }
   }
 
   destroy(fromScene?: boolean) {
@@ -61,6 +98,18 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
 
   preUpdate(t: number, dt: number) {
     super.preUpdate(t, dt);
+
+    switch (this.healthState) {
+      case HealthState.IDLE:
+        break;
+      case HealthState.DAMAGE:
+        this.damageTime += dt;
+        if (this.damageTime >= 250) {
+          this.healthState = HealthState.IDLE;
+          this.setTint(0xffffff);
+          this.damageTime = 0;
+        }
+    }
 
     const speed = 50;
 
@@ -80,6 +129,15 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
       case Direction.RIGHT:
         this.anims.play("enemy-walk-right", true);
         this.setVelocity(speed, 0);
+    }
+  }
+
+  update(){
+    if (
+      this.healthState === HealthState.DAMAGE ||
+      this.healthState === HealthState.DEAD
+    ) {
+      return;
     }
   }
 }

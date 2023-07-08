@@ -48,6 +48,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
+    this._health = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,

@@ -17,16 +17,13 @@ import "../characters/Wizard";
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player; // Reference to the player character
-  private knives!: Phaser.Physics.Arcade.Group; // Group to manage knives thrown by the player
   private projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private barb?: Barb;
   private wizard?: Wizard;
-
   private characterName?: string;
-
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
 
   // Firebase variables
@@ -60,21 +57,16 @@ export default class Game extends Phaser.Scene {
     // Create animations for the characters
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
-    // createSlimeAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "testMap" });
     const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
-
-    // const map = this.make.tilemap({key: "caveMap"})
-    // const tileset = map.addTilesetImage("cave", "tiles")
 
     // Create layers for the tilemap
     if (tileset) {
       const waterLayer = map.createLayer("Water", tileset, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
       const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
-      // const cave = map.createLayer("Cave", tileset, 0, 0)
 
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
@@ -90,8 +82,9 @@ export default class Game extends Phaser.Scene {
         this.man = this.add.wizard(590, 210, "wizard");
       } else {
         this.man = this.add.player(600, 191, "man");
-        // this.man.setProjectiles(this.projectiles)
       }
+      // Camera to follow player
+      this.cameras.main.startFollow(this.man);
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -123,7 +116,6 @@ export default class Game extends Phaser.Scene {
 
       // Set projectiles for the player character
       this.man.setProjectiles(this.projectiles);
-      // this.man.setKnives(this.knives);
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");
@@ -134,7 +126,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           groundLayer,
-          this.handleKnifeWallCollision,
+          this.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -146,7 +138,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           objectsLayer,
-          this.handleKnifeWallCollision,
+          this.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -190,13 +182,13 @@ export default class Game extends Phaser.Scene {
         if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
         if (objectsLayer) this.physics.add.collider(this.slimes, objectsLayer);
       }
-      this.cameras.main.startFollow(this.man);
 
       // Handle collisions between player and enemy characters
       this.playerEnemiesCollider = this.physics.add.collider(
         this.skeletons,
         this.man,
         this.wizard,
+        this.barb,
         this.handlePlayerEnemyCollision,
         undefined,
         this
@@ -206,19 +198,11 @@ export default class Game extends Phaser.Scene {
         this.slimes,
         this.man,
         this.wizard,
+        this.barb,
         this.handlePlayerSlimeCollision,
         undefined,
         this
       );
-      // this.physics.world.enableBody(
-      //   this.man,
-      //   Phaser.Physics.Arcade.DYNAMIC_BODY
-      // );
-
-      // if (this.man.body) {
-      //   this.man.body.setSize(this.man.width * 0.8);
-      // }
-      // this.add.existing(this.man);
 
       // Handle collisions between player and layers
       if (this.man) {
@@ -226,7 +210,6 @@ export default class Game extends Phaser.Scene {
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
         if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
-        // this.cameras.main.startFollow(this.man);
 
         // Add text for player name
         this.playerName = this.add
@@ -240,8 +223,8 @@ export default class Game extends Phaser.Scene {
       }
     }
   }
-  // Method to handle collision between knives and walls
-  private handleKnifeWallCollision(
+  // Method to handle collision between projectiles and walls
+  private handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
@@ -259,7 +242,7 @@ export default class Game extends Phaser.Scene {
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const skeleton = obj2 as Skeleton;
 
-    // Kill and hide the knife
+    // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
 
@@ -275,7 +258,7 @@ export default class Game extends Phaser.Scene {
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const slime = obj2 as Slime;
 
-    // Kill and hide the knife
+    // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
 
@@ -289,11 +272,9 @@ export default class Game extends Phaser.Scene {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
     if (
-      obj1 instanceof Player ||
-      Barb ||
-      (Wizard && obj2 instanceof Skeleton)
+      obj1 instanceof Player || Barb || Wizard && obj2 instanceof Skeleton
     ) {
-      const man = (obj1 as Player) || Barb || Wizard;
+      const man = obj1 as Player || Barb || Wizard;
       const skeleton = obj2 as Skeleton;
 
       const dx = man.x - skeleton.x;
@@ -311,8 +292,8 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player || Barb || (Wizard && obj2 instanceof Slime)) {
-      const man = (obj1 as Player) || Barb || Wizard;
+    if (obj1 instanceof Player || Barb || Wizard && obj2 instanceof Slime) {
+      const man = obj1 as Player || Barb || Wizard;
       const slime = obj2 as Slime;
 
       const dx = man.x - slime.x;

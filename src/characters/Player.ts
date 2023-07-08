@@ -83,7 +83,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     if (this._health <= 0) {
       this.setVelocity(0, 0);
       this.healthState = HealthState.DEAD;
-      this.play("man-walk-right");
+      this.play("death-ghost");
     } else {
       this.setVelocity(dir.x, dir.y);
 

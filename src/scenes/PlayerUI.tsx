@@ -9,7 +9,7 @@ export default class PlayerUI extends Phaser.Scene {
     super({ key: "player-ui" });
   }
   create() {
-    const y = 380;
+    const y = 280;
     const x = 50;
     const fullWidth = 100;
 

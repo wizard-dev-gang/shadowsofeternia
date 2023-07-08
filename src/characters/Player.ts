@@ -31,7 +31,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
-  private knives?: Phaser.Physics.Arcade.Group;
+  // private knives?: Phaser.Physics.Arcade.Group;
+  private projectiles?: Phaser.Physics.Arcade.Group;
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -65,8 +66,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     return this._health;
   }
 
-  setKnives(knives: Phaser.Physics.Arcade.Group) {
-    this.knives = knives;
+  setProjectiles(projectiles: Phaser.Physics.Arcade.Group) {
+    this.projectiles = projectiles;
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {
@@ -93,13 +94,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  private throwKnife(
+  private throwProjectile(
     direction?: string,
     xLoc?: number,
     yLoc?: number,
-    projectile?: string
+    attackObj?: string
   ) {
-    if (!this.knives) {
+    if (!this.projectiles) {
       return;
     }
 
@@ -108,7 +109,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       direction = parts[2];
       xLoc = this.x;
       yLoc = this.y;
-      projectile = "knife";
+      attackObj = "knife";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -131,23 +132,23 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     const angle = vec.angle();
 
-    const knife = this.knives.get(
+    const projectile = this.projectiles.get(
       xLoc,
       yLoc,
-      projectile
+      attackObj
     ) as Phaser.Physics.Arcade.Image;
-    if (!knife) {
+    if (!projectile) {
       return;
     }
-    knife.setActive(true);
-    knife.setVisible(true);
+    projectile.setActive(true);
+    projectile.setVisible(true);
 
-    knife.setRotation(angle);
+    projectile.setRotation(angle);
 
-    knife.x += vec.x * 16;
-    knife.y += vec.y * 16;
-    knife.setVelocity(vec.x * 300, vec.y * 300);
-    console.log(knife.x, knife.y, direction);
+    projectile.x += vec.x * 16;
+    projectile.y += vec.y * 16;
+    projectile.setVelocity(vec.x * 300, vec.y * 300);
+    console.log(projectile.x, projectile.y, direction);
   }
 
   preUpdate(t: number, dt: number): void {
@@ -178,7 +179,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (this.keys.Space?.isDown) {
-      this.throwKnife();
+      this.throwProjectile();
       // if (this.activeChest)
       // {
       //     const coins = this.activeChest.open()

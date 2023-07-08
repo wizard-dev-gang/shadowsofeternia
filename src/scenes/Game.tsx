@@ -9,25 +9,26 @@ import { Skeleton } from "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
-import  { Barb } from "../characters/Barb"
-import "../characters/Barb"
-import { Wizard } from "../characters/Wizard"
-import "../characters/Wizard"
+import { Barb } from "../characters/Barb";
+import "../characters/Barb";
+import { Wizard } from "../characters/Wizard";
+import "../characters/Wizard";
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player; // Reference to the player character
   private knives!: Phaser.Physics.Arcade.Group; // Group to manage knives thrown by the player
+  private projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private barb?: Barb;
   private wizard?: Wizard;
 
-  private characterName?: string
+  private characterName?: string;
 
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
-  
+
   // Firebase variables
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
@@ -45,11 +46,9 @@ export default class Game extends Phaser.Scene {
   preload() {
     // this.cursors = this.input.keyboard?.createCursorKeys();
   }
-  init(data?: {name: string})
-  { 
-    console.log("init data", data)
-    this.characterName = data?.name
-
+  init(data?: { name: string }) {
+    console.log("init data", data);
+    this.characterName = data?.name;
   }
 
   create() {
@@ -83,19 +82,16 @@ export default class Game extends Phaser.Scene {
       objectsLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
-      const barb = this.characterName === "barb"
-      const wizard = this.characterName === "wizard"
-      if(barb){
-        this.man = this.add.barb(580,200, "barb")
-
-      } else if(wizard){
-        this.man = this.add.wizard(590, 210, "wizard")
-      
-      } else{
+      const barb = this.characterName === "barb";
+      const wizard = this.characterName === "wizard";
+      if (barb) {
+        this.man = this.add.barb(580, 200, "barb");
+      } else if (wizard) {
+        this.man = this.add.wizard(590, 210, "wizard");
+      } else {
         this.man = this.add.player(600, 191, "man");
+        // this.man.setProjectiles(this.projectiles)
       }
-
-      
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -120,12 +116,13 @@ export default class Game extends Phaser.Scene {
       });
 
       // Create a group for knives with a maximum size of 3
-      this.knives = this.physics.add.group({
+      this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
         maxSize: 3,
       });
 
-      // Set knives for the player character
+      // Set projectiles for the player character
+      this.man.setProjectiles(this.projectiles);
       // this.man.setKnives(this.knives);
 
       // Add a skeleton to the group
@@ -135,7 +132,7 @@ export default class Game extends Phaser.Scene {
       if (this.skeletons && groundLayer) {
         this.physics.add.collider(this.skeletons, groundLayer);
         this.physics.add.collider(
-          this.knives,
+          this.projectiles,
           groundLayer,
           this.handleKnifeWallCollision,
           undefined,
@@ -147,7 +144,7 @@ export default class Game extends Phaser.Scene {
       if (this.skeletons && objectsLayer) {
         this.physics.add.collider(this.skeletons, objectsLayer);
         this.physics.add.collider(
-          this.knives,
+          this.projectiles,
           objectsLayer,
           this.handleKnifeWallCollision,
           undefined,
@@ -180,7 +177,13 @@ export default class Game extends Phaser.Scene {
       this.slimes.get(414, 90, "slime");
       if (this.man && this.slimes) {
         // Add colliders between man and slimes
-        this.physics.add.collider(this.man, this.slimes, this.handlePlayerSlimeCollision, undefined, this);
+        this.physics.add.collider(
+          this.man,
+          this.slimes,
+          this.handlePlayerSlimeCollision,
+          undefined,
+          this
+        );
 
         // Handle collisions between slimes and layers
         if (waterLayer) this.physics.add.collider(this.slimes, waterLayer);
@@ -206,7 +209,7 @@ export default class Game extends Phaser.Scene {
         this.handlePlayerSlimeCollision,
         undefined,
         this
-      );      
+      );
       // this.physics.world.enableBody(
       //   this.man,
       //   Phaser.Physics.Arcade.DYNAMIC_BODY
@@ -237,59 +240,63 @@ export default class Game extends Phaser.Scene {
       }
     }
   }
-// Method to handle collision between knives and walls
-private handleKnifeWallCollision(
-  obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-  _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-) {
-  if (obj1 instanceof Phaser.Physics.Arcade.Image) {
-    const knife = obj1 as Phaser.Physics.Arcade.Image;
-    knife.destroy();
+  // Method to handle collision between knives and walls
+  private handleKnifeWallCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  ) {
+    if (obj1 instanceof Phaser.Physics.Arcade.Image) {
+      const projectile = obj1 as Phaser.Physics.Arcade.Image;
+      projectile.destroy();
+    }
   }
-}
 
-// Method to handle collision between knife and skeleton
-private handleKnifeSkeletonCollision(
-  obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-  obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
-) {
-  const knife = obj1 as Phaser.Physics.Arcade.Image;
-  const skeleton = obj2 as Skeleton;
+  // Method to handle collision between knife and skeleton
+  private handleKnifeSkeletonCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
+  ) {
+    const projectile = obj1 as Phaser.Physics.Arcade.Image;
+    const skeleton = obj2 as Skeleton;
 
-  // Kill and hide the knife
-  this.knives.killAndHide(knife);
-  knife.destroy();
+    // Kill and hide the knife
+    this.projectiles.killAndHide(projectile);
+    projectile.destroy();
 
-  // Kill and hide the skeleton
-  this.skeletons.killAndHide(skeleton);
-  skeleton.destroy();
-}
+    // Kill and hide the skeleton
+    this.skeletons.killAndHide(skeleton);
+    skeleton.destroy();
+  }
 
-private handleKnifeSlimeCollision(
-  obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-  obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
-) {
-  const knife = obj1 as Phaser.Physics.Arcade.Image;
-  const slime = obj2 as Slime;
+  private handleKnifeSlimeCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
+  ) {
+    const projectile = obj1 as Phaser.Physics.Arcade.Image;
+    const slime = obj2 as Slime;
 
-  // Kill and hide the knife
-  this.knives.killAndHide(knife);
-  knife.destroy();
+    // Kill and hide the knife
+    this.projectiles.killAndHide(projectile);
+    projectile.destroy();
 
-  // Kill and hide the slime
-  this.slimes.killAndHide(slime);
-  slime.destroy();
-}
+    // Kill and hide the slime
+    this.slimes.killAndHide(slime);
+    slime.destroy();
+  }
   // Method to handle collision between player and enemy characters
   private handlePlayerEnemyCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player && obj2 instanceof Skeleton ) {
-      const man = obj1 as Player ;
-      const skeleton = obj2 as Skeleton ;
+    if (
+      obj1 instanceof Player ||
+      Barb ||
+      (Wizard && obj2 instanceof Skeleton)
+    ) {
+      const man = (obj1 as Player) || Barb || Wizard;
+      const skeleton = obj2 as Skeleton;
 
-      const dx = man.x - skeleton.x 
+      const dx = man.x - skeleton.x;
       const dy = man.y - skeleton.y;
 
       const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
@@ -304,24 +311,23 @@ private handleKnifeSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player && obj2 instanceof Slime) {
-      const man = obj1 as Player ;
+    if (obj1 instanceof Player || Barb || (Wizard && obj2 instanceof Slime)) {
+      const man = (obj1 as Player) || Barb || Wizard;
       const slime = obj2 as Slime;
-  
+
       const dx = man.x - slime.x;
       const dy = man.y - slime.y;
-  
+
       const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
       man.setVelocity(dir.x, dir.y);
       man.handleDamage(dir);
       sceneEvents.emit("player-health-changed", man.getHealth());
     }
   }
-  
+
   update() {
     if (this.man && this.playerName) {
       this.man.update();
-     
 
       // Update the player's name position horizontally
       this.playerName.x = this.man.x;
@@ -330,20 +336,20 @@ private handleKnifeSlimeCollision(
 
       // Handle collision between knives and skeletons
       this.physics.overlap(
-      this.knives,
-      this.skeletons,
-      this.handleKnifeSkeletonCollision,
-      undefined,
-      this
-    );
-    // Handle collision between knives and slimes
-    this.physics.overlap(
-      this.knives,
-      this.slimes,
-      this.handleKnifeSlimeCollision,
-      undefined,
-      this
-    );
+        this.projectiles,
+        this.skeletons,
+        this.handleKnifeSkeletonCollision,
+        undefined,
+        this
+      );
+      // Handle collision between knives and slimes
+      this.physics.overlap(
+        this.projectiles,
+        this.slimes,
+        this.handleKnifeSlimeCollision,
+        undefined,
+        this
+      );
 
       if (this.playerRef) {
         update(this.playerRef, {

@@ -10,8 +10,9 @@ import "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
-import { Barb } from "../characters/Barb";
-import "../characters/Barb";
+import  { Barb } from "../characters/Barb"
+import "../characters/Barb"
+import "../characters/Archer"
 import { Wizard } from "../characters/Wizard";
 import "../characters/Wizard";
 
@@ -87,17 +88,16 @@ export default class Game extends Phaser.Scene {
       // pathLayer?.setCollisionByProperty({collides: true});
 
       // Create the player character and define spawn position
-      const barb = this.characterName === "barb";
-      const wizard = this.characterName === "wizard";
-      if (barb) {
-        this.man = this.add.barb(580, 200, "barb");
-      } else if (wizard) {
-        this.man = this.add.wizard(590, 210, "wizard");
+      const barb = this.characterName === "barb"
+      const archer = this.characterName === "archer"
+      if(barb){
+        this.man = this.add.barb(580,200, "barb")
+
+      } else if (archer){
+      this.man = this.add.archer(600, 191, "archer");
       } else {
         this.man = this.add.player(600, 191, "man");
       }
-      // Camera to follow player
-      this.cameras.main.startFollow(this.man);
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -128,8 +128,8 @@ export default class Game extends Phaser.Scene {
         maxSize: 3,
       });
 
-      // Set projectiles for the player character
-      this.man.setProjectiles(this.projectiles);
+      // Set knives for the player character
+      this.man.setKnives(this.knives);
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");

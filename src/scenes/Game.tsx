@@ -281,9 +281,9 @@ export default class Game extends Phaser.Scene {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) { 
     if (
-      obj1 instanceof Player || Barb || Wizard && obj2 instanceof Skeleton
+      obj1 instanceof Player || Barb  && obj2 instanceof Skeleton
     ) {
-      const man = obj1 as Player || Barb || Wizard;
+      const man = obj1 as Player || Barb ;
       const skeleton = obj2 as Skeleton;
 
       const dx = man.x - skeleton.x;
@@ -301,8 +301,8 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player || Barb || Wizard && obj2 instanceof Slime) {
-      const man = obj1 as Player || Barb || Wizard;
+    if (obj1 instanceof Player || Barb  && obj2 instanceof Slime) {
+      const man = obj1 as Player || Barb ;
       const slime = obj2 as Slime;
 
       const dx = man.x - slime.x;

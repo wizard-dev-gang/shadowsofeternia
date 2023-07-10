@@ -14,6 +14,9 @@ import "../characters/Barb";
 import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
 import "../characters/Wizard";
+import { createNpcAnims } from "../anims/NpcAnims";
+import { Npc_wizard } from "../characters/Npc";
+import "../characters/Npc"
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -26,6 +29,9 @@ export default class Game extends Phaser.Scene {
   private wizard?: Wizard;
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   private enemyCount = 0;
+  private Npc_wizard!: Phaser.Physics.Arcade.Group;
+  private interactKey?: Phaser.Input.Keyboard.Key;
+
 
   // Firebase variables
   public characterName?: string;
@@ -63,6 +69,7 @@ export default class Game extends Phaser.Scene {
     // Create animations for the characters
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
+    createNpcAnims(this.anims)
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "testMap" });
@@ -238,8 +245,32 @@ export default class Game extends Phaser.Scene {
           })
           .setOrigin(0.5, 1);
       }
-      this.cameras.main.startFollow(this.man);
+      this.Npc_wizard = this.physics.add.group({
+        classType: Npc_wizard,
+        createCallback: (go) => {
+          const NpcGo = go as Npc_wizard;
+          if (NpcGo.body) {
+            NpcGo.body.onCollide = true;
+          }
+        },
+      });
+      this.Npc_wizard.get(880, 112, "npcWizard")
+      this.interactKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     }
+  }
+  private handlePlayerNpcCollision(
+    player: Phaser.GameObjects.GameObject,
+    npc: Phaser.GameObjects.GameObject
+  ) {
+    // Check if the player is the wizard character and the NPC is the wizard
+    if (
+      player instanceof Player || Wizard || Barb &&
+      npc instanceof Npc_wizard
+    ) {
+      // Perform actions for interacting with the NPC
+      console.log("Interacting with the NPC Wizard");
+      }
+    this.cameras.main.startFollow(this.man);
   }
   // Method to handle collision between projectiles and walls
   private handleProjectileWallCollision(
@@ -369,7 +400,15 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
-
+      if (Phaser.Input.Keyboard.JustDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E))) {
+        this.physics.overlap(
+          this.man,
+          this.Npc_wizard,
+          this.handlePlayerNpcCollision,
+          undefined,
+          this
+        );
+      }
       if (this.playerRef) {
         update(this.playerRef, {
           x: this.man.x,

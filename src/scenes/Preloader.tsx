@@ -5,8 +5,8 @@ export default class Preloader extends Phaser.Scene {
     super("preloader");
   }
   preload() {
-    this.load.image("tiles", "/tiles/spr_grass_tileset.png");
-    this.load.tilemapTiledJSON("testMap", "/tiles/testMap-01.json");
+    // this.load.image("tiles", "/tiles/spr_grass_tileset.png");
+    // this.load.tilemapTiledJSON("testMap", "/tiles/testMap-01.json");
 
     this.load.image("healthBar-full", "ui/healthBar-full.png");
     this.load.image("healthBar-left-cap", "ui/healthBar-left-cap.png");
@@ -16,6 +16,10 @@ export default class Preloader extends Phaser.Scene {
     // this.load.image("tiles", "/tiles/Grasslands-Terrain.png")
     // this.load.tilemapTiledJSON("town-map", "/tiles/town-map.json")
     // this.load.image("houses", "/tiles/Grasslands-Props.png")
+    this.load.image("terrain", "/tiles/Grasslands-Terrain.png")
+    this.load.image("props", "/tiles/Grasslands-Props.png")
+    this.load.image("water", "/tiles/Grasslands-Water.png")
+    this.load.tilemapTiledJSON("townMapV2", "tiles/townMapV2.json")
 
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");

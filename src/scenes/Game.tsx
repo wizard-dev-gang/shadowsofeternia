@@ -65,36 +65,46 @@ export default class Game extends Phaser.Scene {
     createEnemyAnims(this.anims);
 
     //Create tilemap and tileset
-    const map = this.make.tilemap({ key: "testMap" });
-    const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
+    // const map = this.make.tilemap({ key: "testMap" });
+    // const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
     // const map = this.make.tilemap({ key: "town-map" });
     // const tileset = map.addTilesetImage("Grasslands-Terrain", "tiles");
     // const houseTiles = map.addTilesetImage("Grasslands-Props", "houses")
+    const map = this.make.tilemap({key: "townMapV2"})
+    const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain")
+    const propTiles = map.addTilesetImage("Grasslands-Props", "props")
+    const waterTiles = map.addTilesetImage("Grasslands-Water", "water")
+    
 
     // Create layers for the tilemap
     if (tileset) {
-      const waterLayer = map.createLayer("Water", tileset, 0, 0);
+
+      const waterLayer = map.createLayer("Water", waterTiles, 0, 0)
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
-      const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
-      // const houses = map.createLayer("Houses", houseTiles, 0, 0)
-      // const pathLayer = map.createLayer("Paths", tileset, 0, 0)
+      const pathLayer = map.createLayer("Paths", tileset, 0, 0)
+      const treesLayer = map.createLayer("Trees", propTiles)
+      const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0)
+      const fenceLayer = map.createLayer("Fences", propTiles, 0, 0)
+      const houseLayer = map.createLayer("Houses", propTiles, 0, 0)
+      
 
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
-      objectsLayer?.setCollisionByProperty({ collides: true });
-      // houses?.setCollisionByProperty({collides: true});
+      // objectsLayer?.setCollisionByProperty({ collides: true });
+      houseLayer?.setCollisionByProperty({collides: true});
+      fenceLayer?.setCollisionByProperty({collides: true})
       // pathLayer?.setCollisionByProperty({collides: true});
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb";
       const wizard = this.characterName === "wizard";
       if (barb) {
-        this.man = this.add.barb(580, 200, "barb");
+        this.man = this.add.barb(2000, 1100, "barb");
       } else if (wizard) {
-        this.man = this.add.wizard(590, 210, "wizard");
+        this.man = this.add.wizard(2000, 1100, "wizard");
       } else {
-        this.man = this.add.player(600, 191, "man");
+        this.man = this.add.player(2000, 1100, "man");
       }
       // Camera to follow player
       this.cameras.main.startFollow(this.man);
@@ -149,11 +159,11 @@ export default class Game extends Phaser.Scene {
       }
 
       // Handle collisions between skeletons and object layers
-      if (this.skeletons && objectsLayer) {
-        this.physics.add.collider(this.skeletons, objectsLayer);
+      if (this.skeletons && houseLayer) {
+        this.physics.add.collider(this.skeletons, houseLayer);
         this.physics.add.collider(
           this.projectiles,
-          objectsLayer,
+          houseLayer,
           this.handleProjectileWallCollision,
           undefined,
           this
@@ -196,7 +206,8 @@ export default class Game extends Phaser.Scene {
         // Handle collisions between slimes and layers
         if (waterLayer) this.physics.add.collider(this.slimes, waterLayer);
         if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
-        if (objectsLayer) this.physics.add.collider(this.slimes, objectsLayer);
+        if (houseLayer) this.physics.add.collider(this.slimes, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.man, fenceLayer)
       }
 
       // Handle collisions between player and enemy characters
@@ -225,7 +236,8 @@ export default class Game extends Phaser.Scene {
         //if statements are to satisfy TypeScipt compiler
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
-        if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
+        if (houseLayer) this.physics.add.collider(this.man, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.man, fenceLayer)
 
         // Add text for player name
         this.playerName = this.add
@@ -305,9 +317,7 @@ export default class Game extends Phaser.Scene {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
     if (
-      obj1 instanceof Player ||
-      Barb ||
-      (Wizard && obj2 instanceof Skeleton)
+      obj1 instanceof Player || Barb || Wizard && obj2 instanceof Skeleton
     ) {
       const man = (obj1 as Player) || Barb || Wizard;
       const skeleton = obj2 as Skeleton;
@@ -327,8 +337,8 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player || Barb || (Wizard && obj2 instanceof Slime)) {
-      const man = (obj1 as Player) || Barb || Wizard;
+    if (obj1 instanceof Player || Barb || Wizard && obj2 instanceof Slime) {
+      const man = obj1 as Player || Barb || Wizard;
       const slime = obj2 as Slime;
 
       const dx = man.x - slime.x;
@@ -397,7 +407,7 @@ export default class Game extends Phaser.Scene {
             alive: true,
           };
         }
-        update(this.enemyDB, this.dataToSend);
+        // update(this.enemyDB, this.dataToSend);
       }
     }
   }

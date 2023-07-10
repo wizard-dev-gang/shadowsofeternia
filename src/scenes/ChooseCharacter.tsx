@@ -13,7 +13,7 @@ import {
   onDisconnect,
 } from "firebase/database";
 import { app as firebaseApp } from "../../functions/lib/firebaseConfig";
-// import { useRef } from "react";
+import { useRef } from "react";
 
 const LOBBY_SIZE = 4;
 

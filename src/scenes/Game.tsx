@@ -245,10 +245,21 @@ private handleKnifeSlimeCollision(
   this.knives.killAndHide(knife);
   knife.destroy();
 
-  // Kill and hide the slime
-  this.slimes.killAndHide(slime);
-  slime.destroy();
+  // Stop the slime from moving
+  slime.isMoving = false;
+
+  // Play slime death animation
+  if (slime.anims) {
+    slime.anims.play('slime-death');
+  }
+
+  // Kill and hide the slime after the animation completes
+  this.time.delayedCall(1000, () => {
+    this.slimes.killAndHide(slime);
+    slime.destroy();
+  });
 }
+
   // Method to handle collision between player and enemy characters
   private handlePlayerEnemyCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,

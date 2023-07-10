@@ -207,6 +207,7 @@ export default class Archer extends Player {
       return;
     }
 
+
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
       direction = parts[2];
@@ -243,6 +244,11 @@ export default class Archer extends Player {
     if (!knife) {
       return;
     }
+
+    const hitboxWidth = knife.width * 0.42; 
+    const hitboxHeight = knife.height * 0.30; 
+    knife.body?.setSize(hitboxWidth, hitboxHeight);
+
     knife.setActive(true);
     knife.setVisible(true);
 
@@ -250,6 +256,7 @@ export default class Archer extends Player {
 
     knife.x += vec.x * 16;
     knife.y += vec.y * 16;
+    
 
     // Calculate the velocity based on the duration the space bar was held down
     const velocityMultiplier = 1 + (this.getThrowDuration() / 1000); // Increase velocity by 1 unit per second

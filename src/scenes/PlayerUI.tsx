@@ -9,8 +9,8 @@ export default class PlayerUI extends Phaser.Scene {
     super({ key: "player-ui" });
   }
   create() {
-    const y = 280;
-    const x = 50;
+    const y = 290;
+    const x = 10;
     const fullWidth = 100;
 
     this.add.text(x, y - 25, "Health", {

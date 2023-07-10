@@ -15,109 +15,109 @@ import {
 import { app as firebaseApp } from "../../functions/lib/firebaseConfig";
 // import { useRef } from "react";
 
-// const LOBBY_SIZE = 4;
+const LOBBY_SIZE = 4;
 
-// async function writeUserData(character, scene) {
-//   const auth = getAuth(firebaseApp);
-//   const user = auth.currentUser;
+async function writeUserData(character, scene) {
+  const auth = getAuth(firebaseApp);
+  const user = auth.currentUser;
 
-//   if (user) {
-//     const playerId = user.uid;
-//     const db = getDatabase(firebaseApp);
+  if (user) {
+    const playerId = user.uid;
+    const db = getDatabase(firebaseApp);
 
-//     const playerRef = ref(db, "players/" + playerId);
-//     const roomsRef = ref(db, "rooms");
+    const playerRef = ref(db, "players/" + playerId);
+    const roomsRef = ref(db, "rooms");
 
-//     await update(playerRef, {
-//       character: character,
-//     })
-//       .then(() => {
-//         console.log("Character chosen");
-//       })
-//       .catch((error) => {
-//         console.error("Error choosing character:", error);
-//       });
+    await update(playerRef, {
+      character: character,
+    })
+      .then(() => {
+        console.log("Character chosen");
+      })
+      .catch((error) => {
+        console.error("Error choosing character:", error);
+      });
 
-//     let roomId = "";
+    let roomId = "";
 
-//     // Get a reference to the selected characters in the database
-//     const selectedCharactersRef = ref(db, "selectedCharacters");
+    // Get a reference to the selected characters in the database
+    const selectedCharactersRef = ref(db, "selectedCharacters");
 
-//     let isCharacterAvailable = false;
+    let isCharacterAvailable = false;
 
-//     // Check if the character is already selected
-//     await get(selectedCharactersRef).then((snapshot) => {
-//       const selectedCharacters = snapshot.val();
+    // Check if the character is already selected
+    await get(selectedCharactersRef).then((snapshot) => {
+      const selectedCharacters = snapshot.val();
 
-//       if (!selectedCharacters || !selectedCharacters[character]) {
-//         // If the character is not selected yet, mark it as available
-//         isCharacterAvailable = true;
-//       }
-//     });
+      if (!selectedCharacters || !selectedCharacters[character]) {
+        // If the character is not selected yet, mark it as available
+        isCharacterAvailable = true;
+      }
+    });
 
-//     if (!isCharacterAvailable) {
-//       console.error("Character is already chosen");
-//       return;
-//     }
+    if (!isCharacterAvailable) {
+      console.error("Character is already chosen");
+      return;
+    }
 
-//     // Mark the character as selected in the database
-//     await set(ref(db, `selectedCharacters/${character}`), true);
+    // Mark the character as selected in the database
+    await set(ref(db, `selectedCharacters/${character}`), true);
 
-//     // const newPlayerInLobbyRef = push(lobbyRef);
+    // const newPlayerInLobbyRef = push(lobbyRef);
 
-//     await get(roomsRef).then((snapshot) => {
-//       const rooms = snapshot.val();
+    await get(roomsRef).then((snapshot) => {
+      const rooms = snapshot.val();
 
-//       if (rooms) {
-//         //Find an open room
-//         for (const [id, room] of Object.entries(rooms)) {
-//           if (Object.keys(room.players).length < LOBBY_SIZE) {
-//             roomId = id;
-//             break;
-//           }
-//         }
-//       }
+      if (rooms) {
+        //Find an open room
+        for (const [id, room] of Object.entries(rooms)) {
+          if (Object.keys(room.players).length < LOBBY_SIZE) {
+            roomId = id;
+            break;
+          }
+        }
+      }
 
-//       if (!roomId) {
-//         const newRoomRef = push(roomsRef);
-//         roomId = newRoomRef.key;
-//         set(newRoomRef, {
-//           players: {
-//             [playerId]: true,
-//           },
-//         });
-//       } else {
-//         //Join an open room
-//         const roomPlayersRef = ref(db, `rooms/${roomId}/players/${playerId}`);
-//         set(roomPlayersRef, true);
-//       }
-//     });
+      if (!roomId) {
+        const newRoomRef = push(roomsRef);
+        roomId = newRoomRef.key;
+        set(newRoomRef, {
+          players: {
+            [playerId]: true,
+          },
+        });
+      } else {
+        //Join an open room
+        const roomPlayersRef = ref(db, `rooms/${roomId}/players/${playerId}`);
+        set(roomPlayersRef, true);
+      }
+    });
 
-//     const currentRoomRef = ref(db, "rooms/" + roomId);
+    const currentRoomRef = ref(db, "rooms/" + roomId);
 
-//     onDisconnect(selectedCharactersRef).update({ [character]: false });
-//     onDisconnect(currentRoomRef)
-//       .remove()
-//       .then(() => {
-//         console.log("Prepared to remove player from lobby upon disconnect.");
-//       })
-//       .catch((error) => {
-//         console.error("Error setting up onDisconnect:", error);
-//       });
+    onDisconnect(selectedCharactersRef).update({ [character]: false });
+    onDisconnect(currentRoomRef)
+      .remove()
+      .then(() => {
+        console.log("Prepared to remove player from lobby upon disconnect.");
+      })
+      .catch((error) => {
+        console.error("Error setting up onDisconnect:", error);
+      });
 
-//     onValue(currentRoomRef, (snapshot) => {
-//       if (
-//         snapshot.hasChildren() &&
-//         Object.keys(snapshot.val().players).length === LOBBY_SIZE
-//       ) {
-//         console.log("Game starting soon in room " + roomId);
-//         setTimeout(() => {
-//           scene.startGame();
-//         }, 2000);
-//       }
-//     });
-//   }
-// }
+    onValue(currentRoomRef, (snapshot) => {
+      if (
+        snapshot.hasChildren() &&
+        Object.keys(snapshot.val().players).length === LOBBY_SIZE
+      ) {
+        console.log("Game starting soon in room " + roomId);
+        setTimeout(() => {
+          scene.startGame();
+        }, 2000);
+      }
+    });
+  }
+}
 
 export default class ChooseCharacterScene extends Phaser.Scene {
   constructor() {
@@ -173,45 +173,45 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const character1 = this.add
-      .sprite(90, 200, "character1")
+      .sprite(50, 200, "rogue")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character2 = this.add
-      .sprite(180, 200, "barb")
+      .sprite(150, 200, "barb")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character3 = this.add
-      .sprite(270, 200, "archer")
+      .sprite(250, 200, "archer")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character4 = this.add
-      .sprite(360, 200, "wizard")
+      .sprite(350, 200, "wizard")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
 
-    this.add
-      .text(80, 280, "Character 1", {
+    const char1Text = this.add
+      .text(50, 280, "Rogue", {
         fontSize: "10px",
         fontFamily: "Joystix",
         align: "center",
       })
       .setOrigin(0.5);
-    this.add
-      .text(193.33, 280, "Barbarian", {
+    const char2Text = this.add
+      .text(150, 280, "Barbarian", {
         fontSize: "10px",
         fontFamily: "Joystix",
         align: "center",
       })
       .setOrigin(0.5);
-    this.add
-      .text(306.66, 280, "Archer", {
+    const char3Text = this.add
+      .text(250, 280, "Archer", {
         fontSize: "10px",
         fontFamily: "Joystix",
         align: "center",
       })
       .setOrigin(0.5);
-    this.add
-      .text(420, 280, "Wizard", {
+    const char4Text = this.add
+      .text(350, 280, "Wizard", {
         fontSize: "10px",
         fontFamily: "Joystix",
         align: "center",
@@ -297,34 +297,40 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       character4.anims.stop();
     });
 
-    character1.on("pointerdown",
-     async () => { this.startGame()
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("character1", this);
-      //   if (isCharacterAvailable) {
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+    character1.on("pointerdown", async () => {
+      this.startGame();
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("rogue", this);
+        char1Text.setText("Rogue (Selected)");
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
-    character2.on("pointerdown", async () => {this.startGame('barb')
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("barb", this);
-      //   if (isCharacterAvailable) {
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+    character2.on("pointerdown", async () => {
+      // this.startGame("barb");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("barb", this);
+        char2Text.setText("Barbarian (Selected)");
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
-    character3.on("pointerdown", async () => {this.startGame('archer')
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("archer", this);
-      //   if (isCharacterAvailable) {
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+    character3.on("pointerdown", async () => {
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("archer", this);
+        char3Text.setText("Archer (Selected)");
+        if (isCharacterAvailable) {
+          hasChosenCharacter = true;
+        }
+      }
     });
     character4.on("pointerdown", async () => {
+      //this.startGame("wizard");
       if (!hasChosenCharacter) {
         const isCharacterAvailable = await writeUserData("wizard", this);
+        char4Text.setText("Wizard (Selected)");
         if (isCharacterAvailable) {
           hasChosenCharacter = true;
         }
@@ -334,7 +340,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
 
   startGame(name?: string) {
     this.scene.start("game", {
-      name
+      name,
     });
   }
 }

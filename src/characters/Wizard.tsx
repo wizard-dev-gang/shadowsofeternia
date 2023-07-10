@@ -7,6 +7,7 @@ interface WASDKeys {
   D?: Phaser.Input.Keyboard.Key;
   Space?: Phaser.Input.Keyboard.Key;
 }
+
 enum HealthState {
   IDLE,
   DAMAGE,
@@ -16,22 +17,21 @@ enum HealthState {
 declare global {
   namespace Phaser.GameObjects {
     interface GameObjectsFactory {
-      barb(
+      wizard(
         x: number,
         y: number,
         texture: string,
         frame?: string | number
-      ): Barb;
+      ): Wizard;
     }
   }
 }
 
-export default class Barb extends Phaser.Physics.Arcade.Sprite {
+export default class Wizard extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
-
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -171,37 +171,29 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     ) {
       return;
     }
+    if (this.keys.Space?.isDown) {
+      this.throwProjectile();
+    }
 
-    // if (this.keys.Space?.isDown) {
-    //   const slash = `barb-attack-${this.lastMove}`;
-    //   this.anims.play(slash, true);
-    //   this.setVelocity(0, 0);
-    //   this.throwProjectile();
-    // }
-    const speed = 200;
+    const speed = 100;
     if (this.keys.A?.isDown) {
-      this.anims.play("barb-walk-left", true);
+      this.anims.play("wizard-walk-left", true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
-      this.anims.play("barb-walk-right", true);
+      this.anims.play("wizard-walk-right", true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
-      this.anims.play("barb-walk-up", true);
+      this.anims.play("wizard-walk-up", true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
-      this.anims.play("barb-walk-down", true);
+      this.anims.play("wizard-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
-    } else if (this.keys.Space?.isDown) {
-      const slash = `barb-attack-${this.lastMove}`;
-      this.anims.play(slash, true);
-      this.setVelocity(0, 0);
-      this.throwProjectile();
     } else {
-      const idle = `barb-idle-${this.lastMove}`;
+      const idle = `wizard-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
     }
@@ -209,7 +201,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
 }
 
 Phaser.GameObjects.GameObjectFactory.register(
-  "barb",
+  "wizard",
   function (
     this: Phaser.GameObjects.GameObjectFactory,
     x: number,
@@ -217,7 +209,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     texture: string,
     frame?: string | number
   ) {
-    const sprite = new Barb(this.scene, x, y, texture, frame);
+    const sprite = new Wizard(this.scene, x, y, texture, frame);
 
     this.displayList.add(sprite);
     this.updateList.add(sprite);
@@ -227,8 +219,18 @@ Phaser.GameObjects.GameObjectFactory.register(
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
 
+    // Set the hitbox size
+    const hitboxWidth = sprite.width * 0.42;
+    const hitboxHeight = sprite.height * 0.42;
+    sprite.body?.setSize(hitboxWidth, hitboxHeight);
+
+    // Set the hitbox offset
+    const offsetX = sprite.width / (10 / 3);
+    const offsetY = sprite.height * 0.6;
+    sprite.body?.setOffset(offsetX, offsetY);
+
     return sprite;
   }
 );
 
-export { Barb };
+export { Wizard };

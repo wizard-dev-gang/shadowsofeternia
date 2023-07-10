@@ -9,8 +9,46 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
       gameInstance.playerId = user.uid; // Get the current player's ID
       const db = getDatabase(); // Get the Firebase database object
       gameInstance.playerRef = ref(db, `players/${gameInstance.playerId}`); // Reference to the current player in Firebase
+      gameInstance.enemyDB = ref(db, `enemies`); // Reference to enemies in Firebase
 
       const otherPlayersRef = ref(db, "players"); // Reference to other players in Firebase
+
+      // onValue(gameInstance.enemyDB, (snapshot) => {
+      //   const enemiesData = snapshot.val();
+        
+      //   // Now handle the remaining players in Firebase
+      //   for (const enemyId in enemiesData) {
+      //     const enemyData = enemiesData[enemyId];
+
+      //     // Skip if player is not online
+      //     if (!enemyData.alive) continue;
+
+      //     let enemy = gameInstance.enemies.get(enemyId);
+
+      //     // Create or update other players
+      //     if (!enemy) {
+      //       enemy = gameInstance.physics.add.sprite(
+      //         enemyData.x,
+      //         enemyData.y,
+      //         "jacked-skeleton"
+      //       ); // Create a sprite for the other player
+      //       gameInstance.enemies.set(enemyId, enemy);
+      //     }
+      //     enemy.x = enemyData.x;
+      //     enemy.y = enemyData.y;
+
+      //     // Play animation and set frame for other players
+      //     if (enemyData.anim && enemyData.frame) {
+      //       enemy.anims.play(enemyData.anim, true);
+      //       enemy.anims.setCurrentFrame(
+      //         enemy.anims.currentAnim.frames.find(
+      //           (f: any) => f.frame.name === enemyData.frame
+      //         )
+      //       );
+      //     }
+      //   }
+      // })
+
       onValue(otherPlayersRef, (snapshot) => {
         const playersData = snapshot.val();
 

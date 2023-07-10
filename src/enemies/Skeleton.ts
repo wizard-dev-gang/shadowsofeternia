@@ -45,6 +45,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
       this.handleTileCollision,
       this
     );
+    
 
     this.moveEvent = scene.time.addEvent({
       delay: 2000,
@@ -72,7 +73,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     if (this._health <= 0) {
       this.setVelocity(0, 0);
       this.healthState = HealthState.DEAD;
-      this.play("death-ghost");
+      this.anims.play("death-ghost");
     } else {
       this.setVelocity(dir.x, dir.y);
 

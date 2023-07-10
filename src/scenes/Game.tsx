@@ -60,19 +60,26 @@ export default class Game extends Phaser.Scene {
     createEnemyAnims(this.anims);
 
     //Create tilemap and tileset
-    const map = this.make.tilemap({ key: "testMap" });
+    const map = this.make.tilemap({ key: "testMap" }); 
     const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
+    // const map = this.make.tilemap({ key: "town-map" }); 
+    // const tileset = map.addTilesetImage("Grasslands-Terrain", "tiles");
+    // const houseTiles = map.addTilesetImage("Grasslands-Props", "houses")
 
     // Create layers for the tilemap
     if (tileset) {
       const waterLayer = map.createLayer("Water", tileset, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
       const objectsLayer = map.createLayer("Static-Objects", tileset, 0, 0);
+      // const houses = map.createLayer("Houses", houseTiles, 0, 0)
+      // const pathLayer = map.createLayer("Paths", tileset, 0, 0)
 
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
       objectsLayer?.setCollisionByProperty({ collides: true });
+      // houses?.setCollisionByProperty({collides: true}); 
+      // pathLayer?.setCollisionByProperty({collides: true});
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb";
@@ -281,9 +288,9 @@ export default class Game extends Phaser.Scene {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) { 
     if (
-      obj1 instanceof Player || Barb  && obj2 instanceof Skeleton
+      obj1 instanceof Player || Barb || Wizard  && obj2 instanceof Skeleton
     ) {
-      const man = obj1 as Player || Barb ;
+      const man = obj1 as Player || Barb || Wizard ;
       const skeleton = obj2 as Skeleton;
 
       const dx = man.x - skeleton.x;
@@ -294,15 +301,15 @@ export default class Game extends Phaser.Scene {
       man.handleDamage(dir);
       // console.log(man._health);
       sceneEvents.emit("player-health-changed", man.getHealth());
-    }
+    } 
   }
 
   private handlePlayerSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player || Barb  && obj2 instanceof Slime) {
-      const man = obj1 as Player || Barb ;
+    if (obj1 instanceof Player || Barb || Wizard  && obj2 instanceof Slime) {
+      const man = obj1 as Player || Barb || Wizard ;
       const slime = obj2 as Slime;
 
       const dx = man.x - slime.x;

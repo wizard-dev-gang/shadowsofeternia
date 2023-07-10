@@ -106,7 +106,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       direction = parts[2];
       xLoc = this.x;
       yLoc = this.y;
-      attackObj = "fireball";
+      attackObj = attackObj? attackObj:"fireball";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);

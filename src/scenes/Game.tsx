@@ -18,7 +18,7 @@ import "../characters/Wizard";
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player; // Reference to the player character
-  private projectiles!: Phaser.Physics.Arcade.Group;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
@@ -105,6 +105,8 @@ export default class Game extends Phaser.Scene {
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
           this.enemyCount++;
+          skeleGo.id = this.enemyCount
+          skeleGo.isAlive = true
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -125,7 +127,7 @@ export default class Game extends Phaser.Scene {
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
-        maxSize: 3,
+        maxSize: 100,
       });
 
       // Set projectiles for the player character
@@ -182,7 +184,7 @@ export default class Game extends Phaser.Scene {
       });
 
       // Add a slime to the group
-      this.slimes.get(414, 90, "slime");
+      //this.slimes.get(414, 90, "slime");
       if (this.man && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
@@ -269,8 +271,10 @@ export default class Game extends Phaser.Scene {
     skeleton.handleDamage(dir);
     if (skeleton.getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
+      this.enemies.set(skeleton.id, {id:skeleton.id, isAlive : false})
       skeleton.destroy();
     }
+    console.log(skeleton, this.enemies)
   }
 
   private handleProjectileSlimeCollision(
@@ -379,23 +383,35 @@ export default class Game extends Phaser.Scene {
             ? this.man.anims.currentFrame.frame.name
             : null,
           online: true,
+          isRob: true,
+          projectilesFromDB: this.man.projectilesToSend
         });
+        this.man.projectilesToSend = {}
       }
 
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
-          this.dataToSend[entry[0]] = {
-            id: entry[0],
-            x: entry[1].x,
-            y: entry[1].y,
-            anim: entry[1].anims.currentAnim
-              ? entry[1].anims.currentAnim.key
-              : null,
-            frame: entry[1].anims.currentFrame
-              ? entry[1].anims.currentFrame.frame.name
-              : null,
-            alive: true,
-          };
+          if(entry[1].isAlive) {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              x: entry[1].x,
+              y: entry[1].y,
+              anim: entry[1].anims.currentAnim
+                ? entry[1].anims.currentAnim.key
+                : null,
+              frame: entry[1].anims.currentFrame
+                ? entry[1].anims.currentFrame.frame.name
+                : null,
+              isAlive: entry[1].isAlive,
+            };
+          }
+          else 
+          {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              isAlive: entry[1].isAlive,
+            };
+          }
         }
         update(this.enemyDB, this.dataToSend);
       }

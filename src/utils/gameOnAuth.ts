@@ -80,16 +80,27 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
 
           // Create or update other players
           if (!otherPlayer) {
-            otherPlayer = gameInstance.physics.add.sprite(
+            otherPlayer = gameInstance.add.player(
               playerData.x,
               playerData.y,
               "man"
-            ); // Create a sprite for the other player
+            ); // Create a sprite for the other playerddddddddddddd
             gameInstance.otherPlayers.set(playerId, otherPlayer);
           }
           otherPlayer.x = playerData.x;
           otherPlayer.y = playerData.y;
+          if (playerData.isOtherRob) {
+            if(playerData.projectiles)
+            console.log(playerData.projectiles)
+            otherPlayer.setProjectiles(gameInstance.projectiles)
+            for (const projectileId in playerData.projectiles)
+            {
+              const projectileData = playerData.projectiles[projectileId]
+              otherPlayer.throwProjectile(projectileData.direction,projectileData.x, projectileData.y, 'knife' )
 
+            }
+
+          }
           // Play animation and set frame for other players
           if (playerData.anim && playerData.frame) {
             otherPlayer.anims.play(playerData.anim, true);

@@ -7,7 +7,6 @@ interface WASDKeys {
   D?: Phaser.Input.Keyboard.Key;
   Space?: Phaser.Input.Keyboard.Key;
 }
-
 enum HealthState {
   IDLE,
   DAMAGE,
@@ -16,30 +15,29 @@ enum HealthState {
 
 declare global {
   namespace Phaser.GameObjects {
-    interface GameObjectFactory {
-      player(
+    interface GameObjectsFactory {
+      barb(
         x: number,
         y: number,
         texture: string,
         frame?: string | number
-      ): Player;
+      ): Barb;
     }
   }
 }
 
-export default class Player extends Phaser.Physics.Arcade.Sprite {
+export default class Barb extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
-  // private knives?: Phaser.Physics.Arcade.Group;
   private projectiles?: Phaser.Physics.Arcade.Group;
+
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
     S: undefined,
     D: undefined,
-  }; // Providing a default value to keys
-
+  };
   public lastMove = "down";
 
   constructor(
@@ -93,7 +91,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.damageTime = 0;
     }
   }
-
   private throwProjectile(
     direction?: string,
     xLoc?: number,
@@ -109,7 +106,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       direction = parts[2];
       xLoc = this.x;
       yLoc = this.y;
-      attackObj = "knife";
+      attackObj = "fireball";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -168,9 +165,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    //this.play(idle) takes in the idle variable which is the idle position of last move the player made
-    //set player movement keys to WASD
-
     if (
       this.healthState === HealthState.DAMAGE ||
       this.healthState === HealthState.DEAD
@@ -178,41 +172,36 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (this.keys.Space?.isDown) {
-      this.throwProjectile();
-      // if (this.activeChest)
-      // {
-      //     const coins = this.activeChest.open()
-      //     this._coins += coins
-
-      //     sceneEvents.emit('player-coins-changed', this._coins)
-      // }
-      // else
-      // {
-      //     this.throwKnife()
-      // }
-      // return
-    }
-
-    const speed = 100;
+    // if (this.keys.Space?.isDown) {
+    //   const slash = `barb-attack-${this.lastMove}`;
+    //   this.anims.play(slash, true);
+    //   this.setVelocity(0, 0);
+    //   this.throwProjectile();
+    // }
+    const speed = 200;
     if (this.keys.A?.isDown) {
-      this.anims.play("man-walk-left", true);
+      this.anims.play("barb-walk-left", true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
-      this.anims.play("man-walk-right", true);
+      this.anims.play("barb-walk-right", true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
-      this.anims.play("man-walk-up", true);
+      this.anims.play("barb-walk-up", true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
-      this.anims.play("man-walk-down", true);
+      this.anims.play("barb-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
+    } else if (this.keys.Space?.isDown) {
+      const slash = `barb-attack-${this.lastMove}`;
+      this.anims.play(slash, true);
+      this.setVelocity(0, 0);
+      this.throwProjectile();
     } else {
-      const idle = `man-idle-${this.lastMove}`;
+      const idle = `barb-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
     }
@@ -220,7 +209,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 }
 
 Phaser.GameObjects.GameObjectFactory.register(
-  "player",
+  "barb",
   function (
     this: Phaser.GameObjects.GameObjectFactory,
     x: number,
@@ -228,7 +217,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     texture: string,
     frame?: string | number
   ) {
-    const sprite = new Player(this.scene, x, y, texture, frame);
+    const sprite = new Barb(this.scene, x, y, texture, frame);
 
     this.displayList.add(sprite);
     this.updateList.add(sprite);
@@ -238,18 +227,8 @@ Phaser.GameObjects.GameObjectFactory.register(
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
 
-    // Set the hitbox size
-    const hitboxWidth = sprite.width * 0.42;
-    const hitboxHeight = sprite.height * 0.42;
-    sprite.body?.setSize(hitboxWidth, hitboxHeight);
-
-    // Set the hitbox offset
-    const offsetX = sprite.width / (10 / 3);
-    const offsetY = sprite.height * 0.6;
-    sprite.body?.setOffset(offsetX, offsetY);
-
     return sprite;
   }
 );
 
-export { Player };
+export { Barb };

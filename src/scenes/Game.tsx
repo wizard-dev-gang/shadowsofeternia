@@ -9,9 +9,9 @@ import "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
-import  { Barb } from "../characters/Barb"
-import "../characters/Barb"
-import "../characters/Archer"
+import { Barb } from "../characters/Barb";
+import "../characters/Barb";
+import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
 import "../characters/Wizard";
 import { createNpcAnims } from "../anims/NpcAnims";
@@ -27,12 +27,14 @@ export default class Game extends Phaser.Scene {
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private barb?: Barb;
   private wizard?: Wizard;
-  private characterName?: string;
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
+  private enemyCount = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private interactKey?: Phaser.Input.Keyboard.Key;
 
+
   // Firebase variables
+  public characterName?: string;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -42,7 +44,6 @@ export default class Game extends Phaser.Scene {
   public enemyDB!: any;
   public dataToSend: any = {};
   public updateIterations = 0;
-  private enemyCount = 0;
 
   constructor() {
     super("game");
@@ -93,13 +94,15 @@ export default class Game extends Phaser.Scene {
       // pathLayer?.setCollisionByProperty({collides: true});
 
       // Create the player character and define spawn position
-      const barb = this.characterName === "barb"
-      const archer = this.characterName === "archer"
-      if(barb){
-        this.man = this.add.barb(580,200, "barb")
-
-      } else if (archer){
-      this.man = this.add.archer(600, 191, "archer");
+      const barb = this.characterName === "barb";
+      const archer = this.characterName === "archer";
+      const wizard = this.characterName === "wizard";
+      if (barb) {
+        this.man = this.add.barb(580, 200, "barb");
+      } else if (archer) {
+        this.man = this.add.archer(600, 191, "archer");
+      } else if (wizard) {
+        this.man = this.add.wizard(600, 191, "wizard");
       } else {
         this.man = this.add.player(600, 191, "man");
       }
@@ -134,7 +137,7 @@ export default class Game extends Phaser.Scene {
       });
 
       // Set knives for the player character
-      this.man.setKnives(this.knives);
+      this.man.setProjectiles(this.projectiles);
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");
@@ -266,7 +269,8 @@ export default class Game extends Phaser.Scene {
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
-    }
+      }
+    this.cameras.main.startFollow(this.man);
   }
   // Method to handle collision between projectiles and walls
   private handleProjectileWallCollision(
@@ -419,22 +423,24 @@ export default class Game extends Phaser.Scene {
         });
       }
 
-      if (this.updateIterations % 3 === 0) {
-        for (const entry of this.enemies.entries()) {
-          this.dataToSend[entry[0]] = {
-            id: entry[0],
-            x: entry[1].x,
-            y: entry[1].y,
-            anim: entry[1].anims.currentAnim
-              ? entry[1].anims.currentAnim.key
-              : null,
-            frame: entry[1].anims.currentFrame
-              ? entry[1].anims.currentFrame.frame.name
-              : null,
-            alive: true,
-          };
+      if (this.characterName === "rogue") {
+        if (this.updateIterations % 3 === 0) {
+          for (const entry of this.enemies.entries()) {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              x: entry[1].x,
+              y: entry[1].y,
+              anim: entry[1].anims.currentAnim
+                ? entry[1].anims.currentAnim.key
+                : null,
+              frame: entry[1].anims.currentFrame
+                ? entry[1].anims.currentFrame.frame.name
+                : null,
+              alive: true,
+            };
+          }
+          update(this.enemyDB, this.dataToSend);
         }
-        update(this.enemyDB, this.dataToSend);
       }
     }
   }

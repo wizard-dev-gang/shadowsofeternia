@@ -95,6 +95,7 @@ function App() {
   const navigate = useNavigate(); // React router hook to navigate between pages
   const [userName, setUserName] = useState<string>(""); // State to store the player's name
   const [newName, setNewName] = useState<string>(""); // State to store the new name when editing
+  const [anonError, setAnonError] = useState<string>(""); // State to store the error message when trying to change the name of an anonymous user
 
   const auth = getAuth(firebaseApp); // Get the Firebase authentication object
   const user = auth.currentUser;
@@ -173,11 +174,15 @@ function App() {
   const handleChangeName = (newName: string) => {
     const auth = getAuth(firebaseApp);
     if (auth.currentUser?.isAnonymous) {
+      setAnonError(
+        "Anonymous users cannot change their name. Please Sign Up to Change Your Name!"
+      );
       console.log("Anonymous users cannot change their name.");
       return;
     }
 
     if (playerRef.current) {
+      setAnonError(null);
       update(playerRef.current, { name: newName })
         .then(() => {
           console.log("Player's name changed successfully.");
@@ -211,6 +216,7 @@ function App() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
+        {anonError && <div className="text-white">{anonError}</div>}
         <button type="submit" className="Change-Name-Button">
           Change Name
         </button>

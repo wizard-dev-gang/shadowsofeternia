@@ -32,7 +32,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   private _health: number;
   // private knives?: Phaser.Physics.Arcade.Group;
-  private projectiles?: Phaser.Physics.Arcade.Group;
+  public projectiles?: Phaser.Physics.Arcade.Group;
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -253,5 +253,3 @@ Phaser.GameObjects.GameObjectFactory.register(
 );
 
 export { Player };
-
-

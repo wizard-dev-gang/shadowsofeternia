@@ -9,6 +9,8 @@ import { Skeleton } from "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { getDatabase, ref, update, onValue } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
+import  { Barb } from "../characters/Barb"
+import "../characters/Barb"
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -17,6 +19,10 @@ export default class Game extends Phaser.Scene {
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
+  private barb?: Barb;
+
+  private characterName?: string
+
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   
   // Firebase variables
@@ -40,6 +46,12 @@ export default class Game extends Phaser.Scene {
 
   preload() {
     // this.cursors = this.input.keyboard?.createCursorKeys();
+  }
+  init(data?: {name: string})
+  { 
+    console.log("init data", data)
+    this.characterName = data?.name
+
   }
 
   create() {
@@ -73,7 +85,15 @@ export default class Game extends Phaser.Scene {
       objectsLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
+      const barb = this.characterName === "barb"
+      if(barb){
+        this.man = this.add.barb(580,200, "barb")
+
+      } else{
       this.man = this.add.player(600, 191, "man");
+      }
+
+      
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -105,7 +125,7 @@ export default class Game extends Phaser.Scene {
       });
 
       // Set knives for the player character
-      this.man.setKnives(this.knives);
+      // this.man.setKnives(this.knives);
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");
@@ -168,6 +188,7 @@ export default class Game extends Phaser.Scene {
         if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
         if (objectsLayer) this.physics.add.collider(this.slimes, objectsLayer);
       }
+      this.cameras.main.startFollow(this.man);
 
       // Handle collisions between player and enemy characters
       this.playerEnemiesCollider = this.physics.add.collider(
@@ -192,7 +213,7 @@ export default class Game extends Phaser.Scene {
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
         if (objectsLayer) this.physics.add.collider(this.man, objectsLayer);
-        this.cameras.main.startFollow(this.man);
+        // this.cameras.main.startFollow(this.man);
 
         // Add text for player name
         this.playerName = this.add
@@ -308,6 +329,7 @@ private handleKnifeSlimeCollision(
     this.updateIterations++
     if (this.man && this.playerName) {
       this.man.update();
+     
 
       // Update the player's name position horizontally
       this.playerName.x = this.man.x;

@@ -16,7 +16,7 @@ import { Wizard } from "../characters/Wizard";
 import "../characters/Wizard";
 import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
-import "../characters/Npc"
+import "../characters/Npc";
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -31,7 +31,6 @@ export default class Game extends Phaser.Scene {
   private enemyCount = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private interactKey?: Phaser.Input.Keyboard.Key;
-
 
   // Firebase variables
   public characterName?: string;
@@ -69,33 +68,30 @@ export default class Game extends Phaser.Scene {
     // Create animations for the characters
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
-    createNpcAnims(this.anims)
+    createNpcAnims(this.anims);
 
     //Create tilemap and tileset
-    const map = this.make.tilemap({key: "townMapV2"})
-    const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain")
-    const propTiles = map.addTilesetImage("Grasslands-Props", "props")
-    const waterTiles = map.addTilesetImage("Grasslands-Water", "water")
-    
+    const map = this.make.tilemap({ key: "townMapV2" });
+    const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain");
+    const propTiles = map.addTilesetImage("Grasslands-Props", "props");
+    const waterTiles = map.addTilesetImage("Grasslands-Water", "water");
 
     // Create layers for the tilemap
     if (tileset) {
-
-      const waterLayer = map.createLayer("Water", waterTiles, 0, 0)
+      const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
-      const pathLayer = map.createLayer("Paths", tileset, 0, 0)
-      const treesLayer = map.createLayer("Trees", propTiles)
-      const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0)
-      const fenceLayer = map.createLayer("Fences", propTiles, 0, 0)
-      const houseLayer = map.createLayer("Houses", propTiles, 0, 0)
-      
+      const pathLayer = map.createLayer("Paths", tileset, 0, 0);
+      const treesLayer = map.createLayer("Trees", propTiles);
+      const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0);
+      const fenceLayer = map.createLayer("Fences", propTiles, 0, 0);
+      const houseLayer = map.createLayer("Houses", propTiles, 0, 0);
 
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
-      houseLayer?.setCollisionByProperty({collides: true});
-      fenceLayer?.setCollisionByProperty({collides: true});
-      treesLayer?.setCollisionByProperty({collides: true});
+      houseLayer?.setCollisionByProperty({ collides: true });
+      fenceLayer?.setCollisionByProperty({ collides: true });
+      treesLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb";
@@ -182,7 +178,7 @@ export default class Game extends Phaser.Scene {
           this
         );
       }
-            // Handle collisions between skeletons and trees
+      // Handle collisions between skeletons and trees
       if (this.skeletons && treesLayer) {
         this.physics.add.collider(this.skeletons, treesLayer);
         this.physics.add.collider(
@@ -215,6 +211,9 @@ export default class Game extends Phaser.Scene {
         },
       });
 
+      // Follow the player with the camera
+      this.cameras.main.startFollow(this.man);
+
       // Add a slime to the group
       this.slimes.get(414, 90, "slime");
       if (this.man && this.slimes) {
@@ -231,8 +230,8 @@ export default class Game extends Phaser.Scene {
         if (waterLayer) this.physics.add.collider(this.slimes, waterLayer);
         if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
         if (houseLayer) this.physics.add.collider(this.slimes, houseLayer);
-        if (fenceLayer) this.physics.add.collider(this.slimes, fenceLayer)
-        if (treesLayer) this.physics.add.collider(this.slimes, treesLayer)
+        if (fenceLayer) this.physics.add.collider(this.slimes, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
       }
 
       // Handle collisions between player and enemy characters
@@ -262,8 +261,8 @@ export default class Game extends Phaser.Scene {
         if (waterLayer) this.physics.add.collider(this.man, waterLayer);
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
         if (houseLayer) this.physics.add.collider(this.man, houseLayer);
-        if (fenceLayer) this.physics.add.collider(this.man, fenceLayer)
-        if (treesLayer) this.physics.add.collider( this.man, treesLayer)
+        if (fenceLayer) this.physics.add.collider(this.man, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.man, treesLayer);
 
         // Add text for player name
         this.playerName = this.add
@@ -284,8 +283,10 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-      this.Npc_wizard.get(880, 112, "npcWizard")
-      this.interactKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+      this.Npc_wizard.get(880, 112, "npcWizard");
+      this.interactKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.E
+      );
     }
   }
   private handlePlayerNpcCollision(
@@ -294,13 +295,13 @@ export default class Game extends Phaser.Scene {
   ) {
     // Check if the player is the wizard character and the NPC is the wizard
     if (
-      player instanceof Player || Wizard || Barb &&
-      npc instanceof Npc_wizard
+      player instanceof Player ||
+      Wizard ||
+      (Barb && npc instanceof Npc_wizard)
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
-      }
-    this.cameras.main.startFollow(this.man);
+    }
   }
   // Method to handle collision between projectiles and walls
   private handleProjectileWallCollision(
@@ -368,7 +369,9 @@ export default class Game extends Phaser.Scene {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
     if (
-      obj1 instanceof Player || Barb || Wizard && obj2 instanceof Skeleton
+      obj1 instanceof Player ||
+      Barb ||
+      (Wizard && obj2 instanceof Skeleton)
     ) {
       const man = (obj1 as Player) || Barb || Wizard;
       const skeleton = obj2 as Skeleton;
@@ -388,8 +391,8 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj1 instanceof Player || Barb || Wizard && obj2 instanceof Slime) {
-      const man = obj1 as Player || Barb || Wizard;
+    if (obj1 instanceof Player || Barb || (Wizard && obj2 instanceof Slime)) {
+      const man = (obj1 as Player) || Barb || Wizard;
       const slime = obj2 as Slime;
 
       const dx = man.x - slime.x;
@@ -428,7 +431,11 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
-      if (Phaser.Input.Keyboard.JustDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E))) {
+      if (
+        Phaser.Input.Keyboard.JustDown(
+          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+        )
+      ) {
         this.physics.overlap(
           this.man,
           this.Npc_wizard,

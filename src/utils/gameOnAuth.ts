@@ -13,41 +13,43 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
 
       const otherPlayersRef = ref(db, "players"); // Reference to other players in Firebase
 
-      // onValue(gameInstance.enemyDB, (snapshot) => {
-      //   const enemiesData = snapshot.val();
-        
-      //   // Now handle the remaining players in Firebase
-      //   for (const enemyId in enemiesData) {
-      //     const enemyData = enemiesData[enemyId];
+      if (gameInstance.characterName !== "rogue") {
+        onValue(gameInstance.enemyDB, (snapshot) => {
+          const enemiesData = snapshot.val();
 
-      //     // Skip if player is not online
-      //     if (!enemyData.alive) continue;
+          // Now handle the remaining players in Firebase
+          for (const enemyId in enemiesData) {
+            const enemyData = enemiesData[enemyId];
 
-      //     let enemy = gameInstance.enemies.get(enemyId);
+            // Skip if player is not online
+            if (!enemyData.alive) continue;
 
-      //     // Create or update other players
-      //     if (!enemy) {
-      //       enemy = gameInstance.physics.add.sprite(
-      //         enemyData.x,
-      //         enemyData.y,
-      //         "jacked-skeleton"
-      //       ); // Create a sprite for the other player
-      //       gameInstance.enemies.set(enemyId, enemy);
-      //     }
-      //     enemy.x = enemyData.x;
-      //     enemy.y = enemyData.y;
+            let enemy = gameInstance.enemies.get(enemyId);
 
-      //     // Play animation and set frame for other players
-      //     if (enemyData.anim && enemyData.frame) {
-      //       enemy.anims.play(enemyData.anim, true);
-      //       enemy.anims.setCurrentFrame(
-      //         enemy.anims.currentAnim.frames.find(
-      //           (f: any) => f.frame.name === enemyData.frame
-      //         )
-      //       );
-      //     }
-      //   }
-      // })
+            // Create or update other players
+            if (!enemy) {
+              enemy = gameInstance.physics.add.sprite(
+                enemyData.x,
+                enemyData.y,
+                "jacked-skeleton"
+              ); // Create a sprite for the other player
+              gameInstance.enemies.set(enemyId, enemy);
+            }
+            enemy.x = enemyData.x;
+            enemy.y = enemyData.y;
+
+            // Play animation and set frame for other players
+            if (enemyData.anim && enemyData.frame) {
+              enemy.anims.play(enemyData.anim, true);
+              enemy.anims.setCurrentFrame(
+                enemy.anims.currentAnim.frames.find(
+                  (f: any) => f.frame.name === enemyData.frame
+                )
+              );
+            }
+          }
+        });
+      }
 
       onValue(otherPlayersRef, (snapshot) => {
         const playersData = snapshot.val();

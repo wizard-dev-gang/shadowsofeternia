@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import Player, { WASDKeys, HealthState } from "./Player";
 
@@ -37,10 +36,9 @@ export default class Archer extends Player {
     yLoc?: number,
     projectile?: string
   ) {
-    if (!this.knives) {
+    if (!this.projectiles) {
       return;
     }
-
 
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
@@ -70,7 +68,7 @@ export default class Archer extends Player {
 
     const angle = vec.angle();
 
-    const knife = this.knives.get(
+    const knife = this.projectiles.get(
       xLoc,
       yLoc,
       projectile
@@ -79,23 +77,22 @@ export default class Archer extends Player {
       return;
     }
 
-    // const hitboxWidth = knife.width * 0.42; 
-    // const hitboxHeight = knife.height * 0.30; 
+    // const hitboxWidth = knife.width * 0.42;
+    // const hitboxHeight = knife.height * 0.30;
     // knife.body?.setSize(hitboxWidth, hitboxHeight);
 
     let hitboxWidth = 0;
     let hitboxHeight = 0;
 
     if (direction === "up" || direction === "down") {
-        hitboxWidth = knife.width * 0.30; 
-        hitboxHeight = knife.height * 0.42;
+      hitboxWidth = knife.width * 0.3;
+      hitboxHeight = knife.height * 0.42;
     } else {
-        hitboxWidth = knife.width * 0.42; 
-        hitboxHeight = knife.height * 0.30;
+      hitboxWidth = knife.width * 0.42;
+      hitboxHeight = knife.height * 0.3;
     }
 
     knife.body?.setSize(hitboxWidth, hitboxHeight);
-
 
     knife.setActive(true);
     knife.setVisible(true);
@@ -104,10 +101,9 @@ export default class Archer extends Player {
 
     knife.x += vec.x * 16;
     knife.y += vec.y * 16;
-    
 
     // Calculate the velocity based on the duration the space bar was held down
-    const velocityMultiplier = 1 + (this.getThrowDuration() / 1000); // Increase velocity by 1 unit per second
+    const velocityMultiplier = 1 + this.getThrowDuration() / 1000; // Increase velocity by 1 unit per second
     const velocityX = vec.x * 300 * velocityMultiplier;
     const velocityY = vec.y * 300 * velocityMultiplier;
     knife.setVelocity(velocityX, velocityY);
@@ -133,7 +129,7 @@ export default class Archer extends Player {
       // Start tracking the throw start time
       this.throwStartTime = Date.now();
       //If space bar is released and start time is not null then allow player to throw arrow
-    } else if (!this.keys.Space?.isDown && this.throwStartTime !== null) { 
+    } else if (!this.keys.Space?.isDown && this.throwStartTime !== null) {
       this.throwKnife();
       this.throwStartTime = null; //Resets start time to null so more arrows aren't thrown
     }

@@ -103,4 +103,15 @@ const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
     repeat: -1,
     frameRate: 10,
   });
+  anims.create({
+    key: "slime-death",
+    frames: anims.generateFrameNames("slime", {
+      start: 1,
+      end: 6,
+      prefix: "slime-death-00",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 6,
+  });
 };

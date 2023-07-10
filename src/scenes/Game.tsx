@@ -65,11 +65,6 @@ export default class Game extends Phaser.Scene {
     createEnemyAnims(this.anims);
 
     //Create tilemap and tileset
-    // const map = this.make.tilemap({ key: "testMap" });
-    // const tileset = map.addTilesetImage("spr_grass_tileset", "tiles");
-    // const map = this.make.tilemap({ key: "town-map" });
-    // const tileset = map.addTilesetImage("Grasslands-Terrain", "tiles");
-    // const houseTiles = map.addTilesetImage("Grasslands-Props", "houses")
     const map = this.make.tilemap({key: "townMapV2"})
     const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain")
     const propTiles = map.addTilesetImage("Grasslands-Props", "props")
@@ -228,7 +223,8 @@ export default class Game extends Phaser.Scene {
         if (waterLayer) this.physics.add.collider(this.slimes, waterLayer);
         if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
         if (houseLayer) this.physics.add.collider(this.slimes, houseLayer);
-        if (fenceLayer) this.physics.add.collider(this.man, fenceLayer)
+        if (fenceLayer) this.physics.add.collider(this.slimes, fenceLayer)
+        if (treesLayer) this.physics.add.collider(this.slimes, treesLayer)
       }
 
       // Handle collisions between player and enemy characters
@@ -259,6 +255,7 @@ export default class Game extends Phaser.Scene {
         if (groundLayer) this.physics.add.collider(this.man, groundLayer);
         if (houseLayer) this.physics.add.collider(this.man, houseLayer);
         if (fenceLayer) this.physics.add.collider(this.man, fenceLayer)
+        if (treesLayer) this.physics.add.collider( this.man, treesLayer)
 
         // Add text for player name
         this.playerName = this.add

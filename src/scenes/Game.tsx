@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { createSlimeAnims } from "../anims/SlimeAnims";
 import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
@@ -8,7 +7,7 @@ import "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
 import "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
-import { getDatabase, ref, update, onValue } from "firebase/database";
+import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
 import  { Barb } from "../characters/Barb"
 import "../characters/Barb"

@@ -1,33 +1,9 @@
 {
   "frames": {
-    "wizard-walk-up-02.png": {
-      "frame": {
-        "x": 0,
-        "y": 0,
-        "w": 28,
-        "h": 32
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 1,
-        "y": 0,
-        "w": 28,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 32,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
     "wizard-walk-down-02.png": {
       "frame": {
         "x": 0,
-        "y": 32,
+        "y": 0,
         "w": 26,
         "h": 32
       },
@@ -51,6 +27,54 @@
     "wizard-walk-left-02.png": {
       "frame": {
         "x": 0,
+        "y": 32,
+        "w": 21,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 6,
+        "y": 0,
+        "w": 21,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "wizard-walk-up-02.png": {
+      "frame": {
+        "x": 26,
+        "y": 0,
+        "w": 28,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 0,
+        "w": 28,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "wizard-walk-right-02.png": {
+      "frame": {
+        "x": 0,
         "y": 64,
         "w": 21,
         "h": 32
@@ -72,20 +96,20 @@
         "y": 0.5
       }
     },
-    "wizard-walk-right-02.png": {
+    "wizard-walk-down-01.png": {
       "frame": {
-        "x": 0,
-        "y": 96,
-        "w": 21,
-        "h": 32
+        "x": 21,
+        "y": 32,
+        "w": 24,
+        "h": 31
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 6,
-        "y": 0,
-        "w": 21,
-        "h": 32
+        "x": 5,
+        "y": 1,
+        "w": 24,
+        "h": 31
       },
       "sourceSize": {
         "w": 32,
@@ -98,8 +122,8 @@
     },
     "wizard-walk-up-03.png": {
       "frame": {
-        "x": 0,
-        "y": 128,
+        "x": 54,
+        "y": 0,
         "w": 27,
         "h": 31
       },
@@ -122,8 +146,8 @@
     },
     "wizard-walk-down-03.png": {
       "frame": {
-        "x": 21,
-        "y": 64,
+        "x": 0,
+        "y": 96,
         "w": 26,
         "h": 31
       },
@@ -146,7 +170,7 @@
     },
     "wizard-walk-up-01.png": {
       "frame": {
-        "x": 26,
+        "x": 45,
         "y": 32,
         "w": 26,
         "h": 31
@@ -168,34 +192,10 @@
         "y": 0.5
       }
     },
-    "wizard-walk-down-01.png": {
-      "frame": {
-        "x": 47,
-        "y": 0,
-        "w": 24,
-        "h": 31
-      },
-      "rotated": false,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 5,
-        "y": 1,
-        "w": 24,
-        "h": 31
-      },
-      "sourceSize": {
-        "w": 32,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
     "wizard-walk-left-01.png": {
       "frame": {
-        "x": 52,
-        "y": 31,
+        "x": 81,
+        "y": 0,
         "w": 22,
         "h": 31
       },
@@ -218,8 +218,8 @@
     },
     "wizard-walk-left-03.png": {
       "frame": {
-        "x": 71,
-        "y": 0,
+        "x": 0,
+        "y": 127,
         "w": 22,
         "h": 31
       },
@@ -243,7 +243,7 @@
     "wizard-walk-right-01.png": {
       "frame": {
         "x": 21,
-        "y": 95,
+        "y": 63,
         "w": 22,
         "h": 31
       },
@@ -266,8 +266,8 @@
     },
     "wizard-walk-right-03.png": {
       "frame": {
-        "x": 0,
-        "y": 159,
+        "x": 71,
+        "y": 31,
         "w": 21,
         "h": 31
       },
@@ -295,8 +295,8 @@
     "image": "texture.png",
     "format": "RGBA8888",
     "size": {
-      "w": 93,
-      "h": 190
+      "w": 103,
+      "h": 158
     },
     "scale": 1
   }

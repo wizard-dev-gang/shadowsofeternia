@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
+export const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
   anims.create({
     key: "enemy-idle-down",
     frames: [{ key: "jacked-skeleton", frame: "enemy-walk-down-01.png" }],

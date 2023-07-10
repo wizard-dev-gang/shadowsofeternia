@@ -57,7 +57,7 @@ async function writeUserData(character, scene) {
 
     if (!isCharacterAvailable) {
       console.error("Character is already chosen");
-      return;
+      return false;
     }
 
     // Mark the character as selected in the database
@@ -117,6 +117,7 @@ async function writeUserData(character, scene) {
       }
     });
   }
+  return true;
 }
 
 export default class ChooseCharacterScene extends Phaser.Scene {
@@ -130,7 +131,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       "/assets/pixel-art-night-sky-background.png"
     );
 
-    this.load.spritesheet("character1", "/assets/manAlone.png", {
+    this.load.spritesheet("rogue", "/assets/manAlone.png", {
       frameWidth: 32,
       frameHeight: 32,
     });
@@ -142,7 +143,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
-    this.load.spritesheet("wizard", "/assets/wizard-alone.png", {
+    this.load.spritesheet("wizard", "/assets/wizard.png", {
       frameWidth: 32,
       frameHeight: 32,
     });
@@ -298,43 +299,44 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
 
     character1.on("pointerdown", async () => {
-      this.startGame();
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("rogue", this);
-        char1Text.setText("Rogue (Selected)");
-        if (isCharacterAvailable) {
-          hasChosenCharacter = true;
-        }
-      }
+      this.startGame("rogue");
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("rogue", this);
+      //   if (isCharacterAvailable) {
+      //     char1Text.setText("Rogue (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
     character2.on("pointerdown", async () => {
-      // this.startGame("barb");
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("barb", this);
-        char2Text.setText("Barbarian (Selected)");
-        if (isCharacterAvailable) {
-          hasChosenCharacter = true;
-        }
-      }
+      this.startGame("barb");
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("barb", this);
+      //   if (isCharacterAvailable) {
+      //     char2Text.setText("Barbarian (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
     character3.on("pointerdown", async () => {
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("archer", this);
-        char3Text.setText("Archer (Selected)");
-        if (isCharacterAvailable) {
-          hasChosenCharacter = true;
-        }
-      }
+      this.startGame("archer");
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("archer", this);
+      //   if (isCharacterAvailable) {
+      //     char3Text.setText("Archer (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
     character4.on("pointerdown", async () => {
-      //this.startGame("wizard");
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("wizard", this);
-        char4Text.setText("Wizard (Selected)");
-        if (isCharacterAvailable) {
-          hasChosenCharacter = true;
-        }
-      }
+      this.startGame("wizard");
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("wizard", this);
+      //   if (isCharacterAvailable) {
+      //     char4Text.setText("Wizard (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
   }
 

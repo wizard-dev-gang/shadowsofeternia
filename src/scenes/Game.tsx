@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { createSlimeAnims } from "../anims/SlimeAnims";
 import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
@@ -8,12 +7,16 @@ import "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
 import "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
-import { getDatabase, ref, update, onValue } from "firebase/database";
+import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
 import "../characters/Barb";
+import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
 import "../characters/Wizard";
+import { createNpcAnims } from "../anims/NpcAnims";
+import { Npc_wizard } from "../characters/Npc";
+import "../characters/Npc"
 
 export default class Game extends Phaser.Scene {
   // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -24,10 +27,14 @@ export default class Game extends Phaser.Scene {
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private barb?: Barb;
   private wizard?: Wizard;
-  private characterName?: string;
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
+  private enemyCount = 0;
+  private Npc_wizard!: Phaser.Physics.Arcade.Group;
+  private interactKey?: Phaser.Input.Keyboard.Key;
+
 
   // Firebase variables
+  public characterName?: string;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -37,7 +44,6 @@ export default class Game extends Phaser.Scene {
   public enemyDB!: any;
   public dataToSend: any = {};
   public updateIterations = 0;
-  private enemyCount = 0;
 
   constructor() {
     super("game");
@@ -63,6 +69,7 @@ export default class Game extends Phaser.Scene {
     // Create animations for the characters
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
+    createNpcAnims(this.anims)
 
     //Create tilemap and tileset
     const map = this.make.tilemap({key: "townMapV2"})
@@ -92,16 +99,17 @@ export default class Game extends Phaser.Scene {
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb";
+      const archer = this.characterName === "archer";
       const wizard = this.characterName === "wizard";
       if (barb) {
         this.man = this.add.barb(2000, 1100, "barb");
+      } else if (archer) {
+        this.man = this.add.archer(2000, 1100, "archer");
       } else if (wizard) {
         this.man = this.add.wizard(2000, 1100, "wizard");
       } else {
         this.man = this.add.player(2000, 1100, "man");
       }
-      // Camera to follow player
-      this.cameras.main.startFollow(this.man);
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -132,7 +140,7 @@ export default class Game extends Phaser.Scene {
         maxSize: 3,
       });
 
-      // Set projectiles for the player character
+      // Set knives for the player character
       this.man.setProjectiles(this.projectiles);
 
       // Add a skeleton to the group
@@ -267,7 +275,32 @@ export default class Game extends Phaser.Scene {
           })
           .setOrigin(0.5, 1);
       }
+      this.Npc_wizard = this.physics.add.group({
+        classType: Npc_wizard,
+        createCallback: (go) => {
+          const NpcGo = go as Npc_wizard;
+          if (NpcGo.body) {
+            NpcGo.body.onCollide = true;
+          }
+        },
+      });
+      this.Npc_wizard.get(880, 112, "npcWizard")
+      this.interactKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     }
+  }
+  private handlePlayerNpcCollision(
+    player: Phaser.GameObjects.GameObject,
+    npc: Phaser.GameObjects.GameObject
+  ) {
+    // Check if the player is the wizard character and the NPC is the wizard
+    if (
+      player instanceof Player || Wizard || Barb &&
+      npc instanceof Npc_wizard
+    ) {
+      // Perform actions for interacting with the NPC
+      console.log("Interacting with the NPC Wizard");
+      }
+    this.cameras.main.startFollow(this.man);
   }
   // Method to handle collision between projectiles and walls
   private handleProjectileWallCollision(
@@ -395,7 +428,15 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
-
+      if (Phaser.Input.Keyboard.JustDown(this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E))) {
+        this.physics.overlap(
+          this.man,
+          this.Npc_wizard,
+          this.handlePlayerNpcCollision,
+          undefined,
+          this
+        );
+      }
       if (this.playerRef) {
         update(this.playerRef, {
           x: this.man.x,
@@ -410,22 +451,24 @@ export default class Game extends Phaser.Scene {
         });
       }
 
-      if (this.updateIterations % 3 === 0) {
-        for (const entry of this.enemies.entries()) {
-          this.dataToSend[entry[0]] = {
-            id: entry[0],
-            x: entry[1].x,
-            y: entry[1].y,
-            anim: entry[1].anims.currentAnim
-              ? entry[1].anims.currentAnim.key
-              : null,
-            frame: entry[1].anims.currentFrame
-              ? entry[1].anims.currentFrame.frame.name
-              : null,
-            alive: true,
-          };
+      if (this.characterName === "rogue") {
+        if (this.updateIterations % 3 === 0) {
+          for (const entry of this.enemies.entries()) {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              x: entry[1].x,
+              y: entry[1].y,
+              anim: entry[1].anims.currentAnim
+                ? entry[1].anims.currentAnim.key
+                : null,
+              frame: entry[1].anims.currentFrame
+                ? entry[1].anims.currentFrame.frame.name
+                : null,
+              alive: true,
+            };
+          }
+          update(this.enemyDB, this.dataToSend);
         }
-        // update(this.enemyDB, this.dataToSend);
       }
     }
   }

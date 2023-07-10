@@ -15,10 +15,10 @@ const randomDirection = (exclude: Direction) => {
   return newDirection;
 };
 
-export default class Slime extends Phaser.Physics.Arcade.Sprite {
+export default class Npc_wizard extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
-  private isMoving = true;
+  private isMoving = false;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -32,7 +32,7 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
     const hitboxHeight = 2; // Set the desired hitbox height
     this.body?.setSize(hitboxWidth, hitboxHeight);
 
-    this.anims.play("slime-right");
+    this.anims.play("Npc_wizard-idle");
 
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,
@@ -91,4 +91,4 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
   }
 }
 
-export { Slime };
+export { Npc_wizard };

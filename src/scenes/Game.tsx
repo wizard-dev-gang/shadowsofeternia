@@ -91,10 +91,9 @@ export default class Game extends Phaser.Scene {
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
-      // objectsLayer?.setCollisionByProperty({ collides: true });
       houseLayer?.setCollisionByProperty({collides: true});
-      fenceLayer?.setCollisionByProperty({collides: true})
-      // pathLayer?.setCollisionByProperty({collides: true});
+      fenceLayer?.setCollisionByProperty({collides: true});
+      treesLayer?.setCollisionByProperty({collides: true});
 
       // Create the player character and define spawn position
       const barb = this.characterName === "barb";
@@ -158,12 +157,34 @@ export default class Game extends Phaser.Scene {
         );
       }
 
-      // Handle collisions between skeletons and object layers
+      // Handle collisions between skeletons and house layers
       if (this.skeletons && houseLayer) {
         this.physics.add.collider(this.skeletons, houseLayer);
         this.physics.add.collider(
           this.projectiles,
           houseLayer,
+          this.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and fences
+      if (this.skeletons && fenceLayer) {
+        this.physics.add.collider(this.skeletons, fenceLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          fenceLayer,
+          this.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+            // Handle collisions between skeletons and trees
+      if (this.skeletons && treesLayer) {
+        this.physics.add.collider(this.skeletons, treesLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          treesLayer,
           this.handleProjectileWallCollision,
           undefined,
           this

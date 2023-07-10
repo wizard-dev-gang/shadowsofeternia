@@ -253,3 +253,5 @@ Phaser.GameObjects.GameObjectFactory.register(
 );
 
 export { Player };
+
+

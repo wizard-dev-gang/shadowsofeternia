@@ -99,7 +99,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
             for (const projectileId in playerData.projectiles)
             {
               const projectileData = playerData.projectiles[projectileId]
-              otherPlayer.throwProjectile(projectileData.direction,projectileData.x, projectileData.y, 'knife' )
+              otherPlayer.throwProjectile(projectileData.direction,projectileData.x, projectileData.y, projectileData.attackObj )
 
             }
 

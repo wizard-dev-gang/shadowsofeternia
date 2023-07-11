@@ -16,10 +16,19 @@ export default class Preloader extends Phaser.Scene {
     // this.load.image("tiles", "/tiles/Grasslands-Terrain.png")
     // this.load.tilemapTiledJSON("town-map", "/tiles/town-map.json")
     // this.load.image("houses", "/tiles/Grasslands-Props.png")
+    // townMapV2 Preloader
     this.load.image("terrain", "/tiles/Grasslands-Terrain.png")
     this.load.image("props", "/tiles/Grasslands-Props.png")
     this.load.image("water", "/tiles/Grasslands-Water.png")
     this.load.tilemapTiledJSON("townMapV2", "tiles/townMapV2.json")
+
+    // forestMap PreLoader
+    this.load.image("ruinsTerrain", "/tiles/Ruins-Terrain.png")
+    this.load.image("ruinProps", "/tiles/Ruins-Props.png")
+    this.load.image("grassProps", "/tiles/Grasslands-Props.png")
+    this.load.tilemapTiledJSON("forestMap", "tiles/forestMap.json")
+
+
 
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");

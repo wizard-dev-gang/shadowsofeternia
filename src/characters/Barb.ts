@@ -15,7 +15,7 @@ enum HealthState {
 
 declare global {
   namespace Phaser.GameObjects {
-    interface GameObjectsFactory {
+    interface GameObjectFactory {
       barb(
         x: number,
         y: number,
@@ -27,7 +27,7 @@ declare global {
 }
 
 export default class Barb extends Phaser.Physics.Arcade.Sprite {
-  private healthState = HealthState.IDLE;
+  public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
@@ -200,10 +200,10 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       this.anims.play(slash, true);
       this.setVelocity(0, 0);
       this.throwProjectile();
-    } else {
-      const idle = `barb-idle-${this.lastMove}`;
-      this.play(idle);
-      this.setVelocity(0, 0);
+      // } else {
+      //   const idle = `barb-idle-${this.lastMove}`;
+      //   this.play(idle);
+      //   this.setVelocity(0, 0);
     }
   }
 }

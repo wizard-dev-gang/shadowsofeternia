@@ -2,13 +2,6 @@ import Phaser from "phaser";
 import Player, { WASDKeys, HealthState } from "./Player";
 
 export default class Archer extends Player {
-  private keys: WASDKeys = {
-    W: undefined,
-    A: undefined,
-    S: undefined,
-    D: undefined,
-  };
-
   private throwStartTime: number | null = null;
 
   constructor(
@@ -30,11 +23,11 @@ export default class Archer extends Player {
     }
   }
 
-  private throwKnife(
+  private throwArrow(
     direction?: string,
     xLoc?: number,
     yLoc?: number,
-    projectile?: string
+    attackObj?: string
   ) {
     if (!this.projectiles) {
       return;
@@ -45,7 +38,7 @@ export default class Archer extends Player {
       direction = parts[2];
       xLoc = this.x;
       yLoc = this.y;
-      projectile = "arrow";
+      attackObj = "arrow";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -68,53 +61,23 @@ export default class Archer extends Player {
 
     const angle = vec.angle();
 
-    const knife = this.projectiles.get(
+    const projectile = this.projectiles.get(
       xLoc,
       yLoc,
-      projectile
+      attackObj
     ) as Phaser.Physics.Arcade.Image;
-    if (!knife) {
+    if (!projectile) {
       return;
     }
+    projectile.setActive(true);
+    projectile.setVisible(true);
 
-    // const hitboxWidth = knife.width * 0.42;
-    // const hitboxHeight = knife.height * 0.30;
-    // knife.body?.setSize(hitboxWidth, hitboxHeight);
+    projectile.setRotation(angle);
 
-    let hitboxWidth = 0;
-    let hitboxHeight = 0;
-
-    if (direction === "up" || direction === "down") {
-      hitboxWidth = knife.width * 0.3;
-      hitboxHeight = knife.height * 0.42;
-    } else {
-      hitboxWidth = knife.width * 0.42;
-      hitboxHeight = knife.height * 0.3;
-    }
-
-    knife.body?.setSize(hitboxWidth, hitboxHeight);
-
-    knife.setActive(true);
-    knife.setVisible(true);
-
-    knife.setRotation(angle);
-
-    knife.x += vec.x * 16;
-    knife.y += vec.y * 16;
-
-    // Calculate the velocity based on the duration the space bar was held down
-    const velocityMultiplier = 1 + this.getThrowDuration() / 1000; // Increase velocity by 1 unit per second
-    const velocityX = vec.x * 300 * velocityMultiplier;
-    const velocityY = vec.y * 300 * velocityMultiplier;
-    knife.setVelocity(velocityX, velocityY);
-    console.log(knife.x, knife.y, direction);
-  }
-
-  private getThrowDuration() {
-    if (this.throwStartTime !== null) {
-      return Date.now() - this.throwStartTime;
-    }
-    return 0;
+    projectile.x += vec.x * 16;
+    projectile.y += vec.y * 16;
+    projectile.setVelocity(vec.x * 300, vec.y * 300);
+    console.log(projectile.x, projectile.y, direction);
   }
 
   update() {
@@ -130,7 +93,7 @@ export default class Archer extends Player {
       this.throwStartTime = Date.now();
       //If space bar is released and start time is not null then allow player to throw arrow
     } else if (!this.keys.Space?.isDown && this.throwStartTime !== null) {
-      this.throwKnife();
+      this.throwArrow();
       this.throwStartTime = null; //Resets start time to null so more arrows aren't thrown
     }
 
@@ -152,10 +115,10 @@ export default class Archer extends Player {
       this.anims.play("archer-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
-    } else {
-      const idle = `archer-idle-${this.lastMove}`;
-      this.play(idle);
-      this.setVelocity(0, 0);
+      // } else {
+      //   const idle = `archer-idle-${this.lastMove}`;
+      //   this.play(idle);
+      //   this.setVelocity(0, 0);
     }
   }
 }

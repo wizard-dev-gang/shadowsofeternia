@@ -24,7 +24,7 @@ export default class Preloader extends Phaser.Scene {
 
     // forestMap PreLoader
     this.load.image("ruinsTerrain", "/tiles/Ruins-Terrain.png")
-    this.load.image("ruinProps", "/tiles/Ruins-Props.png")
+    this.load.image("ruinsProps", "/tiles/Ruins-Props.png")
     this.load.image("grassProps", "/tiles/Grasslands-Props.png")
     this.load.tilemapTiledJSON("forestMap", "tiles/forestMap.json")
 

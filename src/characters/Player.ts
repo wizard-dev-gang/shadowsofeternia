@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-interface WASDKeys {
+export interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
   A?: Phaser.Input.Keyboard.Key;
   S?: Phaser.Input.Keyboard.Key;
@@ -28,12 +28,12 @@ declare global {
 }
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  private healthState = HealthState.IDLE;
+  public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
   // private knives?: Phaser.Physics.Arcade.Group;
   public projectiles?: Phaser.Physics.Arcade.Group;
-  private keys: WASDKeys = {
+  public keys: WASDKeys = {
     W: undefined,
     A: undefined,
     S: undefined,

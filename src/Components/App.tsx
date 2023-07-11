@@ -90,12 +90,13 @@ function createName() {
 
 function App() {
   const playerId = useRef<string | null>(null); // Reference to store the player ID
-  const playerRef = useRef<DatabaseReference | null>(null); // Reference to the player in the database
+  // const playerRef = useRef<DatabaseReference>(null); // Reference to the player in the database
   const isAddedToDatabase = useRef(false);
   const navigate = useNavigate(); // React router hook to navigate between pages
   const [userName, setUserName] = useState<string>(""); // State to store the player's name
   const [newName, setNewName] = useState<string>(""); // State to store the new name when editing
   const [anonError, setAnonError] = useState<string>(""); // State to store the error message when trying to change the name of an anonymous user
+  const [playerRef, setPlayerRef] = useState<DatabaseReference | null>(null);
 
   const auth = getAuth(firebaseApp); // Get the Firebase authentication object
   const user = auth.currentUser;
@@ -105,20 +106,22 @@ function App() {
     if (user) {
       console.log("Logged in as:", user);
       playerId.current = user.uid; // Store the player ID
-      playerRef.current = ref(db, `players/${playerId.current}`); // Reference to the player in the database
+      const newPlayerRef = ref(db, `players/${playerId.current}`); // Reference to the player in the database
+
+      setPlayerRef(newPlayerRef);
 
       // Set up listener for player data in the database
-      onValue(playerRef.current, (snapshot) => {
+      onValue(newPlayerRef, (snapshot) => {
         const playerData = snapshot.val();
         if (playerData) {
           // If the player's data already exists in the database, don't override it
           console.log("Player data:", playerData);
           setUserName(playerData.name || "");
           isAddedToDatabase.current = true;
-          update(playerRef.current!, { online: true });
+          update(newPlayerRef, { online: true });
         } else {
           // If the player's data doesn't exist in the database, create it
-          set(playerRef.current!, {
+          set(newPlayerRef, {
             id: playerId.current,
             name: createName(),
             level: 1,
@@ -139,16 +142,18 @@ function App() {
         }
 
         // Set up onDisconnect event to remove player data when disconnected
-        onDisconnect(playerRef.current)
-          .update({ online: false })
-          .then(() => {
-            console.log(
-              "Prepared to remove player from database upon disconnect."
-            );
-          })
-          .catch((error) => {
-            console.error("Error setting up onDisconnect:", error);
-          });
+        if (newPlayerRef) {
+          onDisconnect(newPlayerRef)
+            .update({ online: false })
+            .then(() => {
+              console.log(
+                "Prepared to remove player from database upon disconnect."
+              );
+            })
+            .catch((error) => {
+              console.error("Error setting up onDisconnect:", error);
+            });
+        }
       });
     } else {
       console.log("Not logged in.");
@@ -158,9 +163,9 @@ function App() {
   const handleSignOut = async () => {
     const auth = getAuth(firebaseApp);
     try {
-      if (auth.currentUser?.isAnonymous && playerRef.current) {
+      if (auth.currentUser?.isAnonymous && playerRef) {
         // Remove player's data from the database before signing out if the user is anonymous
-        await remove(playerRef.current);
+        await remove(playerRef);
       }
       await signOut(auth);
       navigate("/login"); // Navigate to login page after sign out
@@ -181,9 +186,9 @@ function App() {
       return;
     }
 
-    if (playerRef.current) {
-      setAnonError(null);
-      update(playerRef.current, { name: newName })
+    if (playerRef) {
+      setAnonError("");
+      update(playerRef, { name: newName })
         .then(() => {
           console.log("Player's name changed successfully.");
         })

@@ -1,15 +1,44 @@
 import Phaser from "phaser";
-import Player, { WASDKeys, HealthState } from "./Player";
 
-export default class Archer extends Player {
+interface WASDKeys {
+  W?: Phaser.Input.Keyboard.Key;
+  A?: Phaser.Input.Keyboard.Key;
+  S?: Phaser.Input.Keyboard.Key;
+  D?: Phaser.Input.Keyboard.Key;
+  Space?: Phaser.Input.Keyboard.Key;
+}
+enum HealthState {
+  IDLE,
+  DAMAGE,
+  DEAD,
+}
+
+declare global {
+  namespace Phaser.GameObjects {
+    interface GameObjectFactory {
+      archer(
+        x: number,
+        y: number,
+        texture: string,
+        frame?: string | number
+      ): Archer;
+    }
+  }
+}
+
+export default class Archer extends Phaser.Physics.Arcade.Sprite {
+  public healthState = HealthState.IDLE;
+  private damageTime = 0;
+  private _health: number;
+  private projectiles?: Phaser.Physics.Arcade.Group;
+
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,
     S: undefined,
     D: undefined,
   };
-
-  private throwStartTime: number | null = null;
+  public lastMove = "down";
 
   constructor(
     scene: Phaser.Scene,
@@ -19,6 +48,7 @@ export default class Archer extends Player {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
+    this._health = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -30,11 +60,42 @@ export default class Archer extends Player {
     }
   }
 
-  private throwKnife(
+  getHealth() {
+    return this._health;
+  }
+
+  setProjectiles(projectiles: Phaser.Physics.Arcade.Group) {
+    this.projectiles = projectiles;
+  }
+
+  handleDamage(dir: Phaser.Math.Vector2) {
+    if (this._health <= 0) {
+      return;
+    }
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    }
+
+    --this._health;
+
+    if (this._health <= 0) {
+      this.setVelocity(0, 0);
+      this.healthState = HealthState.DEAD;
+      this.play("death-ghost");
+    } else {
+      this.setVelocity(dir.x, dir.y);
+
+      this.setTint(0xff0000);
+
+      this.healthState = HealthState.DAMAGE;
+      this.damageTime = 0;
+    }
+  }
+  private throwProjectile(
     direction?: string,
     xLoc?: number,
     yLoc?: number,
-    projectile?: string
+    attackObj?: string
   ) {
     if (!this.projectiles) {
       return;
@@ -45,7 +106,7 @@ export default class Archer extends Player {
       direction = parts[2];
       xLoc = this.x;
       yLoc = this.y;
-      projectile = "arrow";
+      attackObj = "arrow";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -68,53 +129,39 @@ export default class Archer extends Player {
 
     const angle = vec.angle();
 
-    const knife = this.projectiles.get(
+    const projectile = this.projectiles.get(
       xLoc,
       yLoc,
-      projectile
+      attackObj
     ) as Phaser.Physics.Arcade.Image;
-    if (!knife) {
+    if (!projectile) {
       return;
     }
+    projectile.setActive(true);
+    projectile.setVisible(true);
 
-    // const hitboxWidth = knife.width * 0.42;
-    // const hitboxHeight = knife.height * 0.30;
-    // knife.body?.setSize(hitboxWidth, hitboxHeight);
+    projectile.setRotation(angle);
 
-    let hitboxWidth = 0;
-    let hitboxHeight = 0;
-
-    if (direction === "up" || direction === "down") {
-      hitboxWidth = knife.width * 0.3;
-      hitboxHeight = knife.height * 0.42;
-    } else {
-      hitboxWidth = knife.width * 0.42;
-      hitboxHeight = knife.height * 0.3;
-    }
-
-    knife.body?.setSize(hitboxWidth, hitboxHeight);
-
-    knife.setActive(true);
-    knife.setVisible(true);
-
-    knife.setRotation(angle);
-
-    knife.x += vec.x * 16;
-    knife.y += vec.y * 16;
-
-    // Calculate the velocity based on the duration the space bar was held down
-    const velocityMultiplier = 1 + this.getThrowDuration() / 1000; // Increase velocity by 1 unit per second
-    const velocityX = vec.x * 300 * velocityMultiplier;
-    const velocityY = vec.y * 300 * velocityMultiplier;
-    knife.setVelocity(velocityX, velocityY);
-    console.log(knife.x, knife.y, direction);
+    projectile.x += vec.x * 16;
+    projectile.y += vec.y * 16;
+    projectile.setVelocity(vec.x * 300, vec.y * 300);
+    console.log(projectile.x, projectile.y, direction);
   }
 
-  private getThrowDuration() {
-    if (this.throwStartTime !== null) {
-      return Date.now() - this.throwStartTime;
+  preUpdate(t: number, dt: number): void {
+    super.preUpdate(t, dt);
+
+    switch (this.healthState) {
+      case HealthState.IDLE:
+        break;
+      case HealthState.DAMAGE:
+        this.damageTime += dt;
+        if (this.damageTime >= 250) {
+          this.healthState = HealthState.IDLE;
+          this.setTint(0xffffff);
+          this.damageTime = 0;
+        }
     }
-    return 0;
   }
 
   update() {
@@ -125,17 +172,13 @@ export default class Archer extends Player {
       return;
     }
 
-    if (this.keys.Space?.isDown && this.throwStartTime === null) {
-      // Start tracking the throw start time
-      this.throwStartTime = Date.now();
-      //If space bar is released and start time is not null then allow player to throw arrow
-    } else if (!this.keys.Space?.isDown && this.throwStartTime !== null) {
-      this.throwKnife();
-      this.throwStartTime = null; //Resets start time to null so more arrows aren't thrown
-    }
-
+    // if (this.keys.Space?.isDown) {
+    //   const slash = `barb-attack-${this.lastMove}`;
+    //   this.anims.play(slash, true);
+    //   this.setVelocity(0, 0);
+    //   this.throwProjectile();
+    // }
     const speed = 200;
-
     if (this.keys.A?.isDown) {
       this.anims.play("archer-walk-left", true);
       this.setVelocity(-speed, 0);
@@ -152,6 +195,11 @@ export default class Archer extends Player {
       this.anims.play("archer-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
+    } else if (this.keys.Space?.isDown) {
+      const slash = `archer-attack-${this.lastMove}`;
+      this.anims.play(slash, true);
+      this.setVelocity(0, 0);
+      this.throwProjectile();
     } else {
       const idle = `archer-idle-${this.lastMove}`;
       this.play(idle);

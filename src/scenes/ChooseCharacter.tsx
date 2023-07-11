@@ -17,7 +17,7 @@ import { app as firebaseApp } from "../../functions/lib/firebaseConfig";
 
 const LOBBY_SIZE = 4;
 
-async function writeUserData(character, scene) {
+async function writeUserData(character: string, scene: ChooseCharacterScene) {
   const auth = getAuth(firebaseApp);
   const user = auth.currentUser;
 
@@ -66,7 +66,10 @@ async function writeUserData(character, scene) {
     // const newPlayerInLobbyRef = push(lobbyRef);
 
     await get(roomsRef).then((snapshot) => {
-      const rooms = snapshot.val();
+      const rooms = snapshot.val() as Record<
+        string,
+        { players: Record<string, boolean> }
+      >;
 
       if (rooms) {
         //Find an open room
@@ -80,7 +83,9 @@ async function writeUserData(character, scene) {
 
       if (!roomId) {
         const newRoomRef = push(roomsRef);
-        roomId = newRoomRef.key;
+        if (newRoomRef.key !== null) {
+          roomId = newRoomRef.key;
+        }
         set(newRoomRef, {
           players: {
             [playerId]: true,
@@ -166,11 +171,16 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       .setScale(0.8);
 
     this.add
-      .text(this.sys.game.config.width / 2, 36, "Select a Character", {
-        fontSize: "28px",
-        fontFamily: "Joystix",
-        align: "center",
-      })
+      .text(
+        (this.sys.game.config.width as number) / 2,
+        36,
+        "Select a Character",
+        {
+          fontSize: "28px",
+          fontFamily: "Joystix",
+          align: "center",
+        }
+      )
       .setOrigin(0.5);
 
     const character1 = this.add
@@ -299,44 +309,44 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
 
     character1.on("pointerdown", async () => {
-      this.startGame("rogue");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("rogue", this);
-      //   if (isCharacterAvailable) {
-      //     char1Text.setText("Rogue (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      this.startGame("rogue"); // Comment this line for final build
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("rogue", this);
+        if (isCharacterAvailable) {
+          char1Text.setText("Rogue (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character2.on("pointerdown", async () => {
       this.startGame("barb");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("barb", this);
-      //   if (isCharacterAvailable) {
-      //     char2Text.setText("Barbarian (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("barb", this);
+        if (isCharacterAvailable) {
+          char2Text.setText("Barbarian (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character3.on("pointerdown", async () => {
       this.startGame("archer");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("archer", this);
-      //   if (isCharacterAvailable) {
-      //     char3Text.setText("Archer (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("archer", this);
+        if (isCharacterAvailable) {
+          char3Text.setText("Archer (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character4.on("pointerdown", async () => {
       this.startGame("wizard");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("wizard", this);
-      //   if (isCharacterAvailable) {
-      //     char4Text.setText("Wizard (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("wizard", this);
+        if (isCharacterAvailable) {
+          char4Text.setText("Wizard (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
   }
 

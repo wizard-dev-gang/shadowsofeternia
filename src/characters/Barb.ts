@@ -180,18 +180,22 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     // }
     const speed = 200;
     if (this.keys.A?.isDown) {
+      console.log("A is down");
       this.anims.play("barb-walk-left", true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
+      console.log("D is down");
       this.anims.play("barb-walk-right", true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
+      console.log("W is down");
       this.anims.play("barb-walk-up", true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
+      console.log("S is down");
       this.anims.play("barb-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
@@ -200,10 +204,10 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       this.anims.play(slash, true);
       this.setVelocity(0, 0);
       this.throwProjectile();
-      // } else {
-      //   const idle = `barb-idle-${this.lastMove}`;
-      //   this.play(idle);
-      //   this.setVelocity(0, 0);
+    } else {
+      const idle = `barb-idle-${this.lastMove}`;
+      this.play(idle);
+      this.setVelocity(0, 0);
     }
   }
 }

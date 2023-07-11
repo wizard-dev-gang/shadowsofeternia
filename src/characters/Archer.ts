@@ -1,8 +1,44 @@
 import Phaser from "phaser";
-import Player, { WASDKeys, HealthState } from "./Player";
 
-export default class Archer extends Player {
-  private throwStartTime: number | null = null;
+interface WASDKeys {
+  W?: Phaser.Input.Keyboard.Key;
+  A?: Phaser.Input.Keyboard.Key;
+  S?: Phaser.Input.Keyboard.Key;
+  D?: Phaser.Input.Keyboard.Key;
+  Space?: Phaser.Input.Keyboard.Key;
+}
+enum HealthState {
+  IDLE,
+  DAMAGE,
+  DEAD,
+}
+
+declare global {
+  namespace Phaser.GameObjects {
+    interface GameObjectFactory {
+      archer(
+        x: number,
+        y: number,
+        texture: string,
+        frame?: string | number
+      ): Archer;
+    }
+  }
+}
+
+export default class Archer extends Phaser.Physics.Arcade.Sprite {
+  public healthState = HealthState.IDLE;
+  private damageTime = 0;
+  private _health: number;
+  private projectiles?: Phaser.Physics.Arcade.Group;
+
+  private keys: WASDKeys = {
+    W: undefined,
+    A: undefined,
+    S: undefined,
+    D: undefined,
+  };
+  public lastMove = "down";
 
   constructor(
     scene: Phaser.Scene,
@@ -12,6 +48,7 @@ export default class Archer extends Player {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
+    this._health = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -23,7 +60,38 @@ export default class Archer extends Player {
     }
   }
 
-  private throwArrow(
+  getHealth() {
+    return this._health;
+  }
+
+  setProjectiles(projectiles: Phaser.Physics.Arcade.Group) {
+    this.projectiles = projectiles;
+  }
+
+  handleDamage(dir: Phaser.Math.Vector2) {
+    if (this._health <= 0) {
+      return;
+    }
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    }
+
+    --this._health;
+
+    if (this._health <= 0) {
+      this.setVelocity(0, 0);
+      this.healthState = HealthState.DEAD;
+      this.play("death-ghost");
+    } else {
+      this.setVelocity(dir.x, dir.y);
+
+      this.setTint(0xff0000);
+
+      this.healthState = HealthState.DAMAGE;
+      this.damageTime = 0;
+    }
+  }
+  private throwProjectile(
     direction?: string,
     xLoc?: number,
     yLoc?: number,
@@ -80,6 +148,22 @@ export default class Archer extends Player {
     console.log(projectile.x, projectile.y, direction);
   }
 
+  preUpdate(t: number, dt: number): void {
+    super.preUpdate(t, dt);
+
+    switch (this.healthState) {
+      case HealthState.IDLE:
+        break;
+      case HealthState.DAMAGE:
+        this.damageTime += dt;
+        if (this.damageTime >= 250) {
+          this.healthState = HealthState.IDLE;
+          this.setTint(0xffffff);
+          this.damageTime = 0;
+        }
+    }
+  }
+
   update() {
     if (
       this.healthState === HealthState.DAMAGE ||
@@ -88,17 +172,13 @@ export default class Archer extends Player {
       return;
     }
 
-    if (this.keys.Space?.isDown && this.throwStartTime === null) {
-      // Start tracking the throw start time
-      this.throwStartTime = Date.now();
-      //If space bar is released and start time is not null then allow player to throw arrow
-    } else if (!this.keys.Space?.isDown && this.throwStartTime !== null) {
-      this.throwArrow();
-      this.throwStartTime = null; //Resets start time to null so more arrows aren't thrown
-    }
-
+    // if (this.keys.Space?.isDown) {
+    //   const slash = `barb-attack-${this.lastMove}`;
+    //   this.anims.play(slash, true);
+    //   this.setVelocity(0, 0);
+    //   this.throwProjectile();
+    // }
     const speed = 200;
-
     if (this.keys.A?.isDown) {
       this.anims.play("archer-walk-left", true);
       this.setVelocity(-speed, 0);
@@ -115,10 +195,15 @@ export default class Archer extends Player {
       this.anims.play("archer-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
-      // } else {
-      //   const idle = `archer-idle-${this.lastMove}`;
-      //   this.play(idle);
-      //   this.setVelocity(0, 0);
+    } else if (this.keys.Space?.isDown) {
+      const slash = `archer-attack-${this.lastMove}`;
+      this.anims.play(slash, true);
+      this.setVelocity(0, 0);
+      this.throwProjectile();
+    } else {
+      const idle = `archer-idle-${this.lastMove}`;
+      this.play(idle);
+      this.setVelocity(0, 0);
     }
   }
 }
@@ -141,16 +226,6 @@ Phaser.GameObjects.GameObjectFactory.register(
       sprite,
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
-
-    // Set the hitbox size
-    const hitboxWidth = sprite.width * 0.42;
-    const hitboxHeight = sprite.height * 0.42;
-    sprite.body?.setSize(hitboxWidth, hitboxHeight);
-
-    // Set the hitbox offset
-    const offsetX = sprite.width / (10 / 3);
-    const offsetY = sprite.height * 0.6;
-    sprite.body?.setOffset(offsetX, offsetY);
 
     return sprite;
   }

@@ -15,7 +15,10 @@ import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 
 export default class Game extends Phaser.Scene {
-  private man?: Player | Barb | Wizard | Archer; // Reference to the player character
+  private man?: Player; // Reference to the player character
+  private barb?: Barb;
+  private archer?: Archer;
+  private wizard?: Wizard;
   private projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
@@ -23,7 +26,9 @@ export default class Game extends Phaser.Scene {
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  private interactKey!: Phaser.Input.Keyboard.Key;
+  private interactKey = this.input.keyboard.addKey(
+    Phaser.Input.Keyboard.KeyCodes.E
+  );
 
   // Firebase variables
   public characterName?: string;
@@ -49,6 +54,7 @@ export default class Game extends Phaser.Scene {
   }
   init(data?: { name: string }) {
     console.log("init data", data);
+    console.log(this.input);
     this.characterName = data?.name;
   }
 
@@ -89,23 +95,18 @@ export default class Game extends Phaser.Scene {
       treesLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
-      const barb = this.characterName === "barb";
-      const archer = this.characterName === "archer";
-      const wizard = this.characterName === "wizard";
-
-      this.scene.physics.world.enableBody(
-        this.man,
-        Phaser.Physics.Arcade.DYNAMIC_BODY
-      );
-
-      if (barb) {
-        this.man = new Barb(this, 2000, 1100, "barb") as Barb;
-      } else if (archer) {
-        this.man = new Archer(this, 2000, 1100, "archer") as Archer;
-      } else if (wizard) {
-        this.man = new Wizard(this, 2000, 1100, "wizard") as Wizard;
+      if (this.characterName === "barb") {
+        this.barb = this.add.barb(2000, 1100, "barb");
+        this.cameras.main.startFollow(this.barb);
+      } else if (this.characterName === "archer") {
+        this.archer = this.add.archer(2000, 1100, "archer");
+        this.cameras.main.startFollow(this.archer);
+      } else if (this.characterName === "wizard") {
+        this.wizard = this.add.wizard(2000, 1100, "wizard");
+        this.cameras.main.startFollow(this.wizard);
       } else {
-        this.man = new Player(this, 2000, 1100, "man") as Player;
+        this.man = this.add.player(2000, 1100, "man");
+        this.cameras.main.startFollow(this.man);
       }
 
       // Create a group for skeletons and set their properties
@@ -138,7 +139,9 @@ export default class Game extends Phaser.Scene {
       });
 
       // Set knives for the player character
-      this.man.setProjectiles(this.projectiles);
+      if (this.man) {
+        this.man.setProjectiles(this.projectiles);
+      }
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");
@@ -212,9 +215,6 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      // Follow the player with the camera
-      this.cameras.main.startFollow(this.man);
-
       // Add a slime to the group
       this.slimes.get(414, 90, "slime");
       if (this.man && this.slimes) {
@@ -236,7 +236,7 @@ export default class Game extends Phaser.Scene {
       }
 
       // Handle collisions between player and enemy characters
-      if (this.playerEnemiesCollider) {
+      if (this.man && this.playerEnemiesCollider) {
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           this.man,
@@ -248,7 +248,7 @@ export default class Game extends Phaser.Scene {
         );
       }
 
-      if (this.playerSlimeCollider) {
+      if (this.man && this.playerSlimeCollider) {
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           this.man,
@@ -289,9 +289,9 @@ export default class Game extends Phaser.Scene {
         },
       });
       this.Npc_wizard.get(880, 112, "npcWizard");
-      this.interactKey = this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.E
-      );
+      if (this.interactKey) {
+        return this.interactKey;
+      }
     }
   }
 
@@ -445,51 +445,49 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
-      if (
-        Phaser.Input.Keyboard.JustDown(
-          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-        )
-      ) {
-        this.physics.overlap(
-          this.man,
-          this.Npc_wizard,
-          this.handlePlayerNpcCollision as any,
-          undefined,
-          this
-        );
-      }
-      if (this.playerRef) {
-        update(this.playerRef, {
-          x: this.man.x,
-          y: this.man.y,
-          anim: this.man.anims.currentAnim
-            ? this.man.anims.currentAnim.key
-            : null,
-          frame: this.man.anims.currentFrame
-            ? this.man.anims.currentFrame.frame.name
-            : null,
-          online: true,
-        });
-      }
+      // if (
+      //   this.interactKey &&
+      //   Phaser.Input.Keyboard.JustDown(this.interactKey)
+      // ) {
+      //   this.physics.overlap(
+      //     this.man,
+      //     this.Npc_wizard,
+      //     this.handlePlayerNpcCollision as any,
+      //     undefined,
+      //     this
+      //   );
+    }
+    if (this.playerRef && this.man) {
+      update(this.playerRef, {
+        x: this.man.x,
+        y: this.man.y,
+        anim: this.man.anims.currentAnim
+          ? this.man.anims.currentAnim.key
+          : null,
+        frame: this.man.anims.currentFrame
+          ? this.man.anims.currentFrame.frame.name
+          : null,
+        online: true,
+      });
+    }
 
-      if (this.characterName === "rogue") {
-        if (this.updateIterations % 3 === 0) {
-          for (const entry of this.enemies.entries()) {
-            this.dataToSend[entry[0]] = {
-              id: entry[0],
-              x: entry[1].x,
-              y: entry[1].y,
-              anim: entry[1].anims.currentAnim
-                ? entry[1].anims.currentAnim.key
-                : null,
-              frame: entry[1].anims.currentFrame
-                ? entry[1].anims.currentFrame.frame.name
-                : null,
-              alive: true,
-            };
-          }
-          update(this.enemyDB, this.dataToSend);
+    if (this.characterName === "rogue") {
+      if (this.updateIterations % 3 === 0) {
+        for (const entry of this.enemies.entries()) {
+          this.dataToSend[entry[0]] = {
+            id: entry[0],
+            x: entry[1].x,
+            y: entry[1].y,
+            anim: entry[1].anims.currentAnim
+              ? entry[1].anims.currentAnim.key
+              : null,
+            frame: entry[1].anims.currentFrame
+              ? entry[1].anims.currentFrame.frame.name
+              : null,
+            alive: true,
+          };
         }
+        update(this.enemyDB, this.dataToSend);
       }
     }
   }

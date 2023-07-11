@@ -211,10 +211,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.anims.play("man-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
-      // } else {
-      //   const idle = `man-idle-${this.lastMove}`;
-      //   this.play(idle);
-      //   this.setVelocity(0, 0);
+    } else {
+      const idle = `man-idle-${this.lastMove}`;
+      this.play(idle);
+      this.setVelocity(0, 0);
     }
   }
 }

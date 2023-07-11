@@ -227,6 +227,16 @@ Phaser.GameObjects.GameObjectFactory.register(
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
 
+    // Set the hitbox size
+    const hitboxWidth = sprite.width * 0.42;
+    const hitboxHeight = sprite.height * 0.42;
+    sprite.body?.setSize(hitboxWidth, hitboxHeight);
+
+    // Set the hitbox offset
+    const offsetX = sprite.width / (10 / 3);
+    const offsetY = sprite.height * 0.6;
+    sprite.body?.setOffset(offsetX, offsetY);
+
     return sprite;
   }
 );

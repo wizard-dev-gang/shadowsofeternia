@@ -309,27 +309,27 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
 
     character1.on("pointerdown", async () => {
-      this.startGame("rogue");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("rogue", this);
-      //   if (isCharacterAvailable) {
-      //     char1Text.setText("Rogue (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      this.startGame("rogue"); // Comment this line for final build
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("rogue", this);
+        if (isCharacterAvailable) {
+          char1Text.setText("Rogue (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character2.on("pointerdown", async () => {
       this.startGame("barb");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("barb", this);
-      //   if (isCharacterAvailable) {
-      //     char2Text.setText("Barbarian (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("barb", this);
+        if (isCharacterAvailable) {
+          char2Text.setText("Barbarian (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character3.on("pointerdown", async () => {
-      // this.startGame("archer");
+      this.startGame("archer");
       if (!hasChosenCharacter) {
         const isCharacterAvailable = await writeUserData("archer", this);
         if (isCharacterAvailable) {
@@ -339,7 +339,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       }
     });
     character4.on("pointerdown", async () => {
-      // this.startGame("wizard");
+      this.startGame("wizard");
       if (!hasChosenCharacter) {
         const isCharacterAvailable = await writeUserData("wizard", this);
         if (isCharacterAvailable) {

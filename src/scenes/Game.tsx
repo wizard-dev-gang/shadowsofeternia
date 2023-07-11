@@ -9,6 +9,7 @@ import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
 import { Archer } from "../characters/Archer";
+import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
 import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
@@ -50,7 +51,7 @@ export default class Game extends Phaser.Scene {
   }
 
   preload() {
-    const cursors = this.input.keyboard?.createCursorKeys();
+    // const cursors = this.input.keyboard?.createCursorKeys();
   }
   init(data?: { name: string }) {
     console.log("init data", data);
@@ -109,7 +110,7 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
 
-      let playerCharacters = [this.barb, this.wizard, this.archer, this.man];
+      const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -222,7 +223,7 @@ export default class Game extends Phaser.Scene {
       if (playerCharacters && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
-          playerCharacters,
+          playerCharacters as Phaser.GameObjects.GameObject[],
           this.slimes,
           this.handlePlayerSlimeCollision,
           undefined,
@@ -266,11 +267,31 @@ export default class Game extends Phaser.Scene {
       // Handle collisions between player and layers
       if (playerCharacters) {
         //if statements are to satisfy TypeScipt compiler
-        if (waterLayer) this.physics.add.collider(playerCharacters, waterLayer);
-        if (groundLayer) this.physics.add.collider(playerCharacters, groundLayer);
-        if (houseLayer) this.physics.add.collider(playerCharacters, houseLayer);
-        if (fenceLayer) this.physics.add.collider(playerCharacters, fenceLayer);
-        if (treesLayer) this.physics.add.collider(playerCharacters, treesLayer);
+        if (waterLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            waterLayer
+          );
+        if (groundLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            groundLayer
+          );
+        if (houseLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            houseLayer
+          );
+        if (fenceLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            fenceLayer
+          );
+        if (treesLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            treesLayer
+          );
 
         // Add text for player name
         this.playerName = this.add
@@ -312,6 +333,7 @@ export default class Game extends Phaser.Scene {
   //     console.log("Interacting with the NPC Wizard");
   //   }
   // }
+
   // Method to handle collision between projectiles and walls
   private handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -430,6 +452,9 @@ export default class Game extends Phaser.Scene {
       character = this.man;
     } else if (this.barb) {
       this.barb.update();
+      character = this.barb;
+    } else if (this.archer) {
+      this.archer.update();
       character = this.barb;
     } else if (this.wizard) {
       this.wizard.update();

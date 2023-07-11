@@ -20,11 +20,14 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
       //   for (const enemyId in enemiesData) {
       //     const enemyData = enemiesData[enemyId];
 
-      //     // Skip if player is not online
-      //     if (!enemyData.alive) continue;
-
       //     let enemy = gameInstance.enemies.get(enemyId);
 
+      //     if (!enemyData.isAlive) {
+      //       enemy.setVisible(false)
+      //       enemy.destroy()
+      //       gameInstance.enemies.delete(enemyId)
+      //       continue
+      //     };
       //     // Create or update other players
       //     if (!enemy) {
       //       enemy = gameInstance.physics.add.sprite(
@@ -38,7 +41,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
       //     enemy.y = enemyData.y;
 
       //     // Play animation and set frame for other players
-      //     if (enemyData.anim && enemyData.frame) {
+      //     if (enemyData.anim && enemyData.frame && enemyData.isAlive) {
       //       enemy.anims.play(enemyData.anim, true);
       //       enemy.anims.setCurrentFrame(
       //         enemy.anims.currentAnim.frames.find(

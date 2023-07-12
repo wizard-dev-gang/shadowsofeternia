@@ -28,6 +28,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE
   private _health: number
   private damageTime = 0;
+  public isAlive:boolean = true
 
   constructor(
     scene: Phaser.Scene,

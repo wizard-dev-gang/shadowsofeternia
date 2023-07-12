@@ -102,11 +102,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     yLoc?: number,
     attackObj?: string
   ) {
-    console.log('in throw, before check')
+
     if (!this.projectiles) {
       return;
     }
-    console.log('in throw, after check')
+
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
       direction = direction? direction: parts[2];

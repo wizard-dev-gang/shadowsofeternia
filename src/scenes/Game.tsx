@@ -21,7 +21,7 @@ export default class Game extends Phaser.Scene {
   private barb?: Barb;
   private archer?: Archer;
   private wizard?: Wizard;
-  private projectiles!: Phaser.Physics.Arcade.Group;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
@@ -150,7 +150,7 @@ export default class Game extends Phaser.Scene {
       });
 
       // Add a skeleton to the group
-      this.skeletons.get(256, 256, "jacked-skeleton");
+      this.skeletons.get(2000, 1200, "jacked-skeleton");
       this.skeletons.get(256, 256, "jacked-skeleton");
       this.skeletons.get(256, 256, "jacked-skeleton");
 
@@ -370,6 +370,7 @@ export default class Game extends Phaser.Scene {
     (skeleton as Skeleton).getHealth();
     (skeleton as Skeleton).handleDamage(dir);
     if ((skeleton as Skeleton).getHealth() <= 0) {
+      skeleton.isAlive =false
       this.skeletons.killAndHide(skeleton);
       skeleton.destroy();
     }
@@ -498,25 +499,36 @@ export default class Game extends Phaser.Scene {
             ? character.anims.currentFrame.frame.name
             : null,
           online: true,
+          projectilesFromDB: character.projectilesToSend
         });
+        character.projectilesToSend = {}
       }
     }
 
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
+          if (entry[1].isAlive) {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              x: entry[1].x,
+              y: entry[1].y,
+              anim: entry[1].anims.currentAnim
+                ? entry[1].anims.currentAnim.key
+                : null,
+              frame: entry[1].anims.currentFrame
+                ? entry[1].anims.currentFrame.frame.name
+                : null,
+              isAlive: entry[1].isAlive,
+          }
+        }
+        else
+        {
           this.dataToSend[entry[0]] = {
             id: entry[0],
-            x: entry[1].x,
-            y: entry[1].y,
-            anim: entry[1].anims.currentAnim
-              ? entry[1].anims.currentAnim.key
-              : null,
-            frame: entry[1].anims.currentFrame
-              ? entry[1].anims.currentFrame.frame.name
-              : null,
-            alive: true,
-          };
+            isAlive: entry[1].isAlive,
+          }
+        }
         }
         update(this.enemyDB, this.dataToSend);
       }

@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 
 interface WASDKeys {
@@ -31,6 +32,8 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   private _health: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
+  private lastThrowTime = 0;
+
 
   private keys: WASDKeys = {
     W: undefined,
@@ -146,6 +149,10 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     projectile.y += vec.y * 16;
     projectile.setVelocity(vec.x * 300, vec.y * 300);
     console.log(projectile.x, projectile.y, direction);
+
+    projectile.setData('initialX', projectile.x);
+    projectile.setData('initialY', projectile.y);
+
   }
 
   preUpdate(t: number, dt: number): void {
@@ -172,43 +179,66 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    // if (this.keys.Space?.isDown) {
-    //   const slash = `barb-attack-${this.lastMove}`;
-    //   this.anims.play(slash, true);
-    //   this.setVelocity(0, 0);
-    //   this.throwProjectile();
-    // }
-    const speed = 200;
-    if (this.keys.A?.isDown) {
-      // console.log("A is down");
+
+    this.projectiles?.getChildren().forEach((projectile: Phaser.Physics.Arcade.Image) => {
+      const initialX = projectile.getData('initialX');
+      const initialY = projectile.getData('initialY');
+  
+      const distanceX = Math.abs(projectile.x - initialX);
+      const distanceY = Math.abs(projectile.y - initialY);
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+  
+      const maxDistance = 16; //Sets max distance the projectile can travel
+      if (distance >= maxDistance) {
+        this.projectiles?.remove(projectile, true, true);
+      }
+    });
+    
+
+  const speed = 200;
+  let isMoving = false;
+
+  if (this.keys.A?.isDown) {
       this.anims.play("barb-walk-left", true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
-    } else if (this.keys.D?.isDown) {
-      // console.log("D is down");
+      isMoving = true;
+  } 
+  if (this.keys.D?.isDown) {
       this.anims.play("barb-walk-right", true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
-    } else if (this.keys.W?.isDown) {
-      // console.log("W is down");
+      isMoving = true;
+  }
+  if (this.keys.W?.isDown) {
       this.anims.play("barb-walk-up", true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
-    } else if (this.keys.S?.isDown) {
-      // console.log("S is down");
+      isMoving = true;
+  } 
+  if (this.keys.S?.isDown) {
       this.anims.play("barb-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
-    } else if (this.keys.Space?.isDown) {
+      isMoving = true;
+  } 
+
+  const now = Date.now();
+  const timeSinceLastThrow = now - this.lastThrowTime;
+  const throwCooldown = 1000;  // Cooldown time to attack again
+
+  if (this.keys.Space?.isDown && timeSinceLastThrow > throwCooldown) {
       const slash = `barb-attack-${this.lastMove}`;
       this.anims.play(slash, true);
-      this.setVelocity(0, 0);
       this.throwProjectile();
-    } else {
+      this.lastThrowTime = now;
+  } 
+
+  if (!isMoving) {
       const idle = `barb-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
-    }
+  }
   }
 }
 

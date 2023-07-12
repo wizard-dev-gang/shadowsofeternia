@@ -241,9 +241,19 @@ export default class Game extends Phaser.Scene {
         if (fenceLayer) this.physics.add.collider(this.slimes, fenceLayer);
         if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
       }
-
+      if (playerCharacters && this.skeletons) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.skeletons,
+          this.handlePlayerEnemyCollision,
+          undefined,
+          this
+        );
+      }
+      console.log('creating colliders...')
       // Handle collisions between player and enemy characters
       if (this.man && this.playerEnemiesCollider) {
+        console.log('create playerenemiescollider')
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           this.man,
@@ -257,6 +267,7 @@ export default class Game extends Phaser.Scene {
 
       // Handle collisions
       if (this.man && this.playerSlimeCollider) {
+        console.log('create playersilmecollider')
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           this.man,
@@ -407,6 +418,7 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
+    console.log('handleplayerEnemyCollision')
     if (
       (obj1 instanceof Player || Barb || Wizard) &&
       obj2 instanceof Skeleton
@@ -433,6 +445,7 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
+    console.log('handle playerslimecollision')
     if ((obj1 instanceof Player || Barb || Wizard) && obj2 instanceof Slime) {
       const man = (obj1 as Player) || Barb || Wizard;
       const slime = obj2 as Slime;
@@ -466,9 +479,6 @@ export default class Game extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return
-
-    console.log(character.x)
-    console.log(character.y)
 
     const forestX = character.x > 2075 && character.x < 2125
     const forestY = character.y > 25 && character.y < 75

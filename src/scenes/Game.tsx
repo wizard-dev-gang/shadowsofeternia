@@ -462,9 +462,11 @@ export default class Game extends Phaser.Scene {
 
   update() {
 
+    
+    
     this.updateIterations++;
     let character;
-
+    
     if (this.man) {
       this.man.update();
       character = this.man;
@@ -479,9 +481,12 @@ export default class Game extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return
+    
+    console.log("x", character.x)
+    console.log("y", character.y)
 
-    const forestX = character.x > 2075 && character.x < 2125
-    const forestY = character.y > 25 && character.y < 75
+    const forestX = character.x >= 2058 && character.x <= 2101;
+    const forestY = character.y === 28.8;
     if (forestX && forestY) {
       this.scene.start("forest", { characterName: this.characterName });
       return;

@@ -68,7 +68,8 @@ export class CollisionHandler {
     (skeleton as Skeleton).handleDamage(dir);
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
-      (skeleton.isAlive = false), skeleton.destroy();
+      skeleton.isAlive = false,
+      skeleton.destroy();
     }
   }
 

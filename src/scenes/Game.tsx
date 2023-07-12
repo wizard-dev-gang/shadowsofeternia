@@ -148,7 +148,7 @@ export default class Game extends Phaser.Scene {
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
-        maxSize: 3,
+        maxSize: 100,
       });
 
       // Set knives for each player

@@ -131,12 +131,9 @@ export default class ChooseCharacterScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image(
-      "pixel-art-night-sky-background",
-      "/assets/pixel-art-night-sky-background.png"
-    );
+    this.load.image("pansbg", "/assets/pansbg.png");
 
-    this.load.spritesheet("rogue", "/assets/manAlone.png", {
+    this.load.spritesheet("rogue", "/assets/man.png", {
       frameWidth: 32,
       frameHeight: 32,
     });
@@ -165,10 +162,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
 
     let hasChosenCharacter = false;
 
-    this.add
-      .image(0, 0, "pixel-art-night-sky-background")
-      .setOrigin(0, 0)
-      .setScale(0.8);
+    this.add.image(0, 0, "pansbg").setOrigin(0, 0).setScale(0.7);
 
     this.add
       .text(
@@ -184,7 +178,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const character1 = this.add
-      .sprite(50, 200, "rogue")
+      .sprite(50, 200, "man")
       .setScale(2)
       .setInteractive({ useHandCursor: true });
     const character2 = this.add

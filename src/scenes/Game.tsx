@@ -15,7 +15,7 @@ import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
-import { createPotionAnims } from "../anims/PotionAnims";
+import { Potion } from "../characters/Potion";
 
 export default class Game extends Phaser.Scene {
   private man?: Player; // Reference to the player character
@@ -30,6 +30,7 @@ export default class Game extends Phaser.Scene {
   private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private collisionHandler: CollisionHandler;
+  private potion?: Potion
 
   // Firebase variables
   public characterName?: string;
@@ -77,7 +78,6 @@ export default class Game extends Phaser.Scene {
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
     createNpcAnims(this.anims);
-    createPotionAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
@@ -318,18 +318,34 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
       );
-      this.
+      this.potion = this.physics.add.group({
+        classType: Potion,
+        createCallback: (go) => {
+          const PotionGo = go as Potion;
+          if (PotionGo.body) {
+            PotionGo.body.onCollide = true;
+          }
+        },
+      });
+      this.potion.get(2062, 1023, "Potion");
+      this.slimes.get(2000, 1000, "slime")
     }
+  }
+  private handlePlayerPotionCollision(player: Phaser.GameObjects.GameObject, potion: Phaser.GameObjects.GameObject) {
+    // Perform actions for interacting with the potion
+    ++this.man._health
+    console.log("Potion Picked Up HP:", this.man.getHealth())
+  
+    // Remove the potion from the scene
+    potion.destroy();
   }
   private handlePlayerNpcCollision(
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject,
-    backgroundImage: string
   ) {
     // Check if the player is interacting with the wizard character
     if (
@@ -400,6 +416,14 @@ export default class Game extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 10;
 
+      //Handle Collision Between Player and Potions
+      this.physics.overlap(
+        this.man, 
+        this.potion, 
+        this.handlePlayerPotionCollision, 
+        undefined, 
+        this);
+
       // Handle collision between knives and skeletons
       this.physics.overlap(
         this.projectiles,
@@ -416,6 +440,19 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
+      if (
+        Phaser.Input.Keyboard.JustDown(
+          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+        )
+      ) {
+        this.physics.overlap(
+          this.man,
+          this.Npc_wizard,
+          this.handlePlayerNpcCollision,
+          undefined,
+          this
+        );
+      }
       // Update the player's data in the database
       if (this.playerRef) {
         update(this.playerRef, {

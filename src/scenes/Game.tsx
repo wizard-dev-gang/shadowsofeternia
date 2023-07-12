@@ -61,6 +61,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    console.log("game create")
     this.scene.run("player-ui");
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
@@ -447,6 +448,7 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
+
     this.updateIterations++;
     let character;
 
@@ -463,8 +465,19 @@ export default class Game extends Phaser.Scene {
       this.wizard.update();
       character = this.wizard;
     }
+    if (!character) return
 
-    if (character && this.playerName) {
+    console.log(character.x)
+    console.log(character.y)
+
+    const forestX = character.x > 2075 && character.x < 2125
+    const forestY = character.y > 25 && character.y < 75
+    if (forestX && forestY) {
+      this.scene.start("forest", { characterName: this.characterName });
+      return;
+    }
+
+    if (this.playerName) {
       // Update the player's name position horizontally
       this.playerName.x = character.x;
       // Position of the name above the player

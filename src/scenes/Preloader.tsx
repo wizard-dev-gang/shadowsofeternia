@@ -12,7 +12,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("healthBar-left-cap", "ui/healthBar-left-cap.png");
     this.load.image("healthBar-middle", "ui/healthBar-middle.png");
     this.load.image("healthBar-right-cap", "ui/healthBar-right-cap.png");
-
+    this.load.image("text-bubble", "ui/text-bubble.png")
     // this.load.image("tiles", "/tiles/Grasslands-Terrain.png")
     // this.load.tilemapTiledJSON("town-map", "/tiles/town-map.json")
     // this.load.image("houses", "/tiles/Grasslands-Props.png")
@@ -21,11 +21,18 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("water", "/tiles/Grasslands-Water.png")
     this.load.tilemapTiledJSON("townMapV2", "tiles/townMapV2.json")
 
+
         // forestMap PreLoader
         this.load.image("ruinsTerrain", "/tiles/Ruins-Terrain.png")
         this.load.image("ruinsProps", "/tiles/Ruins-Props.png")
         this.load.image("grassProps", "/tiles/Grasslands-Props.png")
         this.load.tilemapTiledJSON("forestMap", "tiles/forestMap.json")
+
+    // Ruins map Preload
+    this.load.image("structures", "/tiles/Ruins-Structures.png")
+    this.load.image("temple", "/tiles/Ancient-Temple.png")
+    this.load.tilemapTiledJSON("ruinsMap", "tiles/ruinsMap.json")
+
 
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");

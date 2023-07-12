@@ -388,9 +388,6 @@ export default class Game extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return
-    
-    console.log("x", character.x)
-    console.log("y", character.y)
 
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y === 28.8;

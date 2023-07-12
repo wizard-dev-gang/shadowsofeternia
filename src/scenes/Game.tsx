@@ -325,7 +325,6 @@ export default class Game extends Phaser.Scene {
   private handlePlayerNpcCollision(
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject,
-    backgroundImage: string
   ) {
     // Check if the player is interacting with the wizard character
     if (

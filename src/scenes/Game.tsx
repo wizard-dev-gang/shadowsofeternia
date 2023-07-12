@@ -368,44 +368,6 @@ export default class Game extends Phaser.Scene {
       });
     }
   }
-  // Method to handle collision between projectiles and walls
-  private handleProjectileWallCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    if (obj1 instanceof Phaser.Physics.Arcade.Image) {
-      const projectile = obj1 as Phaser.Physics.Arcade.Image;
-      projectile.destroy();
-    }
-  }
-
-  // Method to handle collision between projectiles and skeleton
-  private handleProjectileSkeletonCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
-  ) {
-    const projectile = obj1 as Phaser.Physics.Arcade.Image;
-    const skeleton = obj2 as Skeleton;
-    // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile);
-    projectile.destroy();
-    const dx = skeleton.x - projectile.x;
-    const dy = skeleton.y - projectile.y;
-
-    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-    skeleton.setVelocity(dir.x, dir.y);
-    skeleton.getHealth();
-    skeleton.handleDamage(dir);
-    if (skeleton.getHealth() <= 0) {
-      this.skeletons.killAndHide(skeleton);
-      skeleton.destroy();
-    }
-  }
-
-
-      if (this.interactKey) {
-        return this.interactKey;
-      }
 
     }
 

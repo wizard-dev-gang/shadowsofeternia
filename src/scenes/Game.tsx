@@ -14,6 +14,7 @@ import { Wizard } from "../characters/Wizard";
 import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
+// import { CollisionHandler } from "./Collisions";
 
 export default class Game extends Phaser.Scene {
   private man?: Player; // Reference to the player character
@@ -141,10 +142,12 @@ export default class Game extends Phaser.Scene {
         maxSize: 3,
       });
 
-      // Set knives for the player character
-      if (this.man) {
-        this.man.setProjectiles(this.projectiles);
-      }
+      // Set knives for each player
+      playerCharacters.forEach((character) => {
+        if (character) {
+          character.setProjectiles(this.projectiles);
+        }
+      });
 
       // Add a skeleton to the group
       this.skeletons.get(256, 256, "jacked-skeleton");
@@ -455,7 +458,7 @@ export default class Game extends Phaser.Scene {
       character = this.barb;
     } else if (this.archer) {
       this.archer.update();
-      character = this.barb;
+      character = this.archer;
     } else if (this.wizard) {
       this.wizard.update();
       character = this.wizard;

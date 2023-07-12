@@ -39,11 +39,11 @@ function GameComponent() {
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        // alignItems: "center",
         height: "100vh",
+        marginTop: "300px",
       }}
     ></div>
   );
 }
-
 export default GameComponent;

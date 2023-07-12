@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -13,6 +13,17 @@ const Login: React.FC<LoginProps> = () => {
   const auth = getAuth();
   const navigate = useNavigate();
   const [authing, setAuthing] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFadeIn(true);
+    }, 500); // Start fade-in after 500ms
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   const signInWithGoogle = async () => {
     setAuthing(true);
@@ -56,15 +67,31 @@ const Login: React.FC<LoginProps> = () => {
   };
 
   return (
-    <div className="Login-Wrapper">
-      <h1>Login</h1>
-      <button onClick={signInWithGoogle} disabled={authing}>
-        Sign in with Google
-      </button>
+    <div
+      className={`flex flex-col items-center justify-center bg-gray-800 text-white p-8 rounded-lg ${
+        fadeIn ? "opacity-100 transition-opacity duration-500" : "opacity-0"
+      }`}
+    >
+      <h1 className="text-3xl font-bold text-center ">Welcome to</h1>
       <br />
-      <button onClick={signInAnonymous} disabled={authing}>
-        Sign in As Guest
-      </button>
+      <p className="soetext">Shadows of Eternia!</p>
+      <div className="Login-Wrapper flex flex-col items-center mt-8">
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <button
+          onClick={signInWithGoogle}
+          disabled={authing}
+          className="py-2 px-4 bg-blue-500 rounded-md text-white hover:bg-blue-600"
+        >
+          Sign in with Google
+        </button>
+        <button
+          onClick={signInAnonymous}
+          disabled={authing}
+          className="py-2 px-4 mt-4 bg-blue-500 rounded-md text-white hover:bg-blue-600"
+        >
+          Sign in As Guest
+        </button>
+      </div>
     </div>
   );
 };

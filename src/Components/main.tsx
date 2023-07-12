@@ -19,6 +19,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={
@@ -27,9 +28,15 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </AuthRoute>
           }
         />
-        <Route path="/game" element={<GameComponent />} />
+        <Route
+          path="/game"
+          element={
+            <AuthRoute>
+              <GameComponent />
+            </AuthRoute>
+          }
+        />
         <Route path="/*" element={<NotFound />} />
-        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

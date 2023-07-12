@@ -172,6 +172,7 @@ export class CollisionHandler {
     if (
       player instanceof Player ||
       player instanceof Barb ||
+      player instanceof Archer ||
       player instanceof Wizard ||
       (npc instanceof Npc_wizard && npc instanceof Npc_wizard)
     ) {

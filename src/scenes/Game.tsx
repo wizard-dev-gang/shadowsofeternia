@@ -66,7 +66,7 @@ export default class Game extends Phaser.Scene {
       this.slimes,
       this.time,
       this.Npc_wizard,
-      this.add,
+      this.add
     );
     this.scene.run("player-ui");
 
@@ -251,10 +251,10 @@ export default class Game extends Phaser.Scene {
           this
         );
       }
-      console.log('creating colliders...')
+      console.log("creating colliders...");
       // Handle collisions between player and enemy characters
       if (this.man && this.playerEnemiesCollider) {
-        console.log('create playerenemiescollider')
+        console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           this.man,
@@ -268,7 +268,7 @@ export default class Game extends Phaser.Scene {
 
       // Handle collisions
       if (this.man && this.playerSlimeCollider) {
-        console.log('create playersilmecollider')
+        console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           this.man,
@@ -329,7 +329,6 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
@@ -344,37 +343,35 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-    // Method to handle collision between player and enemy characters
-    private handlePlayerEnemyCollision(
-      obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-      obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  // Method to handle collision between player and enemy characters
+  private handlePlayerEnemyCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  ) {
+    console.log("handleplayerEnemyCollision");
+    if (
+      (obj1 instanceof Player || Barb || Wizard) &&
+      obj2 instanceof Skeleton
     ) {
-      console.log('handleplayerEnemyCollision')
-      if (
-        (obj1 instanceof Player || Barb || Wizard) &&
-        obj2 instanceof Skeleton
-      ) {
-        const man = (obj1 as Player) || Barb || Wizard;
-        const skeleton = obj2 as Skeleton;
+      const man = (obj1 as Player) || Barb || Wizard;
+      const skeleton = obj2 as Skeleton;
 
-        const dx =
-          (man as Phaser.GameObjects.Image).x -
-          (skeleton as Phaser.GameObjects.Image).x;
-        const dy =
-          (man as Phaser.GameObjects.Image).y -
-          (skeleton as Phaser.GameObjects.Image).y;
+      const dx =
+        (man as Phaser.GameObjects.Image).x -
+        (skeleton as Phaser.GameObjects.Image).x;
+      const dy =
+        (man as Phaser.GameObjects.Image).y -
+        (skeleton as Phaser.GameObjects.Image).y;
 
-        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-        man.setVelocity(dir.x, dir.y);
-        man.handleDamage(dir);
-        // console.log(man._health);
-        sceneEvents.emit("player-health-changed", man.getHealth());
-      }
+      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+      man.setVelocity(dir.x, dir.y);
+      man.handleDamage(dir);
+      // console.log(man._health);
+      sceneEvents.emit("player-health-changed", man.getHealth());
     }
-
+  }
 
   update() {
-
     this.updateIterations++;
     let character;
 
@@ -391,7 +388,7 @@ export default class Game extends Phaser.Scene {
       this.wizard.update();
       character = this.wizard;
     }
-    if (!character) return
+    if (!character) return;
 
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y === 28.8;
@@ -428,9 +425,9 @@ export default class Game extends Phaser.Scene {
         )
       ) {
         this.physics.overlap(
-          this.man,
+          character,
           this.Npc_wizard,
-          this.collisionHandler.handlePlayerNpcCollision,
+          this.collisionHandler.handlePlayerNpcCollision as any,
           undefined,
           this
         );

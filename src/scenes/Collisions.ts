@@ -155,4 +155,18 @@ export class CollisionHandler {
       }
     }
   }
+  handlePlayerNpcCollision(
+    player: Phaser.GameObjects.GameObject,
+    npc: Phaser.GameObjects.GameObject
+  ) {
+    // Check if the player is the wizard character and the NPC is the wizard
+    if (
+      player instanceof Player ||
+      Wizard ||
+      (Barb && npc instanceof Npc_wizard)
+    ) {
+      // Perform actions for interacting with the NPC
+      console.log("Interacting with the NPC Wizard");
+    }
+  }
 }

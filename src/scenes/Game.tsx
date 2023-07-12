@@ -522,7 +522,14 @@ export default class Game extends Phaser.Scene {
                 : null,
               isAlive: entry[1].isAlive,
           }
-          };
+        }
+        else
+        {
+          this.dataToSend[entry[0]] = {
+            id: entry[0],
+            isAlive: entry[1].isAlive,
+          }
+        }
         }
         update(this.enemyDB, this.dataToSend);
       }

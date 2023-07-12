@@ -6,7 +6,7 @@ import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
-// import { sceneEvents } from "../events/EventsCenter";
+import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
 import { Archer } from "../characters/Archer";
 import "../characters/Archer";
@@ -64,7 +64,9 @@ export default class Game extends Phaser.Scene {
       this.projectiles,
       this.skeletons,
       this.slimes,
-      this.time
+      this.time,
+      this.Npc_wizard,
+      this.add,
     );
     this.scene.run("player-ui");
 
@@ -327,33 +329,6 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-  // Method to handle collision between player and enemy characters
-  private handlePlayerEnemyCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    console.log('handleplayerEnemyCollision')
-    if (
-      (obj1 instanceof Player || Barb || Wizard) &&
-      obj2 instanceof Skeleton
-    ) {
-      const man = (obj1 as Player) || Barb || Wizard;
-      const skeleton = obj2 as Skeleton;
-
-      const dx =
-        (man as Phaser.GameObjects.Image).x -
-        (skeleton as Phaser.GameObjects.Image).x;
-      const dy =
-        (man as Phaser.GameObjects.Image).y -
-        (skeleton as Phaser.GameObjects.Image).y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
-    }
-  }
 
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
@@ -369,11 +344,40 @@ export default class Game extends Phaser.Scene {
     }
   }
 
+    // Method to handle collision between player and enemy characters
+    private handlePlayerEnemyCollision(
+      obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+      obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+    ) {
+      console.log('handleplayerEnemyCollision')
+      if (
+        (obj1 instanceof Player || Barb || Wizard) &&
+        obj2 instanceof Skeleton
+      ) {
+        const man = (obj1 as Player) || Barb || Wizard;
+        const skeleton = obj2 as Skeleton;
+
+        const dx =
+          (man as Phaser.GameObjects.Image).x -
+          (skeleton as Phaser.GameObjects.Image).x;
+        const dy =
+          (man as Phaser.GameObjects.Image).y -
+          (skeleton as Phaser.GameObjects.Image).y;
+
+        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+        man.setVelocity(dir.x, dir.y);
+        man.handleDamage(dir);
+        // console.log(man._health);
+        sceneEvents.emit("player-health-changed", man.getHealth());
+      }
+    }
+
+
   update() {
 
     this.updateIterations++;
     let character;
-    
+
     if (this.man) {
       this.man.update();
       character = this.man;

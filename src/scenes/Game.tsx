@@ -319,11 +319,55 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-      this.Npc_wizard.get(880, 112, "npcWizard");
 
-      if (this.interactKey) {
-        return this.interactKey;
-      }
+      this.Npc_wizard.get(1876, 1028, "npcWizard");
+      this.interactKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.E
+      );
+    }
+  }
+  private handlePlayerNpcCollision(
+    player: Phaser.GameObjects.GameObject,
+    npc: Phaser.GameObjects.GameObject,
+    backgroundImage: string
+  ) {
+    // Check if the player is interacting with the wizard character
+    if (
+      player instanceof Player ||
+      player instanceof Barb ||
+      player instanceof Wizard ||
+      (npc instanceof Npc_wizard && npc instanceof Npc_wizard)
+    ) {
+      // Perform actions for interacting with the NPC
+      console.log("Interacting with the NPC Wizard");
+  
+      // Add text on the screen
+      const text = this.add.text(1876, 1028, "Hello World!", {
+        fontSize: "11px",
+        color: "#000000",
+        padding: {
+          left: 10,
+          right: 10,
+          top: 5,
+          bottom: 5,
+        },
+      });
+      text.setOrigin(0.5, 1.4);
+      text.setDepth(1);
+      
+      // Add a background image behind the text
+    const background = this.add.image(1876, 1028, "text-bubble");
+    background.setDisplaySize(text.width, text.height);
+    background.setOrigin(0.53, 1.5);
+    background.setDepth(0);
+
+      // Remove the text after a certain delay
+      this.time.delayedCall(2000, () => {
+        text.destroy();
+        background.destroy();
+      });
+    }
+  }
 
     }
 

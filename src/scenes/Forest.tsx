@@ -68,7 +68,7 @@ export default class Forest extends Phaser.Scene {
         }
     }
     update(){
-        if (this.man) {
+        if (this.character) {
             this.character?.update();
           }
     }

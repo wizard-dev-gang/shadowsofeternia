@@ -29,9 +29,6 @@ export default class Game extends Phaser.Scene {
   private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private collisionHandler: CollisionHandler;
-  // private interactKey = this.input.keyboard.addKey(
-  //   Phaser.Input.Keyboard.KeyCodes.E
-  // );
 
   // Firebase variables
   public characterName?: string;
@@ -340,7 +337,7 @@ export default class Game extends Phaser.Scene {
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
-  
+
       // Add text on the screen
       const text = this.add.text(1876, 1028, "Hello World!", {
         fontSize: "11px",
@@ -354,21 +351,18 @@ export default class Game extends Phaser.Scene {
       });
       text.setOrigin(0.5, 1.4);
       text.setDepth(1);
-      
+
       // Add a background image behind the text
-    const background = this.add.image(1876, 1028, "text-bubble");
-    background.setDisplaySize(text.width, text.height);
-    background.setOrigin(0.53, 1.5);
-    background.setDepth(0);
+      const background = this.add.image(1876, 1028, "text-bubble");
+      background.setDisplaySize(text.width, text.height);
+      background.setOrigin(0.53, 1.5);
+      background.setDepth(0);
 
       // Remove the text after a certain delay
       this.time.delayedCall(2000, () => {
         text.destroy();
         background.destroy();
       });
-    }
-  }
-
     }
 
     // Add a skeleton to the group
@@ -431,9 +425,9 @@ export default class Game extends Phaser.Scene {
             ? character.anims.currentFrame.frame.name
             : null,
           online: true,
-          projectilesFromDB: character.projectilesToSend
+          projectilesFromDB: character.projectilesToSend,
         });
-        character.projectilesToSend = {}
+        character.projectilesToSend = {};
       }
     }
 
@@ -452,15 +446,13 @@ export default class Game extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+            };
+          } else {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              isAlive: entry[1].isAlive,
+            };
           }
-        }
-        else
-        {
-          this.dataToSend[entry[0]] = {
-            id: entry[0],
-            isAlive: entry[1].isAlive,
-          }
-        }
         }
         update(this.enemyDB, this.dataToSend);
       }

@@ -30,7 +30,7 @@ declare global {
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
-  private _health: number;
+  public _health: number;
   // private knives?: Phaser.Physics.Arcade.Group;
   public projectiles?: Phaser.Physics.Arcade.Group;
   public keys: WASDKeys = {

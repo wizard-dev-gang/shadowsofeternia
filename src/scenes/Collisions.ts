@@ -16,19 +16,22 @@ export class CollisionHandler {
   slimes: Phaser.Physics.Arcade.Group;
   time: Phaser.Time.Clock;
   Npc_wizard!: Phaser.Physics.Arcade.Group;
+  add: GameObjects.GameObjectFactory;
 
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
     skeletons: Phaser.Physics.Arcade.Group,
     slimes: Phaser.Physics.Arcade.Group,
     time: Phaser.Time.Clock,
-    Npc_wizard: Phaser.Physics.Arcade.Group
+    Npc_wizard: Phaser.Physics.Arcade.Group,
+    add: GameObjects.GameObjectFactory
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
     this.slimes = slimes;
     this.time = time;
     this.Npc_wizard = Npc_wizard;
+    this.add = add;
   }
 
   // Method to handle collision between projectiles and walls
@@ -163,7 +166,7 @@ export class CollisionHandler {
 
   handlePlayerNpcCollision(
     player: Phaser.GameObjects.GameObject,
-    npc: Phaser.GameObjects.GameObject,
+    npc: Phaser.GameObjects.GameObject
   ) {
     // Check if the player is interacting with the wizard character
     if (

@@ -90,12 +90,16 @@ function createName() {
 
 function App() {
   const playerId = useRef<string | null>(null); // Reference to store the player ID
-  const playerRef = useRef<DatabaseReference | null>(null); // Reference to the player in the database
+  // const playerRef = useRef<DatabaseReference>(null); // Reference to the player in the database
   const isAddedToDatabase = useRef(false);
   const navigate = useNavigate(); // React router hook to navigate between pages
   const [userName, setUserName] = useState<string>(""); // State to store the player's name
   const [newName, setNewName] = useState<string>(""); // State to store the new name when editing
   const [anonError, setAnonError] = useState<string>(""); // State to store the error message when trying to change the name of an anonymous user
+  const [playerRef, setPlayerRef] = useState<DatabaseReference | null>(null);
+  const [userGold, setUserGold] = useState<number>(0);
+  const [userLevel, setUserLevel] = useState<number>(1);
+  const [equippedWeapon, setEquippedWeapon] = useState<string>("");
 
   const auth = getAuth(firebaseApp); // Get the Firebase authentication object
   const user = auth.currentUser;
@@ -103,22 +107,27 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      console.log("Logged in as:", user);
+      console.log("Authenticated User Logged in as:", user);
       playerId.current = user.uid; // Store the player ID
-      playerRef.current = ref(db, `players/${playerId.current}`); // Reference to the player in the database
+      const newPlayerRef = ref(db, `players/${playerId.current}`); // Reference to the player in the database
+
+      setPlayerRef(newPlayerRef);
 
       // Set up listener for player data in the database
-      onValue(playerRef.current, (snapshot) => {
+      onValue(newPlayerRef, (snapshot) => {
         const playerData = snapshot.val();
         if (playerData) {
           // If the player's data already exists in the database, don't override it
-          console.log("Player data:", playerData);
+          // console.log("Player data:", playerData);
           setUserName(playerData.name || "");
+          setUserGold(playerData.gold || 0);
+          setUserLevel(playerData.level || 1);
+          setEquippedWeapon(playerData.equipped.weapon || "");
           isAddedToDatabase.current = true;
-          update(playerRef.current!, { online: true });
+          update(newPlayerRef, { online: true });
         } else {
           // If the player's data doesn't exist in the database, create it
-          set(playerRef.current!, {
+          set(newPlayerRef, {
             id: playerId.current,
             name: createName(),
             level: 1,
@@ -130,25 +139,27 @@ function App() {
             gold: 0,
             inventory: [],
             equipped: {
-              weapon: "placeholder",
-              armor: "placeholder",
-              accessory: "placeholder",
+              weapon: "None(Placeholder)",
+              armor: "None",
+              accessory: "None",
             },
             online: true,
           });
         }
 
         // Set up onDisconnect event to remove player data when disconnected
-        onDisconnect(playerRef.current)
-          .update({ online: false })
-          .then(() => {
-            console.log(
-              "Prepared to remove player from database upon disconnect."
-            );
-          })
-          .catch((error) => {
-            console.error("Error setting up onDisconnect:", error);
-          });
+        if (newPlayerRef) {
+          onDisconnect(newPlayerRef)
+            .update({ online: false })
+            .then(() => {
+              console.log(
+                "Prepared to remove player from database upon disconnect."
+              );
+            })
+            .catch((error) => {
+              console.error("Error setting up onDisconnect:", error);
+            });
+        }
       });
     } else {
       console.log("Not logged in.");
@@ -158,9 +169,9 @@ function App() {
   const handleSignOut = async () => {
     const auth = getAuth(firebaseApp);
     try {
-      if (auth.currentUser?.isAnonymous && playerRef.current) {
+      if (auth.currentUser?.isAnonymous && playerRef) {
         // Remove player's data from the database before signing out if the user is anonymous
-        await remove(playerRef.current);
+        await remove(playerRef);
       }
       await signOut(auth);
       navigate("/login"); // Navigate to login page after sign out
@@ -181,9 +192,9 @@ function App() {
       return;
     }
 
-    if (playerRef.current) {
-      setAnonError(null);
-      update(playerRef.current, { name: newName })
+    if (playerRef) {
+      setAnonError("");
+      update(playerRef, { name: newName })
         .then(() => {
           console.log("Player's name changed successfully.");
         })
@@ -194,37 +205,52 @@ function App() {
   };
 
   return (
-    <div className="Sign-In-Wrapper">
-      <h1 className="Header">
-        Welcome to <span className="title">Shadows of Eternia!</span>
-      </h1>
+    <div className="flex flex-col items-center justify-center bg-gray-800 text-white p-8 rounded-lg">
+      <h1 className="text-3xl font-bold text-center ">Welcome to</h1>
+      <br />
+      <p className="soetext">Shadows of Eternia!</p>
       {userName && (
-        <h1 className="Username">
-          Welcome, <span>{userName}</span>!
-        </h1>
+        <div className="transition duration-500">
+          <h1 className="text-2xl mt-4 mb-2">
+            Welcome, <span className="nameglow">{userName}</span>!
+          </h1>
+          <p>Level: {userLevel}</p>
+          <p>Gold: {userGold}</p>
+          <p>Equipped Weapon: {equippedWeapon}</p>
+        </div>
       )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleChangeName(newName);
         }}
+        className="flex flex-col items-center mt-8"
       >
         <input
           type="text"
           placeholder="Change Display Name"
-          className="Change-Name-Input-Box"
+          className="p-2 text-black placeholder-gray-400 rounded-md mb-4"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        {anonError && <div className="text-white">{anonError}</div>}
-        <button type="submit" className="Change-Name-Button">
+        {anonError && <div className="mt-2">{anonError}</div>}
+        <button
+          type="submit"
+          className="mt-4 px-8 py-2 bg-blue-500 rounded-md text-white hover:bg-blue-600"
+        >
           Change Name
         </button>
       </form>
-      <button className="Sign-Out-Button" onClick={handleSignOut}>
+      <button
+        className="mt-4 px-8 py-2 bg-red-500 rounded-md text-white hover:bg-red-600"
+        onClick={handleSignOut}
+      >
         Sign out!
       </button>
-      <Link to="/game" className="Play-Game-BUtton">
+      <Link
+        to="/game"
+        className="mt-4 px-8 py-2 bg-green-500 rounded-md text-white hover:bg-green-600"
+      >
         Play Game!
       </Link>
     </div>

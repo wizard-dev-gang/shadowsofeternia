@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-interface WASDKeys {
+export interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
   A?: Phaser.Input.Keyboard.Key;
   S?: Phaser.Input.Keyboard.Key;
@@ -28,12 +28,12 @@ declare global {
 }
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  private healthState = HealthState.IDLE;
+  public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
   // private knives?: Phaser.Physics.Arcade.Group;
   public projectiles?: Phaser.Physics.Arcade.Group;
-  private keys: WASDKeys = {
+  public keys: WASDKeys = {
     W: undefined,
     A: undefined,
     S: undefined,
@@ -41,6 +41,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }; // Providing a default value to keys
 
   public lastMove = "down";
+  public projectilesToSend?: any = {};
+  public projectileCount = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -100,16 +102,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     yLoc?: number,
     attackObj?: string
   ) {
+
     if (!this.projectiles) {
       return;
     }
 
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
-      direction = parts[2];
-      xLoc = this.x;
-      yLoc = this.y;
-      attackObj = "knife";
+      direction = direction? direction: parts[2];
+      xLoc = xLoc? xLoc:this.x;
+      yLoc = yLoc? yLoc: this.y;
+      attackObj = attackObj? attackObj:"knife";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -148,7 +151,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     projectile.x += vec.x * 16;
     projectile.y += vec.y * 16;
     projectile.setVelocity(vec.x * 300, vec.y * 300);
-    console.log(projectile.x, projectile.y, direction);
+    this.projectilesToSend[this.projectileCount] = {
+      id:this.projectileCount,
+      direction: direction,
+      x: xLoc,
+      y: yLoc,
+      attackObj: attackObj
+    }
+    this.projectileCount++
   }
 
   preUpdate(t: number, dt: number): void {

@@ -16,7 +16,7 @@ enum HealthState {
 
 declare global {
   namespace Phaser.GameObjects {
-    interface GameObjectsFactory {
+    interface GameObjectFactory {
       wizard(
         x: number,
         y: number,
@@ -28,7 +28,7 @@ declare global {
 }
 
 export default class Wizard extends Phaser.Physics.Arcade.Sprite {
-  private healthState = HealthState.IDLE;
+  public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
   private projectiles?: Phaser.Physics.Arcade.Group;

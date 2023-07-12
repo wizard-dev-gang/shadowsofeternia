@@ -15,7 +15,7 @@ enum HealthState {
 
 declare global {
   namespace Phaser.GameObjects {
-    interface GameObjectsFactory {
+    interface GameObjectFactory {
       barb(
         x: number,
         y: number,
@@ -27,7 +27,7 @@ declare global {
 }
 
 export default class Barb extends Phaser.Physics.Arcade.Sprite {
-  private healthState = HealthState.IDLE;
+  public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
@@ -180,18 +180,22 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     // }
     const speed = 200;
     if (this.keys.A?.isDown) {
+      // console.log("A is down");
       this.anims.play("barb-walk-left", true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
+      // console.log("D is down");
       this.anims.play("barb-walk-right", true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
+      // console.log("W is down");
       this.anims.play("barb-walk-up", true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
+      // console.log("S is down");
       this.anims.play("barb-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
@@ -226,6 +230,16 @@ Phaser.GameObjects.GameObjectFactory.register(
       sprite,
       Phaser.Physics.Arcade.DYNAMIC_BODY
     );
+
+    // Set the hitbox size
+    const hitboxWidth = sprite.width * 0.69;
+    const hitboxHeight = sprite.height * 0.69;
+    sprite.body?.setSize(hitboxWidth, hitboxHeight);
+
+    // Set the hitbox offset
+    const offsetX = 5;
+    const offsetY = sprite.height * 0.6;
+    sprite.body?.setOffset(offsetX, offsetY);
 
     return sprite;
   }

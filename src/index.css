@@ -3,120 +3,79 @@
 @import "tailwindcss/utilities";
 
 @font-face {
-    font-family: 'Joystix Monospace';
-    src: url('/public/assets/fonts/JoystixMonospace-Regular.woff') format('woff2'),
-        url('/public/assets/fonts/JoystixMonospace-Regular.woff2') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+  font-family: "Joystix Monospace";
+  src: url("/assets/fonts/JoystixMonospace-Regular.woff") format("woff2"),
+    url("/assets/fonts/JoystixMonospace-Regular.woff2") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    height: 100vh;
-    background-image: url('https://www.nlspacecampus.eu/cache/3/1920x1080/mob-shutterstock-481251031-20210610135721_1920x1080.jpg');
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  height: 100vh;
+  background-image: url("/assets/shadowsofeternia.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center 0px;
 }
-/* Signed in Page*/  
-.Header {
-    font-size: 4rem;
-    text-align: center;
-    color: red;
+
+.opacity-0 {
+  opacity: 0;
 }
-.title {
-    font-weight: bold;
-    background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: rainbow-animation 5s ease-in-out infinite;
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.transition-opacity {
+  transition: opacity 4000ms;
+}
+
+@keyframes combinedGlow {
+  0% {
+    text-shadow: 0 0 0 navy, 0 0 0 navy, 0 0 0 navy, 0 0 0 navy;
   }
-  
-  @keyframes rainbow-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  50% {
+    text-shadow: 0 0 20px white, 0 0 40px white, 0 0 50px white, 0 0 60px white,
+      0 0 70px white;
   }
-.Username {
-    font-size: 3rem;
-    text-align: center;
-    color: red;
-    margin: 25px;
-}
-  
-.Username span {
-    color: gold;
-    font-weight: bold;
-}
-
-.Change-Name-Button {
-    background-color: red;
-    border: none;
-    border-radius: 10px;
-    width: 200px;
-    height: 25px;
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
-}
-  
-.Sign-Out-Button {
-    float: right;
-    background-color: red;
-    border: none;
-    border-radius: 10px;
-    width: 200px;
-    height: 25px;
-    cursor: pointer;
-    margin: 25px;
-}
-
-.Sign-In-Wrapper {
-    background-color: black;
-    margin: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  100% {
+    text-shadow: 0 0 20px navy, 0 0 40px navy, 0 0 50px navy, 0 0 60px navy,
+      0 0 70px navy;
   }
-.Play-Game-BUtton {
-    background-color: red;
-    border: none;
-    border-radius: 10px;
-    width: 200px;
-    height: 25px;
-    cursor: pointer;
-    text-align: center;
 }
 
-/* Login page */
-.Login-Wrapper {
-    background-color: black;
-    padding: 20px;
-    width: 300px;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 0 0 rgba(0, 0, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 0 0 rgba(0, 0, 255, 0.5);
+  }
 }
-  
-.Login-Wrapper h1 {
-    color:red;
-    font-size: 3rem;
-    margin-bottom: 20px;
+
+.nameglow {
+  color: red;
+  text-emphasis: bold;
+  text-shadow: 0 0 10px white;
 }
-  
-.Login-Wrapper button {
-    color: black;
-    background-color: red;
-    border: none;
-    border-radius: 10px;
-    width: 200px;
-    height: 40px;
-    margin-bottom: 10px;
-    cursor: pointer;
+
+.soetext {
+  font-family: "Joystix Monospace";
+  font-size: 3rem;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, white, black);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: combinedGlow 8s ease-in-out infinite alternate;
 }
-  

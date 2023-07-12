@@ -3,34 +3,35 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
-import "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
-import "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
-import { sceneEvents } from "../events/EventsCenter";
+// import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
-import "../characters/Barb";
+import { Archer } from "../characters/Archer";
 import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
-import "../characters/Wizard";
 import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
+import { CollisionHandler } from "./Collisions";
 
 export default class Game extends Phaser.Scene {
-  // private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player; // Reference to the player character
-  private projectiles!: Phaser.Physics.Arcade.Group;
+  private barb?: Barb;
+  private archer?: Archer;
+  private wizard?: Wizard;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
-  private barb?: Barb;
-  private wizard?: Wizard;
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
-  private enemyCount = 0;
+  private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  private interactKey?: Phaser.Input.Keyboard.Key;
+  private collisionHandler: CollisionHandler;
+  // private interactKey = this.input.keyboard.addKey(
+  //   Phaser.Input.Keyboard.KeyCodes.E
+  // );
 
   // Firebase variables
   public characterName?: string;
@@ -49,17 +50,26 @@ export default class Game extends Phaser.Scene {
     this.otherPlayers = new Map();
     this.playerNames = new Map();
     this.enemies = new Map();
+    this.collisionHandler = new CollisionHandler();
   }
 
   preload() {
-    // this.cursors = this.input.keyboard?.createCursorKeys();
+    // const cursors = this.input.keyboard?.createCursorKeys();
   }
   init(data?: { name: string }) {
     console.log("init data", data);
+    console.log(this.input);
     this.characterName = data?.name;
   }
 
   create() {
+    const collisionHandler = new CollisionHandler(
+      this.projectiles,
+      this.skeletons,
+      this.slimes,
+      this.time
+    );
+
     this.scene.run("player-ui");
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
@@ -77,35 +87,40 @@ export default class Game extends Phaser.Scene {
     const waterTiles = map.addTilesetImage("Grasslands-Water", "water");
 
     // Create layers for the tilemap
-    if (tileset) {
+    if (tileset && propTiles && waterTiles) {
       const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
-      const pathLayer = map.createLayer("Paths", tileset, 0, 0);
-      const treesLayer = map.createLayer("Trees", propTiles);
+      const treesLayer = map.createLayer("Trees", propTiles, 0, 0);
       const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0);
       const fenceLayer = map.createLayer("Fences", propTiles, 0, 0);
+      const pathLayer = map.createLayer("Paths", tileset, 0, 0);
       const houseLayer = map.createLayer("Houses", propTiles, 0, 0);
 
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
-      houseLayer?.setCollisionByProperty({ collides: true });
-      fenceLayer?.setCollisionByProperty({ collides: true });
       treesLayer?.setCollisionByProperty({ collides: true });
+      bushesLayer?.setCollisionByProperty({ colldes: false });
+      fenceLayer?.setCollisionByProperty({ collides: true });
+      pathLayer?.setCollisionByProperty({ colldes: false });
+      houseLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
-      const barb = this.characterName === "barb";
-      const archer = this.characterName === "archer";
-      const wizard = this.characterName === "wizard";
-      if (barb) {
-        this.man = this.add.barb(2000, 1100, "barb");
-      } else if (archer) {
-        this.man = this.add.archer(2000, 1100, "archer");
-      } else if (wizard) {
-        this.man = this.add.wizard(2000, 1100, "wizard");
-      } else {
+      if (this.characterName === "barb") {
+        this.barb = this.add.barb(2000, 1100, "barb");
+        this.cameras.main.startFollow(this.barb);
+      } else if (this.characterName === "archer") {
+        this.archer = this.add.archer(2000, 1100, "archer");
+        this.cameras.main.startFollow(this.archer);
+      } else if (this.characterName === "wizard") {
+        this.wizard = this.add.wizard(2000, 1100, "wizard");
+        this.cameras.main.startFollow(this.wizard);
+      } else if (this.characterName === "rogue") {
         this.man = this.add.player(2000, 1100, "man");
+        this.cameras.main.startFollow(this.man);
       }
+
+      const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
@@ -136,13 +151,12 @@ export default class Game extends Phaser.Scene {
         maxSize: 3,
       });
 
-      // Set knives for the player character
-      this.man.setProjectiles(this.projectiles);
-
-      // Add a skeleton to the group
-      this.skeletons.get(256, 256, "jacked-skeleton");
-      this.skeletons.get(256, 256, "jacked-skeleton");
-      this.skeletons.get(256, 256, "jacked-skeleton");
+      // Set knives for each player
+      playerCharacters.forEach((character) => {
+        if (character) {
+          character.setProjectiles(this.projectiles);
+        }
+      });
 
       // Handle collisions between skeletons and ground layers
       if (this.skeletons && groundLayer) {
@@ -150,7 +164,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           groundLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -162,7 +176,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           houseLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -173,7 +187,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           fenceLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -184,7 +198,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           treesLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -211,17 +225,14 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      // Follow the player with the camera
-      this.cameras.main.startFollow(this.man);
-
       // Add a slime to the group
       this.slimes.get(414, 90, "slime");
-      if (this.man && this.slimes) {
+      if (playerCharacters && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
-          this.man,
+          playerCharacters as Phaser.GameObjects.GameObject[],
           this.slimes,
-          this.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision,
           undefined,
           this
         );
@@ -235,34 +246,59 @@ export default class Game extends Phaser.Scene {
       }
 
       // Handle collisions between player and enemy characters
-      this.playerEnemiesCollider = this.physics.add.collider(
-        this.skeletons,
-        this.man,
-        this.wizard,
-        this.barb,
-        this.handlePlayerEnemyCollision,
-        undefined,
-        this
-      );
+      if (this.man && this.playerEnemiesCollider) {
+        this.playerEnemiesCollider = this.physics.add.collider(
+          this.skeletons,
+          this.man,
+          // this.wizard,
+          // this.barb,
+          this.collisionHandler.handlePlayerEnemyCollision,
+          undefined,
+          this
+        );
+      }
 
-      this.playerSlimeCollider = this.physics.add.collider(
-        this.slimes,
-        this.man,
-        this.wizard,
-        this.barb,
-        this.handlePlayerSlimeCollision,
-        undefined,
-        this
-      );
+      // Handle collisions
+      if (this.man && this.playerSlimeCollider) {
+        this.playerSlimeCollider = this.physics.add.collider(
+          this.slimes,
+          this.man,
+          // this.wizard,
+          // this.barb,
+          this.collisionHandler.handlePlayerSlimeCollision,
+          undefined,
+          this
+        );
+      }
 
       // Handle collisions between player and layers
-      if (this.man) {
+      if (playerCharacters) {
         //if statements are to satisfy TypeScipt compiler
-        if (waterLayer) this.physics.add.collider(this.man, waterLayer);
-        if (groundLayer) this.physics.add.collider(this.man, groundLayer);
-        if (houseLayer) this.physics.add.collider(this.man, houseLayer);
-        if (fenceLayer) this.physics.add.collider(this.man, fenceLayer);
-        if (treesLayer) this.physics.add.collider(this.man, treesLayer);
+        if (waterLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            waterLayer
+          );
+        if (groundLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            groundLayer
+          );
+        if (houseLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            houseLayer
+          );
+        if (fenceLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            fenceLayer
+          );
+        if (treesLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            treesLayer
+          );
 
         // Add text for player name
         this.playerName = this.add
@@ -283,6 +319,7 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
+
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
@@ -365,89 +402,50 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private handleProjectileSlimeCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
-  ) {
-    const projectile = obj1 as Phaser.Physics.Arcade.Image;
-    const slime = obj2 as Slime;
 
-    // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile);
-    projectile.destroy();
+      if (this.interactKey) {
+        return this.interactKey;
+      }
 
-    // Stop the slime from moving
-    slime.isMoving = false;
-
-    // Play slime death animation
-    if (slime.anims) {
-      slime.anims.play("slime-death");
     }
 
-    // Kill and hide the slime after the animation completes
-    this.time.delayedCall(1000, () => {
-      this.slimes.killAndHide(slime);
-      slime.destroy();
-    });
-  }
-
-  // Method to handle collision between player and enemy characters
-  private handlePlayerEnemyCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    if (
-      obj1 instanceof Player ||
-      Barb ||
-      (Wizard && obj2 instanceof Skeleton)
-    ) {
-      const man = (obj1 as Player) || Barb || Wizard;
-      const skeleton = obj2 as Skeleton;
-
-      const dx = man.x - skeleton.x;
-      const dy = man.y - skeleton.y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
-    }
-  }
-
-  private handlePlayerSlimeCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    if (obj1 instanceof Player || Barb || (Wizard && obj2 instanceof Slime)) {
-      const man = (obj1 as Player) || Barb || Wizard;
-      const slime = obj2 as Slime;
-
-      const dx = man.x - slime.x;
-      const dy = man.y - slime.y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      sceneEvents.emit("player-health-changed", man.getHealth());
+    // Add a skeleton to the group
+    if (this.characterName === "rogue") {
+      this.skeletons.get(2000, 1200, "jacked-skeleton");
+      this.skeletons.get(256, 256, "jacked-skeleton");
+      this.skeletons.get(256, 256, "jacked-skeleton");
     }
   }
 
   update() {
     this.updateIterations++;
-    if (this.man && this.playerName) {
-      this.man.update();
+    let character;
 
+    if (this.man) {
+      this.man.update();
+      character = this.man;
+    } else if (this.barb) {
+      this.barb.update();
+      character = this.barb;
+    } else if (this.archer) {
+      this.archer.update();
+      character = this.archer;
+    } else if (this.wizard) {
+      this.wizard.update();
+      character = this.wizard;
+    }
+
+    if (character && this.playerName) {
       // Update the player's name position horizontally
-      this.playerName.x = this.man.x;
+      this.playerName.x = character.x;
       // Position of the name above the player
-      this.playerName.y = this.man.y - 10;
+      this.playerName.y = character.y - 10;
 
       // Handle collision between knives and skeletons
       this.physics.overlap(
         this.projectiles,
         this.skeletons,
-        this.handleProjectileSkeletonCollision,
+        this.collisionHandler.handleProjectileSkeletonCollision as any,
         undefined,
         this
       );
@@ -455,40 +453,32 @@ export default class Game extends Phaser.Scene {
       this.physics.overlap(
         this.projectiles,
         this.slimes,
-        this.handleProjectileSlimeCollision,
+        this.collisionHandler.handleProjectileSlimeCollision as any,
         undefined,
         this
       );
-      if (
-        Phaser.Input.Keyboard.JustDown(
-          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-        )
-      ) {
-        this.physics.overlap(
-          this.man,
-          this.Npc_wizard,
-          this.handlePlayerNpcCollision,
-          undefined,
-          this
-        );
-      }
+      // Update the player's data in the database
       if (this.playerRef) {
         update(this.playerRef, {
-          x: this.man.x,
-          y: this.man.y,
-          anim: this.man.anims.currentAnim
-            ? this.man.anims.currentAnim.key
+          x: character.x,
+          y: character.y,
+          anim: character.anims.currentAnim
+            ? character.anims.currentAnim.key
             : null,
-          frame: this.man.anims.currentFrame
-            ? this.man.anims.currentFrame.frame.name
+          frame: character.anims.currentFrame
+            ? character.anims.currentFrame.frame.name
             : null,
           online: true,
+          projectilesFromDB: character.projectilesToSend
         });
+        character.projectilesToSend = {}
       }
+    }
 
-      if (this.characterName === "rogue") {
-        if (this.updateIterations % 3 === 0) {
-          for (const entry of this.enemies.entries()) {
+    if (this.characterName === "rogue") {
+      if (this.updateIterations % 3 === 0) {
+        for (const entry of this.enemies.entries()) {
+          if (entry[1].isAlive) {
             this.dataToSend[entry[0]] = {
               id: entry[0],
               x: entry[1].x,
@@ -499,11 +489,18 @@ export default class Game extends Phaser.Scene {
               frame: entry[1].anims.currentFrame
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
-              alive: true,
-            };
+              isAlive: entry[1].isAlive,
           }
-          update(this.enemyDB, this.dataToSend);
         }
+        else
+        {
+          this.dataToSend[entry[0]] = {
+            id: entry[0],
+            isAlive: entry[1].isAlive,
+          }
+        }
+        }
+        update(this.enemyDB, this.dataToSend);
       }
     }
   }

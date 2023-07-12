@@ -21,6 +21,11 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("water", "/tiles/Grasslands-Water.png")
     this.load.tilemapTiledJSON("townMapV2", "tiles/townMapV2.json")
 
+    // Ruins map Preload
+    this.load.image("structures", "/tiles/Ruins-Structures.png")
+    this.load.image("temple", "/tiles/Ancient-Temple.png")
+    this.load.tilemapTiledJSON("ruinsMap", "tiles/ruinsMap.json")
+
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");
     this.load.atlas(

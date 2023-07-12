@@ -23,7 +23,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
   
             let enemy = gameInstance.enemies.get(enemyId);
   
-            if (!enemyData.isAlive) {
+            if (!enemyData.isAlive && enemy) {
               enemy.setVisible(false)
               enemy.destroy()
               gameInstance.enemies.delete(enemyId)

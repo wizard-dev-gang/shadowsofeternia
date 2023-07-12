@@ -4,6 +4,7 @@ import Game from "../scenes/Game";
 import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
 import ChooseCharacterScene from "../scenes/ChooseCharacter";
+import Ruins from "../scenes/Ruins";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -26,7 +27,7 @@ function GameComponent() {
           debug: true, // Enable physics debugging (collider outlines, etc.)
         },
       },
-      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI],
+      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI, Ruins],
       scale: {
         zoom: 2.69,
       },

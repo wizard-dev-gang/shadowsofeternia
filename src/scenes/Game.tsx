@@ -21,7 +21,7 @@ export default class Game extends Phaser.Scene {
   private barb?: Barb;
   private archer?: Archer;
   private wizard?: Wizard;
-  private projectiles!: Phaser.Physics.Arcade.Group;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
@@ -498,7 +498,10 @@ export default class Game extends Phaser.Scene {
             ? character.anims.currentFrame.frame.name
             : null,
           online: true,
+          isRob: true,
+          projectilesFromDB: character.projectilesToSend
         });
+        character.projectilesToSend = {}
       }
     }
 

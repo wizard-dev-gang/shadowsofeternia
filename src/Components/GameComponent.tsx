@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Phaser from "phaser";
 import Game from "../scenes/Game";
+import Forest from '../scenes/Forest';
 import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
 import ChooseCharacterScene from "../scenes/ChooseCharacter";
@@ -27,7 +28,9 @@ function GameComponent() {
           debug: true, // Enable physics debugging (collider outlines, etc.)
         },
       },
-      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI, Ruins],
+      
+      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI, Forest, Ruins],
+
       scale: {
         zoom: 2.69,
       },

@@ -499,7 +499,6 @@ export default class Game extends Phaser.Scene {
             ? character.anims.currentFrame.frame.name
             : null,
           online: true,
-          isRob: true,
           projectilesFromDB: character.projectilesToSend
         });
         character.projectilesToSend = {}

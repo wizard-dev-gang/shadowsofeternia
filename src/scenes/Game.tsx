@@ -16,6 +16,7 @@ import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
+import { createPotionAnims } from "../anims/PotionAnims";
 
 export default class Game extends Phaser.Scene {
   private man?: Player; // Reference to the player character
@@ -78,6 +79,7 @@ export default class Game extends Phaser.Scene {
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
     createNpcAnims(this.anims);
+    createPotionAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });

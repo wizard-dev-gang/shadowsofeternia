@@ -357,46 +357,7 @@ export default class Game extends Phaser.Scene {
     // Remove the potion from the scene
     potion.destroy();
   }
-  private handlePlayerNpcCollision(
-    player: Phaser.GameObjects.GameObject,
-    npc: Phaser.GameObjects.GameObject,
-  ) {
-    // Check if the player is interacting with the wizard character
-    if (
-      player instanceof Player ||
-      player instanceof Barb ||
-      player instanceof Wizard ||
-      (npc instanceof Npc_wizard && npc instanceof Npc_wizard)
-    ) {
-      // Perform actions for interacting with the NPC
-      console.log("Interacting with the NPC Wizard");
 
-      // Add text on the screen
-      const text = this.add.text(1876, 1028, "Hello World!", {
-        fontSize: "11px",
-        color: "#000000",
-        padding: {
-          left: 10,
-          right: 10,
-          top: 5,
-          bottom: 5,
-        },
-      });
-      text.setOrigin(0.5, 1.4);
-      text.setDepth(1);
-
-      // Add a background image behind the text
-      const background = this.add.image(1876, 1028, "text-bubble");
-      background.setDisplaySize(text.width, text.height);
-      background.setOrigin(0.53, 1.5);
-      background.setDepth(0);
-
-      // Remove the text after a certain delay
-      this.time.delayedCall(2000, () => {
-        text.destroy();
-        background.destroy();
-      });
-    }
       // Add a skeleton to the group
       if (this.characterName === "rogue") {
         this.skeletons.get(2000, 1200, "jacked-skeleton");

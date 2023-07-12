@@ -36,6 +36,7 @@ export default class Forest extends Phaser.Scene {
         if(ruinsTerrain && ruinsProps && grassProps) {
             const groundLayer = map.createLayer("Ground", ruinsTerrain, 0,0)
             const grassLayer = map.createLayer("Grass", ruinsProps, 0, 0)
+            const pathsLayer = map.createLayer("Paths", ruinsTerrain, 0, 0)
             const treesLayer = map.createLayer("Trees", ruinsProps, 0, 0)
             const trees2Layer = map.createLayer("Trees2", grassProps, 0 ,0)
             const trees3Layer = map.createLayer("Trees3", ruinsProps, 0, 0)
@@ -43,6 +44,7 @@ export default class Forest extends Phaser.Scene {
             // Setting collisions on map layers
             groundLayer?.setCollisionByProperty({collides: false})
             grassLayer?.setCollisionByProperty({collides: false})
+            pathsLayer?.setCollisionByPropterty({collides: false})
             treesLayer?.setCollisionByProperty({collides: true})
             trees2Layer?.setCollisionByProperty({collides: true})
             trees3Layer?.setCollisionByProperty({collides: true})

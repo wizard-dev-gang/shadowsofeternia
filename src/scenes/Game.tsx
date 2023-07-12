@@ -316,7 +316,6 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
@@ -411,6 +410,19 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
+      if (
+        Phaser.Input.Keyboard.JustDown(
+          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+        )
+      ) {
+        this.physics.overlap(
+          this.man,
+          this.Npc_wizard,
+          this.handlePlayerNpcCollision,
+          undefined,
+          this
+        );
+      }
       // Update the player's data in the database
       if (this.playerRef) {
         update(this.playerRef, {

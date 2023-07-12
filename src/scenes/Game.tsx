@@ -91,19 +91,19 @@ export default class Game extends Phaser.Scene {
       const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
       const treesLayer = map.createLayer("Trees", propTiles, 0, 0);
-      const houseLayer = map.createLayer("Houses", propTiles, 0, 0);
+      const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0);
       const fenceLayer = map.createLayer("Fences", propTiles, 0, 0);
       const pathLayer = map.createLayer("Paths", tileset, 0, 0);
-      const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0);
+      const houseLayer = map.createLayer("Houses", propTiles, 0, 0);
 
       // Set collision properties for the layers
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
       treesLayer?.setCollisionByProperty({ collides: true });
-      houseLayer?.setCollisionByProperty({ collides: true });
+      bushesLayer?.setCollisionByProperty({ colldes: false });
       fenceLayer?.setCollisionByProperty({ collides: true });
       pathLayer?.setCollisionByProperty({ colldes: false });
-      bushesLayer?.setCollisionByProperty({ colldes: false });
+      houseLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
       if (this.characterName === "barb") {

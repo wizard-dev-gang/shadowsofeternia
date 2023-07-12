@@ -22,7 +22,7 @@ export default class Game extends Phaser.Scene {
   private archer?: Archer;
   private wizard?: Wizard;
   public projectiles!: Phaser.Physics.Arcade.Group;
-  private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
+  public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;

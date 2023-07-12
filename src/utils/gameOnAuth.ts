@@ -31,7 +31,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
             };
             // Create or update other players
             if (!enemy) {
-              enemy = gameInstance.physics.add.sprite(
+              enemy = gameInstance.skeletons.get(
                 enemyData.x,
                 enemyData.y,
                 "jacked-skeleton"
@@ -96,7 +96,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           otherPlayer.y = playerData.y;
           
           if(playerData.projectilesFromDB)
-          console.log(playerData.projectilesFromDB)
+          
           otherPlayer.setProjectiles(gameInstance.projectiles)
           for (const projectileId in playerData.projectilesFromDB)
           {

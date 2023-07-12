@@ -16,16 +16,19 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
       if (gameInstance.characterName !== "rogue") {
         onValue(gameInstance.enemyDB, (snapshot) => {
           const enemiesData = snapshot.val();
-
+          
           // Now handle the remaining players in Firebase
           for (const enemyId in enemiesData) {
             const enemyData = enemiesData[enemyId];
-
-            // Skip if player is not online
-            if (!enemyData.alive) continue;
-
+  
             let enemy = gameInstance.enemies.get(enemyId);
-
+  
+            if (!enemyData.isAlive && enemy) {
+              enemy.setVisible(false)
+              enemy.destroy()
+              gameInstance.enemies.delete(enemyId)
+              continue
+            };
             // Create or update other players
             if (!enemy) {
               enemy = gameInstance.physics.add.sprite(
@@ -37,9 +40,9 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
             }
             enemy.x = enemyData.x;
             enemy.y = enemyData.y;
-
+  
             // Play animation and set frame for other players
-            if (enemyData.anim && enemyData.frame) {
+            if (enemyData.anim && enemyData.frame && enemyData.isAlive) {
               enemy.anims.play(enemyData.anim, true);
               enemy.anims.setCurrentFrame(
                 enemy.anims.currentAnim.frames.find(
@@ -48,7 +51,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
               );
             }
           }
-        });
+        })
       }
 
       onValue(otherPlayersRef, (snapshot) => {
@@ -82,7 +85,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
 
           // Create or update other players
           if (!otherPlayer) {
-            otherPlayer = gameInstance.physics.add.sprite(
+            otherPlayer = gameInstance.add.player(
               playerData.x,
               playerData.y,
               "man"
@@ -91,6 +94,17 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           }
           otherPlayer.x = playerData.x;
           otherPlayer.y = playerData.y;
+          
+          if(playerData.projectilesFromDB)
+          console.log(playerData.projectilesFromDB)
+          otherPlayer.setProjectiles(gameInstance.projectiles)
+          for (const projectileId in playerData.projectilesFromDB)
+          {
+            const projectileData = playerData.projectilesFromDB[projectileId]
+            otherPlayer.throwProjectile(projectileData.direction,projectileData.x, projectileData.y, projectileData.attackObj )
+
+          }
+          
 
           // Play animation and set frame for other players
           if (playerData.anim && playerData.frame) {

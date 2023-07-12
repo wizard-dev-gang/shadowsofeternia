@@ -1,4 +1,4 @@
-import Phaser, { GameObjects } from "phaser";
+import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
@@ -6,7 +6,7 @@ import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
-import { sceneEvents } from "../events/EventsCenter";
+// import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
 import { Archer } from "../characters/Archer";
 import "../characters/Archer";
@@ -14,23 +14,21 @@ import { Wizard } from "../characters/Wizard";
 import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
-// import { CollisionHandler } from "./Collisions";
+import { CollisionHandler } from "./Collisions";
 
 export default class Game extends Phaser.Scene {
   private man?: Player; // Reference to the player character
   private barb?: Barb;
   private archer?: Archer;
   private wizard?: Wizard;
-  private projectiles!: Phaser.Physics.Arcade.Group;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   private skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  // private interactKey = this.input.keyboard.addKey(
-  //   Phaser.Input.Keyboard.KeyCodes.E
-  // );
+  private collisionHandler: CollisionHandler;
 
   // Firebase variables
   public characterName?: string;
@@ -49,6 +47,7 @@ export default class Game extends Phaser.Scene {
     this.otherPlayers = new Map();
     this.playerNames = new Map();
     this.enemies = new Map();
+    this.collisionHandler = new CollisionHandler();
   }
 
   preload() {
@@ -61,6 +60,13 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    const collisionHandler = new CollisionHandler(
+      this.projectiles,
+      this.skeletons,
+      this.slimes,
+      this.time
+    );
+
     this.scene.run("player-ui");
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
@@ -81,20 +87,20 @@ export default class Game extends Phaser.Scene {
     if (tileset && propTiles && waterTiles) {
       const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const groundLayer = map.createLayer("Ground", tileset, 0, 0);
-      const pathLayer = map.createLayer("Paths", tileset, 0, 0);
       const treesLayer = map.createLayer("Trees", propTiles, 0, 0);
       const bushesLayer = map.createLayer("Bushes", propTiles, 0, 0);
       const fenceLayer = map.createLayer("Fences", propTiles, 0, 0);
+      const pathLayer = map.createLayer("Paths", tileset, 0, 0);
       const houseLayer = map.createLayer("Houses", propTiles, 0, 0);
 
       // Set collision properties for the layers
-      pathLayer?.setCollisionByProperty({ colldes: false });
-      bushesLayer?.setCollisionByProperty({ colldes: false });
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
-      houseLayer?.setCollisionByProperty({ collides: true });
-      fenceLayer?.setCollisionByProperty({ collides: true });
       treesLayer?.setCollisionByProperty({ collides: true });
+      bushesLayer?.setCollisionByProperty({ colldes: false });
+      fenceLayer?.setCollisionByProperty({ collides: true });
+      pathLayer?.setCollisionByProperty({ colldes: false });
+      houseLayer?.setCollisionByProperty({ collides: true });
 
       // Create the player character and define spawn position
       if (this.characterName === "barb") {
@@ -139,7 +145,7 @@ export default class Game extends Phaser.Scene {
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
-        maxSize: 3,
+        maxSize: 100,
       });
 
       // Set knives for each player
@@ -149,18 +155,13 @@ export default class Game extends Phaser.Scene {
         }
       });
 
-      // Add a skeleton to the group
-      this.skeletons.get(256, 256, "jacked-skeleton");
-      this.skeletons.get(256, 256, "jacked-skeleton");
-      this.skeletons.get(256, 256, "jacked-skeleton");
-
       // Handle collisions between skeletons and ground layers
       if (this.skeletons && groundLayer) {
         this.physics.add.collider(this.skeletons, groundLayer);
         this.physics.add.collider(
           this.projectiles,
           groundLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -172,7 +173,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           houseLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -183,7 +184,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           fenceLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -194,7 +195,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           treesLayer,
-          this.handleProjectileWallCollision,
+          collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -228,7 +229,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.slimes,
-          this.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision,
           undefined,
           this
         );
@@ -248,7 +249,7 @@ export default class Game extends Phaser.Scene {
           this.man,
           // this.wizard,
           // this.barb,
-          this.handlePlayerEnemyCollision,
+          this.collisionHandler.handlePlayerEnemyCollision,
           undefined,
           this
         );
@@ -261,7 +262,7 @@ export default class Game extends Phaser.Scene {
           this.man,
           // this.wizard,
           // this.barb,
-          this.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision,
           undefined,
           this
         );
@@ -318,13 +319,13 @@ export default class Game extends Phaser.Scene {
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
-      )
+      );
     }
   }
-
   private handlePlayerNpcCollision(
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject,
+    backgroundImage: string
   ) {
     // Check if the player is interacting with the wizard character
     if (
@@ -335,7 +336,7 @@ export default class Game extends Phaser.Scene {
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
-  
+
       // Add text on the screen
       const text = this.add.text(1876, 1028, "Hello World!", {
         fontSize: "11px",
@@ -349,12 +350,12 @@ export default class Game extends Phaser.Scene {
       });
       text.setOrigin(0.5, 1.4);
       text.setDepth(1);
-      
+
       // Add a background image behind the text
-    const background = this.add.image(1876, 1028, "text-bubble");
-    background.setDisplaySize(text.width, text.height);
-    background.setOrigin(0.53, 1.5);
-    background.setDepth(0);
+      const background = this.add.image(1876, 1028, "text-bubble");
+      background.setDisplaySize(text.width, text.height);
+      background.setOrigin(0.53, 1.5);
+      background.setDepth(0);
 
       // Remove the text after a certain delay
       this.time.delayedCall(2000, () => {
@@ -362,114 +363,12 @@ export default class Game extends Phaser.Scene {
         background.destroy();
       });
     }
-  }
 
-  // Method to handle collision between projectiles and walls
-  private handleProjectileWallCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    if (obj1 instanceof Phaser.GameObjects.Image) {
-      const projectile = obj1 as Phaser.GameObjects.Image;
-      projectile.destroy();
-    }
-  }
-
-  // Method to handle collision between projectiles and skeleton
-  private handleProjectileSkeletonCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
-  ) {
-    const projectile = obj1;
-    const skeleton = obj2;
-    // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile as GameObjects.Image);
-    projectile.destroy();
-    const dx =
-      (skeleton as Phaser.GameObjects.Image).x -
-      (projectile as Phaser.GameObjects.Image).x;
-    const dy =
-      (skeleton as Phaser.GameObjects.Image).y -
-      (projectile as Phaser.GameObjects.Image).y;
-
-    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-    (skeleton as Skeleton).setVelocity(dir.x, dir.y);
-    (skeleton as Skeleton).getHealth();
-    (skeleton as Skeleton).handleDamage(dir);
-    if ((skeleton as Skeleton).getHealth() <= 0) {
-      this.skeletons.killAndHide(skeleton);
-      skeleton.destroy();
-    }
-  }
-
-  private handleProjectileSlimeCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
-  ) {
-    const projectile = obj1 as Phaser.Physics.Arcade.Image;
-    const slime = obj2 as Slime;
-
-    // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile);
-    projectile.destroy();
-
-    // Stop the slime from moving
-    slime.isMoving = false;
-
-    // Play slime death animation
-    if (slime.anims) {
-      slime.anims.play("slime-death");
-    }
-
-    // Kill and hide the slime after the animation completes
-    this.time.delayedCall(1000, () => {
-      this.slimes.killAndHide(slime);
-      slime.destroy();
-    });
-  }
-
-  // Method to handle collision between player and enemy characters
-  private handlePlayerEnemyCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    if (
-      (obj1 instanceof Player || Barb || Wizard) &&
-      obj2 instanceof Skeleton
-    ) {
-      const man = (obj1 as Player) || Barb || Wizard;
-      const skeleton = obj2 as Skeleton;
-
-      const dx =
-        (man as Phaser.GameObjects.Image).x -
-        (skeleton as Phaser.GameObjects.Image).x;
-      const dy =
-        (man as Phaser.GameObjects.Image).y -
-        (skeleton as Phaser.GameObjects.Image).y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
-    }
-  }
-
-  private handlePlayerSlimeCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    if ((obj1 instanceof Player || Barb || Wizard) && obj2 instanceof Slime) {
-      const man = (obj1 as Player) || Barb || Wizard;
-      const slime = obj2 as Slime;
-
-      const dx = man.x - slime.x;
-      const dy = man.y - slime.y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      sceneEvents.emit("player-health-changed", man.getHealth());
+    // Add a skeleton to the group
+    if (this.characterName === "rogue") {
+      this.skeletons.get(2000, 1200, "jacked-skeleton");
+      this.skeletons.get(256, 256, "jacked-skeleton");
+      this.skeletons.get(256, 256, "jacked-skeleton");
     }
   }
 
@@ -501,7 +400,7 @@ export default class Game extends Phaser.Scene {
       this.physics.overlap(
         this.projectiles,
         this.skeletons,
-        this.handleProjectileSkeletonCollision as any,
+        this.collisionHandler.handleProjectileSkeletonCollision as any,
         undefined,
         this
       );
@@ -509,7 +408,7 @@ export default class Game extends Phaser.Scene {
       this.physics.overlap(
         this.projectiles,
         this.slimes,
-        this.handleProjectileSlimeCollision as any,
+        this.collisionHandler.handleProjectileSlimeCollision as any,
         undefined,
         this
       );
@@ -538,25 +437,34 @@ export default class Game extends Phaser.Scene {
             ? character.anims.currentFrame.frame.name
             : null,
           online: true,
+          projectilesFromDB: character.projectilesToSend,
         });
+        character.projectilesToSend = {};
       }
     }
 
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
-          this.dataToSend[entry[0]] = {
-            id: entry[0],
-            x: entry[1].x,
-            y: entry[1].y,
-            anim: entry[1].anims.currentAnim
-              ? entry[1].anims.currentAnim.key
-              : null,
-            frame: entry[1].anims.currentFrame
-              ? entry[1].anims.currentFrame.frame.name
-              : null,
-            alive: true,
-          };
+          if (entry[1].isAlive) {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              x: entry[1].x,
+              y: entry[1].y,
+              anim: entry[1].anims.currentAnim
+                ? entry[1].anims.currentAnim.key
+                : null,
+              frame: entry[1].anims.currentFrame
+                ? entry[1].anims.currentFrame.frame.name
+                : null,
+              isAlive: entry[1].isAlive,
+            };
+          } else {
+            this.dataToSend[entry[0]] = {
+              id: entry[0],
+              isAlive: entry[1].isAlive,
+            };
+          }
         }
         update(this.enemyDB, this.dataToSend);
       }

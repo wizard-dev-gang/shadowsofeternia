@@ -131,7 +131,7 @@ export default class Game extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-          // this.enemyCount++;
+          this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -361,8 +361,8 @@ export default class Game extends Phaser.Scene {
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
       this.skeletons.get(2000, 1210, "jacked-skeleton");
-      this.skeletons.get(2000, 1220, "jacked-skeleton");
-      this.skeletons.get(2000, 1230, "jacked-skeleton");
+      //this.skeletons.get(2000, 1220, "jacked-skeleton");
+      //this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
 
@@ -478,6 +478,14 @@ export default class Game extends Phaser.Scene {
           }
         }
         update(this.enemyDB, this.dataToSend);
+      }
+    }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers,{x:character.x,y:character.y})
+        }
       }
     }
   }

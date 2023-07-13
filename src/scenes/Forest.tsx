@@ -8,9 +8,7 @@ import Archer from "../characters/Archer";
 import Wizard from "../characters/Wizard";
 import { CollisionHandler } from "./Collisions";
 import { Skeleton } from "../enemies/Skeleton";
-import { Npc_wizard } from "../characters/Npc";
-
-
+import { sceneEvents } from "../events/EventsCenter";
 
 export default class Forest extends Phaser.Scene {
     private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -112,7 +110,7 @@ export default class Forest extends Phaser.Scene {
 
             const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
-
+ 
                   // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,

@@ -82,7 +82,8 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           if (!playerData.online) continue;
 
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
-
+          if (otherPlayer?.scene === undefined) continue
+          if (otherPlayer.scene != gameInstance.playerRef.scene) continue
           // Create or update other players
           if (!otherPlayer) {
             otherPlayer = gameInstance.add.player(

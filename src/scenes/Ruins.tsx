@@ -86,14 +86,14 @@ export default class Ruins extends Phaser.Scene {
     const templeTiles = map.addTilesetImage("Ancient-Temple", "temple");
 
     if (structureTiles && templeTiles && waterTiles && terrainTiles) {
+    const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const groundLayer = map.createLayer("Ground", structureTiles, 0, 0);
-      const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const pathLayer = map.createLayer("Paths", structureTiles, 0, 0);
       const platformLayer = map.createLayer("Platform-Ground", terrainTiles, 0, 0);
       const templeLayer = map.createLayer("Temple", templeTiles, 0, 0);
 
-      groundLayer?.setCollisionByProperty({ collides: true });
       waterLayer?.setCollisionByProperty({ collides: true });
+      groundLayer?.setCollisionByProperty({ collides: true });
       pathLayer?.setCollisionByProperty({ collides: true });
       platformLayer?.setCollisionByProperty({ collides: true });
       templeLayer?.setCollisionByProperty({ collides: true });

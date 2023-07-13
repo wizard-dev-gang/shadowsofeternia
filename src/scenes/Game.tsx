@@ -133,7 +133,7 @@ export default class Game extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-          // this.enemyCount++;
+          this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -342,7 +342,20 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      this.Npc_wizard.get(1876, 1028, "npcWizard");
+      // this.Npc_wizard.get(1876, 1028, "npcWizard");
+      // this.Npc_wizard.get(1576, 1028, "npcWizard");
+
+      // Create an instance of Npc_wizard with specific text
+      const npc1 = this.Npc_wizard.get(1876, 1028, "npcWizard");
+      npc1.text = "Hello, I am a wizard";
+
+      const npc2 = this.Npc_wizard.get(1776, 1028, "npcWizard");
+      npc2.text = "Hello, I am also a  wizard";
+
+      const npc3 = this.Npc_wizard.get(1676, 1028, "npcWizard");
+      npc3.text =
+        "You've seen three wizards and don't know what they look like?";
+
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
       );
@@ -363,8 +376,8 @@ export default class Game extends Phaser.Scene {
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
       this.skeletons.get(2000, 1210, "jacked-skeleton");
-      this.skeletons.get(2000, 1220, "jacked-skeleton");
-      this.skeletons.get(2000, 1230, "jacked-skeleton");
+      //this.skeletons.get(2000, 1220, "jacked-skeleton");
+      //this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
     // Method to update player's experience
@@ -472,7 +485,7 @@ export default class Game extends Phaser.Scene {
     if (!character) return;
 
     const forestX = character.x >= 2058 && character.x <= 2101;
-    const forestY = character.y === 28.8;
+    const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
       this.scene.start("forest", { characterName: this.characterName });
       return;
@@ -514,13 +527,14 @@ export default class Game extends Phaser.Scene {
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
         )
       ) {
-        this.physics.overlap(
-          character,
-          this.Npc_wizard,
-          this.collisionHandler.handlePlayerNpcCollision,
-          undefined,
-          this
-        );
+        console.log("Player pushed E."),
+          this.physics.overlap(
+            character,
+            this.Npc_wizard,
+            this.collisionHandler.handlePlayerNpcCollision,
+            undefined,
+            this
+          );
       }
       // Update the player's data in the database
       if (this.playerRef) {
@@ -564,6 +578,14 @@ export default class Game extends Phaser.Scene {
           }
         }
         update(this.enemyDB, this.dataToSend);
+      }
+    }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers,{x:character.x,y:character.y})
+        }
       }
     }
   }

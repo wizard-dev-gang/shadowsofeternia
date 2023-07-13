@@ -19,12 +19,14 @@ export default class Npc_wizard extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
   private isMoving = false;
+  public text?: string;
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
     texture: string,
-    frame?: string | number
+    frame?: string | number,
+    text?: string
   ) {
     super(scene, x, y, texture, frame);
 
@@ -33,6 +35,7 @@ export default class Npc_wizard extends Phaser.Physics.Arcade.Sprite {
     this.body?.setSize(hitboxWidth, hitboxHeight);
 
     this.anims.play("Npc_wizard-idle");
+    this.text = text;
 
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,
@@ -64,11 +67,11 @@ export default class Npc_wizard extends Phaser.Physics.Arcade.Sprite {
   preUpdate(t: number, dt: number) {
     super.preUpdate(t, dt);
 
-    if (!this.isMoving) { 
+    if (!this.isMoving) {
       this.setVelocity(0, 0);
       return;
     }
-    
+
     const speed = 50;
 
     switch (this.direction) {

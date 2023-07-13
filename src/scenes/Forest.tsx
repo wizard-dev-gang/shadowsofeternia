@@ -252,37 +252,8 @@ export default class Forest extends Phaser.Scene {
         },
       });
       this.potion.get(800, 2800, "Potion");
-
-      // this.potion.get(800, 2900, "Potion");
     }
   }
-  // Method to handle collision between player and enemy characters
-  // private handlePlayerEnemyCollision(
-  //   obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-  //   obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  // ) {
-  //   console.log('handleplayerEnemyCollision')
-  //   if (
-  //     (obj1 instanceof Player || Barb || Wizard) &&
-  //     obj2 instanceof Skeleton
-  //   ) {
-  //     const man = (obj1 as Player) || Barb || Wizard;
-  //     const skeleton = obj2 as Skeleton;
-
-  //     const dx =
-  //       (man as Phaser.GameObjects.Image).x -
-  //       (skeleton as Phaser.GameObjects.Image).x;
-  //     const dy =
-  //       (man as Phaser.GameObjects.Image).y -
-  //       (skeleton as Phaser.GameObjects.Image).y;
-
-  //     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-  //     man.setVelocity(dir.x, dir.y);
-  //     man.handleDamage(dir);
-  //     // console.log(man._health);
-  //     sceneEvents.emit("player-health-changed", man.getHealth());
-  //   }
-  // }
 
   update() {
     this.updateIterations++;
@@ -302,6 +273,13 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+
+    const ruinsX = character.x >= 647 && character.x <= 990;
+    const ruinsY = character.y <= 35 && character.y >= 27;
+    if (ruinsX && ruinsY) {
+      this.scene.start("ruins", { characterName: this.characterName });
+      return;
+    }
 
     if (this.playerName) {
       // Update the player's name position horizontally

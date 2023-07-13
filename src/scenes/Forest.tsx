@@ -242,6 +242,16 @@ export default class Forest extends Phaser.Scene {
           })
           .setOrigin(0.5, 1);
       }
+      this.potion = this.physics.add.group({
+        classType: Potion,
+        createCallback: (go) => {
+          const PotionGo = go as Potion;
+          if (PotionGo.body) {
+            PotionGo.body.onCollide = true;
+          }
+        },
+      });
+      this.potion.get(800, 2800, "Potion");
 
       // this.potion.get(800, 2900, "Potion");
     }

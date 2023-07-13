@@ -34,6 +34,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   public maxHealth: number;
   // private knives?: Phaser.Physics.Arcade.Group;
   public projectiles?: Phaser.Physics.Arcade.Group;
+  public lastProjectileTime?: number = 0;
+  public projectileCooldown?: number = 1000; // cooldown in milliseconds
+  public projectileLife?: number = 800; // projectile is removed after this amount of time
+
+
   public keys: WASDKeys = {
     W: undefined,
     A: undefined,
@@ -117,6 +122,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
+    const currentTime = this.scene.time.now;
+  
+    if (this.lastProjectileTime && this.projectileCooldown && currentTime < this.lastProjectileTime + this.projectileCooldown) {
+      return;
+  }
+
+  // update lastProjectileTime
+  this.lastProjectileTime = currentTime;
+
+
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
       direction = direction ? direction : parts[2];
@@ -169,6 +184,18 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       attackObj: attackObj,
     };
     this.projectileCount++;
+
+    if (this.projectileLife) {
+      this.scene.time.addEvent({
+        delay: this.projectileLife,
+        callback: () => {
+          if (this.projectiles) {
+            this.projectiles.remove(projectile, true, true); // Remove from group, and destroy the GameObject
+          }
+        },
+        loop: false
+      });
+    }
   }
 
   preUpdate(t: number, dt: number): void {

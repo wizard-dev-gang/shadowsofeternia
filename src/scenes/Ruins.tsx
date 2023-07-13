@@ -100,16 +100,16 @@ export default class Ruins extends Phaser.Scene {
     
 
     if (this.characterName === "barb") {
-        this.barb = this.add.barb(2000, 3100, "barb");
+        this.barb = this.add.barb(2500, 3100, "barb");
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(2000, 3100, "archer");
+        this.archer = this.add.archer(2500, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(2000, 3100, "wizard");
+        this.wizard = this.add.wizard(2500, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(2000, 3100, "man");
+        this.man = this.add.player(2500, 3100, "man");
         this.cameras.main.startFollow(this.man);
       }
 

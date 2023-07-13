@@ -5,6 +5,7 @@ enum Direction {
   DOWN,
   LEFT,
   RIGHT,
+  STOP
 }
 
 enum HealthState {
@@ -28,6 +29,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE
   private _health: number
   private damageTime = 0;
+  private currentTarget:any = {x: 0, y:0,distance:Number(500)}
   public isAlive:boolean = true
 
   constructor(
@@ -49,9 +51,19 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     
 
     this.moveEvent = scene.time.addEvent({
-      delay: 2000,
+      delay: 1000,
       callback: () => {
-        this.direction = randomDirection(this.direction);
+        let newNum = Math.random()
+        if (newNum >= .3) {
+          this.seekAndDestroy()
+          console.log(newNum, 'seekndestroy')
+        } else if (newNum >= .1 && newNum < .2 ) {
+          this.direction = randomDirection(this.direction);
+          console.log(newNum, 'random')
+        } else {
+          this.currentTarget = {x: 0, y:0,distance:Number(500)}
+          console.log(newNum, 'change character')
+        }
       },
       loop: true,
     });
@@ -59,6 +71,51 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   // Enemies have health, to not die in 1 hit.
   getHealth() {
     return this._health;
+  }
+
+  findTarget(playerData:Map<any,any>, host:any) {
+    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y)
+    if(this.currentTarget.id === "host" || (distance < 500 && distance< this.currentTarget.distance)) {
+      this.currentTarget = {
+        id:'host',
+        x:host.x,
+        y:host.y,
+        distance:distance
+      }
+    }
+
+    for (const entry of playerData.entries()) {
+      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)
+      if(this.currentTarget.id === entry[0]) {
+        this.currentTarget = {
+          id:entry[0],
+          x:entry[1].x,
+          y:entry[1].y,
+          distance:distance
+        }
+      }
+      if  (distance < 500 && distance< this.currentTarget.distance) {
+        this.currentTarget = {
+          id:entry[0],
+          x:entry[1].x,
+          y:entry[1].y,
+          distance:distance
+        }
+      }
+    }
+  }
+
+  seekAndDestroy() {
+    if(Math.abs(this.x - this.currentTarget.x) > Math.abs(this.y - this.currentTarget.y)){
+      this.x > this.currentTarget.x ? this.direction = 2 : this.direction = 3 
+    }
+    else 
+    {
+      this.y > this.currentTarget.y ? this.direction = 0 : this.direction = 1
+    }
+    console.log(this.currentTarget, 
+      this.direction,Math.abs(this.x - this.currentTarget.x), Math.abs(this.y - this.currentTarget.y)
+      )
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {

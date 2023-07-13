@@ -175,35 +175,36 @@ export class CollisionHandler {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
 
+      const npcX = npc.x;
+      const npcY = npc.y;
+
+      const textX = npcX;
+      const textY = npcY;
+
       // Add text on the screen
-      const text = this.add.text(
-        1876,
-        1028,
-        "Seek the Wizards, who will grant you sacred knowledge!",
-        {
-          fontSize: "11px",
-          color: "#000000",
-          padding: {
-            left: 10,
-            right: 20,
-            top: 10,
-            bottom: 10,
-          },
-        }
-      );
+      const text = this.add.text(textX, textY, npc.text, {
+        fontSize: "11px",
+        color: "#000000",
+        padding: {
+          left: 10,
+          right: 20,
+          top: 10,
+          bottom: 10,
+        },
+      });
       text.setWordWrapWidth(200);
       text.setLineSpacing(1);
       text.setOrigin(0.5, 1.4);
       text.setDepth(1);
 
       // Add a background image behind the text
-      const background = this.add.image(1876, 1028, "text-bubble");
+      const background = this.add.image(textX, textY, "text-bubble");
       background.setDisplaySize(text.width, text.height);
       background.setOrigin(0.53, 1.5);
       background.setDepth(0);
 
       // Remove the text after a certain delay
-      this.time.delayedCall(2000, () => {
+      this.time.delayedCall(3000, () => {
         text.destroy();
         background.destroy();
       });

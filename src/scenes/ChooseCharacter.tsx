@@ -114,17 +114,6 @@ async function writeUserData(character: string, scene: ChooseCharacterScene) {
         console.error("Error setting up onDisconnect:", error);
       });
 
-    const enemyId = "enemy123";
-
-    // Create a reference to the enemy data
-    const enemyRef = ref(db, "enemies/" + enemyId);
-
-    // Set the onDisconnect event handler
-    onDisconnect(enemyRef).set(() => {
-      // Call the removeEnemyFromDatabase function when the client disconnects
-      removeEnemyFromDatabase(enemyId);
-    });
-
     onValue(currentRoomRef, (snapshot) => {
       if (
         snapshot.hasChildren() &&
@@ -132,7 +121,7 @@ async function writeUserData(character: string, scene: ChooseCharacterScene) {
       ) {
         console.log("Game starting soon in room " + roomId);
         setTimeout(() => {
-          scene.startGame();
+          scene.startGame(character);
         }, 2000);
       }
     });
@@ -175,7 +164,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
   create() {
     // this.textures.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
-    const hasChosenCharacter = false; // This is okay to be unassigned for now. It will be assigned when the user chooses a character.
+    let hasChosenCharacter = false; // This is okay to be unassigned for now. It will be assigned when the user chooses a character.
 
     this.add.image(0, 10, "pansbg").setOrigin(0, 0.1).setScale(0.5);
 
@@ -354,24 +343,24 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       // }
     });
     character3.on("pointerdown", async () => {
-      this.startGame("archer");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("archer", this);
-      //   if (isCharacterAvailable) {
-      //     char3Text.setText("Archer (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      // this.startGame("archer");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("archer", this);
+        if (isCharacterAvailable) {
+          char3Text.setText("Archer (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character4.on("pointerdown", async () => {
-      this.startGame("wizard");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("wizard", this);
-      //   if (isCharacterAvailable) {
-      //     char4Text.setText("Wizard (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      // this.startGame("wizard");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("wizard", this);
+        if (isCharacterAvailable) {
+          char4Text.setText("Wizard (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
   }
 

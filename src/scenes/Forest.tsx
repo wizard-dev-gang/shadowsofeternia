@@ -27,6 +27,9 @@ export default class Forest extends Phaser.Scene {
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
+  private forestEntranceX!: number;
+  private forestEntranceY!: number;
+
 
   // Firebase variables
   public characterName?: string;
@@ -114,6 +117,9 @@ export default class Forest extends Phaser.Scene {
       }
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
+
+      this.forestEntranceX = 2070; // Set the X coordinate of the entrance
+      this.forestEntranceY = 29; // Set the Y coordinate of the entrance
 
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
@@ -302,6 +308,17 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+
+    // console.log("x", character.x)
+    // console.log("y", character.y)
+
+    const forestX = character.x >= 709 && character.x <= 825;
+    const forestY = character.y <= 3152 && character.y >= 3140;
+    if (forestX && forestY) {
+      this.scene.switch("game");
+      this.scene.get("game").events.emit("spawnAtEntrance", this.forestEntranceX, this.forestEntranceY);
+      return;
+    }
 
     if (this.playerName) {
       // Update the player's name position horizontally

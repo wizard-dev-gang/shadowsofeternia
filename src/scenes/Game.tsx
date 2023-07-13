@@ -125,6 +125,7 @@ export default class Game extends Phaser.Scene {
 
       // Create an array of that holds all characters to be targeted if needed
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
+      
 
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({

@@ -366,35 +366,6 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-    // Method to handle collision between player and enemy characters
-    private handlePlayerEnemyCollision(
-      obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-      obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-    ) {
-      console.log('handleplayerEnemyCollision')
-      if (
-        (obj1 instanceof Player || Barb || Wizard) &&
-        obj2 instanceof Skeleton
-      ) {
-        const man = (obj1 as Player) || Barb || Wizard;
-        const skeleton = obj2 as Skeleton;
-
-        const dx =
-          (man as Phaser.GameObjects.Image).x -
-          (skeleton as Phaser.GameObjects.Image).x;
-        const dy =
-          (man as Phaser.GameObjects.Image).y -
-          (skeleton as Phaser.GameObjects.Image).y;
-
-        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-        man.setVelocity(dir.x, dir.y);
-        man.handleDamage(dir);
-        // console.log(man._health);
-        sceneEvents.emit("player-health-changed", man.getHealth());
-      }
-    }
-
-
   update() {
     this.updateIterations++;
     let character;

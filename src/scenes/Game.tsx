@@ -15,6 +15,8 @@ import { createNpcAnims } from "../anims/NpcAnims";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
+import { Potion } from "../characters/Potion";
+import { createPotionAnims } from "../anims/PotionAnims";
 
 export default class Game extends Phaser.Scene {
   private man?: Player; //Rogue Character
@@ -28,7 +30,8 @@ export default class Game extends Phaser.Scene {
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  private collisionHandler: CollisionHandler;
+  public collisionHandler: CollisionHandler;
+  public potion!: Potion;
 
   // Firebase variables
   public characterName?: string;
@@ -67,6 +70,7 @@ export default class Game extends Phaser.Scene {
       this.time,
       this.Npc_wizard,
       this.add,
+      this.potion
     );
     this.scene.run("player-ui");
 
@@ -77,6 +81,7 @@ export default class Game extends Phaser.Scene {
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
     createNpcAnims(this.anims);
+    createPotionAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
@@ -118,6 +123,7 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
 
+      // Create an array of that holds all characters to be targeted if needed
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
       // Create a group for skeletons and set their properties
@@ -125,7 +131,7 @@ export default class Game extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-          this.enemyCount++;
+          // this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -246,34 +252,30 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.skeletons,
-          this.handlePlayerEnemyCollision,
+          this.collisionHandler.handlePlayerEnemyCollision as any,
           undefined,
           this
         );
       }
-      console.log('creating colliders...')
+      console.log("creating enemy colliders...");
       // Handle collisions between player and enemy characters
-      if (this.man && this.playerEnemiesCollider) {
-        console.log('create playerenemiescollider')
+      if (playerCharacters && this.playerEnemiesCollider) {
+        console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
-          this.man,
-          // this.wizard,
-          // this.barb,
-          this.collisionHandler.handlePlayerEnemyCollision,
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.collisionHandler.handlePlayerEnemyCollision as any,
           undefined,
           this
         );
       }
 
       // Handle collisions
-      if (this.man && this.playerSlimeCollider) {
-        console.log('create playersilmecollider')
+      if (playerCharacters && this.playerSlimeCollider) {
+        console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
-          this.man,
-          // this.wizard,
-          // this.barb,
+          playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerSlimeCollision,
           undefined,
           this
@@ -326,21 +328,41 @@ export default class Game extends Phaser.Scene {
           if (NpcGo.body) {
             NpcGo.body.onCollide = true;
           }
+          // Adjust the hitbox size here
+          const hitboxWidth = 70; // Set the desired hitbox width
+          const hitboxHeight = 70; // Set the desired hitbox height
+          NpcGo.body.setSize(hitboxWidth, hitboxHeight);
+
+          // Set the hitbox offset here
+          const offsetX = hitboxWidth * -0.25; // Set the desired X offset
+          const offsetY = hitboxHeight * -0.25; // Set the desired Y offset
+          NpcGo.body.setOffset(offsetX, offsetY);
         },
       });
-
 
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
       );
+      this.potion = this.physics.add.group({
+        classType: Potion,
+        createCallback: (go) => {
+          const PotionGo = go as Potion;
+          if (PotionGo.body) {
+            PotionGo.body.onCollide = true;
+          }
+        },
+      });
+      this.potion.get(2062, 1023, "Potion");
+      // this.slimes.get(2000, 1000, "slime");
+    }
 
-      // Add a skeleton to the group
-      if (this.characterName === "rogue") {
-        this.skeletons.get(2000, 1200, "jacked-skeleton");
-        this.skeletons.get(256, 256, "jacked-skeleton");
-        this.skeletons.get(256, 256, "jacked-skeleton");
-      }
+    // Add a skeleton to the group
+    if (this.characterName === "rogue") {
+      console.log("Rogue host is spawning...");
+      this.skeletons.get(2000, 1210, "jacked-skeleton");
+      this.skeletons.get(2000, 1220, "jacked-skeleton");
+      this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
 
@@ -374,7 +396,6 @@ export default class Game extends Phaser.Scene {
 
 
   update() {
-
     this.updateIterations++;
     let character;
 
@@ -391,7 +412,7 @@ export default class Game extends Phaser.Scene {
       this.wizard.update();
       character = this.wizard;
     }
-    if (!character) return
+    if (!character) return;
 
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y === 28.8;
@@ -405,6 +426,15 @@ export default class Game extends Phaser.Scene {
       this.playerName.x = character.x;
       // Position of the name above the player
       this.playerName.y = character.y - 10;
+
+      //Handle Collision Between Player and Potions
+      this.physics.overlap(
+        character,
+        this.potion,
+        this.collisionHandler.handlePlayerPotionCollision as any,
+        undefined,
+        this
+      );
 
       // Handle collision between knives and skeletons
       this.physics.overlap(
@@ -428,7 +458,7 @@ export default class Game extends Phaser.Scene {
         )
       ) {
         this.physics.overlap(
-          this.man,
+          character,
           this.Npc_wizard,
           this.collisionHandler.handlePlayerNpcCollision,
           undefined,

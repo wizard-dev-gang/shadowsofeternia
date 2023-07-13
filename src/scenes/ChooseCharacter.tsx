@@ -3,6 +3,10 @@ import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { getAuth } from "firebase/auth";
 import {
+  removeEnemyFromDatabase,
+  removeAllEnemiesFromDatabase,
+} from "../../functions/lib/enemySupport";
+import {
   getDatabase,
   ref,
   update,
@@ -110,6 +114,17 @@ async function writeUserData(character: string, scene: ChooseCharacterScene) {
         console.error("Error setting up onDisconnect:", error);
       });
 
+    const enemyId = "enemy123";
+
+    // Create a reference to the enemy data
+    const enemyRef = ref(db, "enemies/" + enemyId);
+
+    // Set the onDisconnect event handler
+    onDisconnect(enemyRef).set(() => {
+      // Call the removeEnemyFromDatabase function when the client disconnects
+      removeEnemyFromDatabase(enemyId);
+    });
+
     onValue(currentRoomRef, (snapshot) => {
       if (
         snapshot.hasChildren() &&
@@ -160,9 +175,9 @@ export default class ChooseCharacterScene extends Phaser.Scene {
   create() {
     // this.textures.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
-    let hasChosenCharacter = false;
+    const hasChosenCharacter = false; // This is okay to be unassigned for now. It will be assigned when the user chooses a character.
 
-    this.add.image(0, 0, "pansbg").setOrigin(0, 0).setScale(0.7);
+    this.add.image(0, 10, "pansbg").setOrigin(0, 0.1).setScale(0.5);
 
     this.add
       .text(
@@ -195,33 +210,49 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     const char1Text = this.add
-      .text(50, 280, "Rogue", {
-        fontSize: "10px",
+      .text(50, 270, "Rogue", {
+        fontSize: "20px",
         fontFamily: "Joystix",
         align: "center",
+        color: "#000000",
       })
       .setOrigin(0.5);
+    char1Text.setWordWrapWidth(8);
+    char1Text.setLineSpacing(1);
+    // char1Text.setScale(0.25);
     const char2Text = this.add
-      .text(150, 280, "Barbarian", {
-        fontSize: "10px",
+      .text(150, 270, "Barbarian", {
+        fontSize: "20px",
         fontFamily: "Joystix",
         align: "center",
+        color: "#000000",
       })
       .setOrigin(0.5);
+    char2Text.setWordWrapWidth(10);
+    char2Text.setLineSpacing(1);
+    // char2Text.setScale(0.25);
     const char3Text = this.add
-      .text(250, 280, "Archer", {
-        fontSize: "10px",
+      .text(250, 270, "Archer", {
+        fontSize: "20px",
         fontFamily: "Joystix",
         align: "center",
+        color: "#000000",
       })
       .setOrigin(0.5);
+    char3Text.setWordWrapWidth(10);
+    char3Text.setLineSpacing(1);
+    // char3Text.setScale(0.25);
     const char4Text = this.add
-      .text(350, 280, "Wizard", {
-        fontSize: "10px",
+      .text(350, 270, "Wizard", {
+        fontSize: "20px",
         fontFamily: "Joystix",
         align: "center",
+        color: "#000000",
       })
       .setOrigin(0.5);
+    char4Text.setWordWrapWidth(10);
+    char4Text.setLineSpacing(1);
+    // char4Text.setScale(0.25);
 
     createCharacterAnims(this.anims);
 
@@ -304,15 +335,15 @@ export default class ChooseCharacterScene extends Phaser.Scene {
 
     character1.on("pointerdown", async () => {
       this.startGame("rogue"); // Comment this line for final build
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("rogue", this);
-        if (isCharacterAvailable) {
-          char1Text.setText("Rogue (Selected)");
-          hasChosenCharacter = true;
-        }
-      }
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("rogue", this);
+      //   if (isCharacterAvailable) {
+      //     char1Text.setText("Rogue (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
-    character2.on("pointerdown", async () => { 
+    character2.on("pointerdown", async () => {
       this.startGame("barb");
       // if (!hasChosenCharacter) {
       //   const isCharacterAvailable = await writeUserData("barb", this);
@@ -324,27 +355,28 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
     character3.on("pointerdown", async () => {
       this.startGame("archer");
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("archer", this);
-        if (isCharacterAvailable) {
-          char3Text.setText("Archer (Selected)");
-          hasChosenCharacter = true;
-        }
-      }
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("archer", this);
+      //   if (isCharacterAvailable) {
+      //     char3Text.setText("Archer (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
-    character4.on("pointerdown", async () => { 
+    character4.on("pointerdown", async () => {
       this.startGame("wizard");
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("wizard", this);
-        if (isCharacterAvailable) {
-          char4Text.setText("Wizard (Selected)");
-          hasChosenCharacter = true;
-        }
-      }
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("wizard", this);
+      //   if (isCharacterAvailable) {
+      //     char4Text.setText("Wizard (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
   }
 
   startGame(name?: string) {
+    removeAllEnemiesFromDatabase();
     this.scene.start("game", {
       name,
     });

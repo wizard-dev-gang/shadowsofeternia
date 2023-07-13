@@ -56,13 +56,13 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         let newNum = Math.random()
         if (newNum >= .3) {
           this.seekAndDestroy()
-          console.log(newNum, 'seekndestroy')
+          
         } else if (newNum >= .1 && newNum < .2 ) {
           this.direction = randomDirection(this.direction);
-          console.log(newNum, 'random')
+          
         } else {
           this.currentTarget = {x: 0, y:0,distance:Number(500)}
-          console.log(newNum, 'change character')
+          
         }
       },
       loop: true,
@@ -113,9 +113,6 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     {
       this.y > this.currentTarget.y ? this.direction = 0 : this.direction = 1
     }
-    console.log(this.currentTarget, 
-      this.direction,Math.abs(this.x - this.currentTarget.x), Math.abs(this.y - this.currentTarget.y)
-      )
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {

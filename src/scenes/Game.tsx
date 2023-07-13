@@ -402,6 +402,7 @@ export default class Game extends Phaser.Scene {
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
       this.scene.start("forest", { characterName: this.characterName });
+      update(this.playerRef, {Scene:'forest'})
       return;
     }
 
@@ -463,6 +464,7 @@ export default class Game extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
+          Scene:this.scene.key,
         });
         character.projectilesToSend = {};
       }

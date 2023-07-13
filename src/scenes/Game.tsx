@@ -30,8 +30,8 @@ export default class Game extends Phaser.Scene {
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   private enemyCount: number = 0;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  private collisionHandler: CollisionHandler;
-  private potion?: Potion;
+  public collisionHandler: CollisionHandler;
+  public potion!: Potion;
 
   // Firebase variables
   public characterName?: string;
@@ -69,7 +69,8 @@ export default class Game extends Phaser.Scene {
       this.slimes,
       this.time,
       this.Npc_wizard,
-      this.add
+      this.add,
+      this.potion
     );
     this.scene.run("player-ui");
 
@@ -122,6 +123,7 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
 
+      // Create an array of that holds all characters to be targeted if needed
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
       // Create a group for skeletons and set their properties
@@ -129,7 +131,7 @@ export default class Game extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-          this.enemyCount++;
+          // this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -250,34 +252,30 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.skeletons,
-          this.collisionHandler.handlePlayerEnemyCollision,
+          this.collisionHandler.handlePlayerEnemyCollision as any,
           undefined,
           this
         );
       }
-      console.log("creating colliders...");
+      console.log("creating enemy colliders...");
       // Handle collisions between player and enemy characters
-      if (this.man && this.playerEnemiesCollider) {
+      if (playerCharacters && this.playerEnemiesCollider) {
         console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
-          this.man,
-          // this.wizard,
-          // this.barb,
-          this.collisionHandler.handlePlayerEnemyCollision,
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.collisionHandler.handlePlayerEnemyCollision as any,
           undefined,
           this
         );
       }
 
       // Handle collisions
-      if (this.man && this.playerSlimeCollider) {
+      if (playerCharacters && this.playerSlimeCollider) {
         console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
-          this.man,
-          // this.wizard,
-          // this.barb,
+          playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerSlimeCollision,
           undefined,
           this
@@ -330,6 +328,15 @@ export default class Game extends Phaser.Scene {
           if (NpcGo.body) {
             NpcGo.body.onCollide = true;
           }
+          // Adjust the hitbox size here
+          const hitboxWidth = 70; // Set the desired hitbox width
+          const hitboxHeight = 70; // Set the desired hitbox height
+          NpcGo.body.setSize(hitboxWidth, hitboxHeight);
+
+          // Set the hitbox offset here
+          const offsetX = hitboxWidth * -0.25; // Set the desired X offset
+          const offsetY = hitboxHeight * -0.25; // Set the desired Y offset
+          NpcGo.body.setOffset(offsetX, offsetY);
         },
       });
       this.Npc_wizard.get(1876, 1028, "npcWizard");
@@ -346,54 +353,15 @@ export default class Game extends Phaser.Scene {
         },
       });
       this.potion.get(2062, 1023, "Potion");
-      this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
     }
 
     // Add a skeleton to the group
     if (this.characterName === "rogue") {
-      this.skeletons.get(2000, 1200, "jacked-skeleton");
-      this.skeletons.get(256, 256, "jacked-skeleton");
-      this.skeletons.get(256, 256, "jacked-skeleton");
-    }
-  }
-
-  private handlePlayerPotionCollision(
-    player: Phaser.GameObjects.GameObject,
-    potion: Phaser.GameObjects.GameObject
-  ) {
-    // Perform actions for interacting with the potion
-    ++this.man._health;
-    console.log("Potion Picked Up HP:", this.man.getHealth());
-
-    // Remove the potion from the scene
-    potion.destroy();
-  }
-
-  // Method to handle collision between player and enemy characters
-  private handlePlayerEnemyCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    console.log("handleplayerEnemyCollision");
-    if (
-      (obj1 instanceof Player || Barb || Wizard) &&
-      obj2 instanceof Skeleton
-    ) {
-      const man = (obj1 as Player) || Barb || Wizard;
-      const skeleton = obj2 as Skeleton;
-
-      const dx =
-        (man as Phaser.GameObjects.Image).x -
-        (skeleton as Phaser.GameObjects.Image).x;
-      const dy =
-        (man as Phaser.GameObjects.Image).y -
-        (skeleton as Phaser.GameObjects.Image).y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
+      console.log("Rogue host is spawning...");
+      this.skeletons.get(2000, 1210, "jacked-skeleton");
+      this.skeletons.get(2000, 1220, "jacked-skeleton");
+      this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
 
@@ -433,7 +401,7 @@ export default class Game extends Phaser.Scene {
       this.physics.overlap(
         character,
         this.potion,
-        this.handlePlayerPotionCollision,
+        this.collisionHandler.handlePlayerPotionCollision as any,
         undefined,
         this
       );

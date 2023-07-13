@@ -31,6 +31,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
   public _health: number;
+  public maxHealth: number;
   // private knives?: Phaser.Physics.Arcade.Group;
   public projectiles?: Phaser.Physics.Arcade.Group;
   public keys: WASDKeys = {
@@ -53,6 +54,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
     this._health = 10;
+    this.maxHealth = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -70,6 +72,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   setProjectiles(projectiles: Phaser.Physics.Arcade.Group) {
     this.projectiles = projectiles;
+  }
+
+  increaseHealth(amount: number) {
+    this._health += amount;
+
+    // make sure the health doesnt exceed the max
+    if (this._health > this.maxHealth) {
+      this._health = this.maxHealth;
+    }
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {
@@ -102,17 +113,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     yLoc?: number,
     attackObj?: string
   ) {
-
     if (!this.projectiles) {
       return;
     }
 
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
-      direction = direction? direction: parts[2];
-      xLoc = xLoc? xLoc:this.x;
-      yLoc = yLoc? yLoc: this.y;
-      attackObj = attackObj? attackObj:"knife";
+      direction = direction ? direction : parts[2];
+      xLoc = xLoc ? xLoc : this.x;
+      yLoc = yLoc ? yLoc : this.y;
+      attackObj = attackObj ? attackObj : "knife";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -152,13 +162,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     projectile.y += vec.y * 16;
     projectile.setVelocity(vec.x * 300, vec.y * 300);
     this.projectilesToSend[this.projectileCount] = {
-      id:this.projectileCount,
+      id: this.projectileCount,
       direction: direction,
       x: xLoc,
       y: yLoc,
-      attackObj: attackObj
-    }
-    this.projectileCount++
+      attackObj: attackObj,
+    };
+    this.projectileCount++;
   }
 
   preUpdate(t: number, dt: number): void {

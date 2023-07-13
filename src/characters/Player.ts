@@ -127,7 +127,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.lastProjectileTime && this.projectileCooldown && currentTime < this.lastProjectileTime + this.projectileCooldown) {
       return;
   }
-  
 
   // update lastProjectileTime
   this.lastProjectileTime = currentTime;

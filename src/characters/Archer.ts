@@ -34,6 +34,9 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
   public maxHealth: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
   private throwStartTime: number | null = null;
+  public lastProjectileTime?: number = 0;
+  public projectileCooldown?: number = 1000; // cooldown in milliseconds
+  public projectileLife?: number = 800; // projectile is removed after this amount of time
 
   private keys: WASDKeys = {
     W: undefined,
@@ -117,6 +120,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
+    const currentTime = this.scene.time.now;
+  
+    if (this.lastProjectileTime && this.projectileCooldown && currentTime < this.lastProjectileTime + this.projectileCooldown) {
+      return;
+  }
+
+  this.lastProjectileTime = currentTime;
+
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
       direction = direction ? direction : parts[2];
@@ -184,6 +195,18 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
       attackObj: attackObj,
     };
     this.projectileCount++;
+
+    if (this.projectileLife) {
+      this.scene.time.addEvent({
+        delay: this.projectileLife,
+        callback: () => {
+          if (this.projectiles) {
+            this.projectiles.remove(projectile, true, true); // Remove from group, and destroy the GameObject
+          }
+        },
+        loop: false
+      });
+    }
 
 
     const velocityMultiplier = 1 + (this.getThrowDuration() / 1000); // Increase velocity by 1 unit per second

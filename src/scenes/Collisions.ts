@@ -9,6 +9,7 @@ import { Wizard } from "../characters/Wizard";
 import { Archer } from "../characters/Archer";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
+import { Potion } from "../characters/Potion";
 
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
@@ -17,6 +18,7 @@ export class CollisionHandler {
   time: Phaser.Time.Clock;
   Npc_wizard!: Phaser.Physics.Arcade.Group;
   add: GameObjects.GameObjectFactory;
+  potion: Potion;
 
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
@@ -24,7 +26,8 @@ export class CollisionHandler {
     slimes: Phaser.Physics.Arcade.Group,
     time: Phaser.Time.Clock,
     Npc_wizard: Phaser.Physics.Arcade.Group,
-    add: GameObjects.GameObjectFactory
+    add: GameObjects.GameObjectFactory,
+    potion: Potion
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -32,6 +35,7 @@ export class CollisionHandler {
     this.time = time;
     this.Npc_wizard = Npc_wizard;
     this.add = add;
+    this.potion = potion;
   }
 
   // Method to handle collision between projectiles and walls
@@ -68,8 +72,7 @@ export class CollisionHandler {
     (skeleton as Skeleton).handleDamage(dir);
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
-      skeleton.isAlive = false,
-      skeleton.destroy();
+      (skeleton.isAlive = false), skeleton.destroy();
     }
   }
 
@@ -104,34 +107,26 @@ export class CollisionHandler {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ) {
-    if (obj2 instanceof Skeleton) {
-      let man;
-      if (obj1 instanceof Player) {
-        man = obj1 as Player;
-      } else if (obj1 instanceof Barb) {
-        man = obj1 as Barb;
-      } else if (obj1 instanceof Wizard) {
-        man = obj1 as Wizard;
-      } else if (obj1 instanceof Archer) {
-        man = obj1 as Archer;
-      }
+    console.log("handleplayerEnemyCollision");
+    if (
+      (obj1 instanceof Player || Barb || Wizard || Archer) &&
+      obj2 instanceof Skeleton
+    ) {
+      const man = (obj1 as Player) || Barb || Wizard || Archer;
+      const skeleton = obj2 as Skeleton;
 
-      if (man) {
-        const skeleton = obj2 as Skeleton;
+      const dx =
+        (man as Phaser.GameObjects.Image).x -
+        (skeleton as Phaser.GameObjects.Image).x;
+      const dy =
+        (man as Phaser.GameObjects.Image).y -
+        (skeleton as Phaser.GameObjects.Image).y;
 
-        const dx =
-          (man as Phaser.GameObjects.Image).x -
-          (skeleton as Phaser.GameObjects.Image).x;
-        const dy =
-          (man as Phaser.GameObjects.Image).y -
-          (skeleton as Phaser.GameObjects.Image).y;
-
-        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-        man.setVelocity(dir.x, dir.y);
-        man.handleDamage(dir);
-        // console.log(man._health);
-        sceneEvents.emit("player-health-changed", man.getHealth());
-      }
+      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+      man.setVelocity(dir.x, dir.y);
+      man.handleDamage(dir);
+      // console.log(man._health);
+      sceneEvents.emit("player-health-changed", man.getHealth());
     }
   }
 
@@ -174,22 +169,30 @@ export class CollisionHandler {
       player instanceof Player ||
       player instanceof Barb ||
       player instanceof Wizard ||
+      player instanceof Archer ||
       (npc instanceof Npc_wizard && npc instanceof Npc_wizard)
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
 
       // Add text on the screen
-      const text = this.add.text(1876, 1028, "Hello World!", {
-        fontSize: "11px",
-        color: "#000000",
-        padding: {
-          left: 10,
-          right: 10,
-          top: 5,
-          bottom: 5,
-        },
-      });
+      const text = this.add.text(
+        1876,
+        1028,
+        "Seek the Wizards, who will grant you sacred knowledge!",
+        {
+          fontSize: "11px",
+          color: "#000000",
+          padding: {
+            left: 10,
+            right: 20,
+            top: 10,
+            bottom: 10,
+          },
+        }
+      );
+      text.setWordWrapWidth(200);
+      text.setLineSpacing(1);
       text.setOrigin(0.5, 1.4);
       text.setDepth(1);
 
@@ -205,5 +208,41 @@ export class CollisionHandler {
         background.destroy();
       });
     }
+  }
+
+  handlePlayerPotionCollision(
+    player: Phaser.GameObjects.GameObject,
+    potion: Potion
+  ) {
+    // Perform actions for interacting with the potion
+
+    if (
+      player instanceof Player ||
+      player instanceof Barb ||
+      player instanceof Wizard ||
+      player instanceof Archer ||
+      potion instanceof Phaser.GameObjects.GameObject
+    ) {
+      if (player instanceof Player) {
+        player.increaseHealth(5);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+        console.log("Potion Picked Up HP:", player.getHealth());
+      } else if (player instanceof Barb) {
+        player.increaseHealth(5);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+        console.log("Potion Picked Up HP:", player.getHealth());
+      } else if (player instanceof Wizard) {
+        player.increaseHealth(5);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+        console.log("Potion Picked Up HP:", player.getHealth());
+      } else if (player instanceof Archer) {
+        player.increaseHealth(5);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+        console.log("Potion Picked Up HP:", player.getHealth());
+      }
+    }
+
+    // Remove the potion from the scene
+    potion.destroy();
   }
 }

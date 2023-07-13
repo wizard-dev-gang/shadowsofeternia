@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 
 interface WASDKeys {
@@ -32,9 +31,9 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health: number;
+  public maxHealth: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
   private lastThrowTime = 0;
-
 
   private keys: WASDKeys = {
     W: undefined,
@@ -42,7 +41,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     S: undefined,
     D: undefined,
   };
-  
+
   public lastMove = "down";
   public projectilesToSend?: any = {};
   public projectileCount = 0;
@@ -56,6 +55,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
     this._health = 10;
+    this.maxHealth = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -73,6 +73,15 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
 
   setProjectiles(projectiles: Phaser.Physics.Arcade.Group) {
     this.projectiles = projectiles;
+  }
+
+  increaseHealth(amount: number) {
+    this._health += amount;
+
+    // make sure the health doesnt exceed the max
+    if (this._health > this.maxHealth) {
+      this._health = this.maxHealth;
+    }
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {
@@ -112,10 +121,10 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
 
-      direction = direction? direction: parts[2];
-      xLoc = xLoc? xLoc:this.x;
-      yLoc = yLoc? yLoc: this.y;
-      attackObj = attackObj? attackObj:"slash";
+      direction = direction ? direction : parts[2];
+      xLoc = xLoc ? xLoc : this.x;
+      yLoc = yLoc ? yLoc : this.y;
+      attackObj = attackObj ? attackObj : "slash";
     }
 
     const vec = new Phaser.Math.Vector2(0, 0);
@@ -155,18 +164,17 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     projectile.y += vec.y * 16;
     projectile.setVelocity(vec.x * 300, vec.y * 300);
 
-    projectile.setData('initialX', projectile.x);
-    projectile.setData('initialY', projectile.y);
+    projectile.setData("initialX", projectile.x);
+    projectile.setData("initialY", projectile.y);
 
     this.projectilesToSend[this.projectileCount] = {
-      id:this.projectileCount,
+      id: this.projectileCount,
       direction: direction,
       x: xLoc,
       y: yLoc,
-      attackObj: attackObj
-    }
-    this.projectileCount++
-
+      attackObj: attackObj,
+    };
+    this.projectileCount++;
   }
 
   preUpdate(t: number, dt: number): void {
@@ -193,66 +201,68 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
+    this.projectiles
+      ?.getChildren()
+      .forEach((projectile: Phaser.Physics.Arcade.Image) => {
+        const initialX = projectile.getData("initialX");
+        const initialY = projectile.getData("initialY");
 
-    this.projectiles?.getChildren().forEach((projectile: Phaser.Physics.Arcade.Image) => {
-      const initialX = projectile.getData('initialX');
-      const initialY = projectile.getData('initialY');
-  
-      const distanceX = Math.abs(projectile.x - initialX);
-      const distanceY = Math.abs(projectile.y - initialY);
-      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-  
-      const maxDistance = 16; //Sets max distance the projectile can travel
-      if (distance >= maxDistance) {
-        this.projectiles?.remove(projectile, true, true);
-      }
-    });
-    
+        const distanceX = Math.abs(projectile.x - initialX);
+        const distanceY = Math.abs(projectile.y - initialY);
+        const distance = Math.sqrt(
+          distanceX * distanceX + distanceY * distanceY
+        );
 
-  const speed = 200;
-  let isMoving = false;
+        const maxDistance = 16; //Sets max distance the projectile can travel
+        if (distance >= maxDistance) {
+          this.projectiles?.remove(projectile, true, true);
+        }
+      });
 
-  if (this.keys.A?.isDown) {
+    const speed = 200;
+    let isMoving = false;
+
+    if (this.keys.A?.isDown) {
       this.anims.play("barb-walk-left", true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
       isMoving = true;
-  } 
-  if (this.keys.D?.isDown) {
+    }
+    if (this.keys.D?.isDown) {
       this.anims.play("barb-walk-right", true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
       isMoving = true;
-  }
-  if (this.keys.W?.isDown) {
+    }
+    if (this.keys.W?.isDown) {
       this.anims.play("barb-walk-up", true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
       isMoving = true;
-  } 
-  if (this.keys.S?.isDown) {
+    }
+    if (this.keys.S?.isDown) {
       this.anims.play("barb-walk-down", true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
       isMoving = true;
-  } 
+    }
 
-  const now = Date.now();
-  const timeSinceLastThrow = now - this.lastThrowTime;
-  const throwCooldown = 1000;  // Cooldown time to attack again
+    const now = Date.now();
+    const timeSinceLastThrow = now - this.lastThrowTime;
+    const throwCooldown = 1000; // Cooldown time to attack again
 
-  if (this.keys.Space?.isDown && timeSinceLastThrow > throwCooldown) {
+    if (this.keys.Space?.isDown && timeSinceLastThrow > throwCooldown) {
       const slash = `barb-attack-${this.lastMove}`;
       this.anims.play(slash, true);
       this.throwProjectile();
       this.lastThrowTime = now;
-  } 
+    }
 
-  if (!isMoving) {
+    if (!isMoving) {
       const idle = `barb-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
-  }
+    }
   }
 }
 
@@ -276,13 +286,13 @@ Phaser.GameObjects.GameObjectFactory.register(
     );
 
     // Set the hitbox size
-    const hitboxWidth = sprite.width * 0.69;
-    const hitboxHeight = sprite.height * 0.69;
+    const hitboxWidth = sprite.width * 0.6;
+    const hitboxHeight = sprite.height * 0.6;
     sprite.body?.setSize(hitboxWidth, hitboxHeight);
 
     // Set the hitbox offset
-    const offsetX = 5;
-    const offsetY = sprite.height * 0.6;
+    const offsetX = 6;
+    const offsetY = sprite.height * 0.42;
     sprite.body?.setOffset(offsetX, offsetY);
 
     return sprite;

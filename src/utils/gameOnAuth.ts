@@ -21,6 +21,8 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           for (const enemyId in enemiesData) {
             const enemyData = enemiesData[enemyId];
 
+            if (enemyData.scene != gameInstance.playerRef.scene) continue
+            
             let enemy = gameInstance.enemies.get(enemyId);
 
             if (!enemyData.isAlive && enemy) {

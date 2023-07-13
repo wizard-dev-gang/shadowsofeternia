@@ -485,6 +485,7 @@ export default class Game extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+              Scene:this.scene.key,
             };
           } else {
             this.dataToSend[entry[0]] = {

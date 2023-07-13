@@ -32,6 +32,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   public _health: number;
   public maxHealth: number;
+  public exp: number = 0;
+  public level: number = 1;
   // private knives?: Phaser.Physics.Arcade.Group;
   public projectiles?: Phaser.Physics.Arcade.Group;
   public lastProjectileTime?: number = 0;

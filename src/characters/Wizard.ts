@@ -33,6 +33,8 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
   public _health: number;
   public maxHealth: number;
   public projectiles?: Phaser.Physics.Arcade.Group;
+  public exp: number = 0;
+  public level: number = 1;
   public lastProjectileTime?: number = 0;
   public projectileCooldown?: number = 1000; // cooldown in milliseconds
   public projectileLife?: number = 800; // projectile is removed after this amount of time

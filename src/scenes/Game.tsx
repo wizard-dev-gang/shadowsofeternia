@@ -32,6 +32,7 @@ export default class Game extends Phaser.Scene {
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public collisionHandler: CollisionHandler;
   public potion!: Potion;
+  public exp: number = 0;
 
   // Firebase variables
   public characterName?: string;
@@ -70,7 +71,8 @@ export default class Game extends Phaser.Scene {
       this.time,
       this.Npc_wizard,
       this.add,
-      this.potion
+      this.potion,
+      this.playerId
     );
     this.scene.run("player-ui");
 
@@ -367,7 +369,7 @@ export default class Game extends Phaser.Scene {
         },
       });
       this.potion.get(2062, 1023, "Potion");
-      // this.slimes.get(2000, 1000, "slime");
+      this.slimes.get(2000, 1000, "slime");
     }
 
     // Add a skeleton to the group
@@ -378,6 +380,86 @@ export default class Game extends Phaser.Scene {
       //this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
+    // Method to update player's experience
+    public updatePlayerExp(exp: number) {
+      this.exp = exp;
+  
+      // Update the player's exp value in the database
+      if (this.playerRef) {
+        update(this.playerRef, {
+          exp: this.exp,
+        });
+      }
+    }
+    
+    private levelUpPlayer(player: Player) {
+      if (player.exp >= player.level * 10) {
+        player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
+        player._health *= 1.25; // Increase the player's HP by 1.25 times
+        player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
+        player.level++;
+        console.log("You have leveled up! Level:", player.level);
+        console.log("HP:", player._health);
+        // Update the player's exp and HP in the database
+        if (this.playerRef) {
+          update(this.playerRef, {
+            exp: player.exp,
+            hp: player._health,
+          });
+        }
+      }
+    }
+    private levelUpBarb(player: Barb) {
+      if (player.exp >= player.level * 10) {
+        player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
+        player._health *= 1.25; // Increase the player's HP by 1.25 times
+        player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
+        player.level++;
+        console.log("You have leveled up! Level:", player.level);
+        console.log("HP:", player._health);
+        // Update the player's exp and HP in the database
+        if (this.playerRef) {
+          update(this.playerRef, {
+            exp: player.exp,
+            hp: player._health,
+          });
+        }
+      }
+    }
+    private levelUpArcher(player: Archer) {
+      if (player.exp >= player.level * 10) {
+        player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
+        player._health *= 1.25; // Increase the player's HP by 1.25 times
+        player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
+        player.level++;
+        console.log("You have leveled up! Level:", player.level);
+        console.log("HP:", player._health);
+        // Update the player's exp and HP in the database
+        if (this.playerRef) {
+          update(this.playerRef, {
+            exp: player.exp,
+            hp: player._health,
+          });
+        }
+      }
+    }
+    private levelUpWizard(player: Wizard) {
+      if (player.exp >= player.level * 10) {
+        player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
+        player._health *= 1.25; // Increase the player's HP by 1.25 times
+        player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
+        player.level++;
+        console.log("You have leveled up! Level:", player.level);
+        console.log("HP:", player._health);
+        // Update the player's exp and HP in the database
+        if (this.playerRef) {
+          update(this.playerRef, {
+            exp: player.exp,
+            hp: player._health,
+          });
+        }
+      }
+    }
 
   update() {
     this.updateIterations++;
@@ -386,15 +468,19 @@ export default class Game extends Phaser.Scene {
     if (this.man) {
       this.man.update();
       character = this.man;
+      this.levelUpPlayer(this.man);
     } else if (this.barb) {
       this.barb.update();
       character = this.barb;
+      this.levelUpBarb(this.barb)
     } else if (this.archer) {
       this.archer.update();
       character = this.archer;
+      this.levelUpArcher(this.archer)
     } else if (this.wizard) {
       this.wizard.update();
       character = this.wizard;
+      this.levelUpWizard(this.wizard)
     }
     if (!character) return;
 

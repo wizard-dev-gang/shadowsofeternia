@@ -339,6 +339,7 @@ export default class Game extends Phaser.Scene {
           NpcGo.body.setOffset(offsetX, offsetY);
         },
       });
+
       this.Npc_wizard.get(1876, 1028, "npcWizard");
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E

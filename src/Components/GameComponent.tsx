@@ -27,9 +27,9 @@ function GameComponent() {
           gravity: { y: 0 }, // The gravity configuration (no gravity in this case)
           debug: true, // Enable physics debugging (collider outlines, etc.)
         },
-      },
+      }, 
       
-      scene: [Preloader, ChooseCharacterScene, Game, PlayerUI, Forest, Ruins],
+      scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, PlayerUI],
 
       scale: {
         zoom: 2.69,

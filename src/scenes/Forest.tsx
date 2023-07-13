@@ -82,6 +82,7 @@ export default class Forest extends Phaser.Scene {
             const groundLayer = map.createLayer("Ground", ruinsTerrain, 0,0)
             const grassLayer = map.createLayer("Grass", ruinsProps, 0, 0)
             const pathsLayer = map.createLayer("Paths", ruinsTerrain, 0, 0)
+            const borderLayer = map.createLayer("Border", grassProps, 0, 0)
             const treesLayer = map.createLayer("Trees", ruinsProps, 0, 0)
             const trees2Layer = map.createLayer("Trees2", grassProps, 0 ,0)
             const trees3Layer = map.createLayer("Trees3", ruinsProps, 0, 0)
@@ -90,6 +91,7 @@ export default class Forest extends Phaser.Scene {
             groundLayer?.setCollisionByProperty({collides: false})
             grassLayer?.setCollisionByProperty({collides: false})
             pathsLayer?.setCollisionByProperty({collides: false})
+            borderLayer?.setCollisionByProperty({collides: true})
             treesLayer?.setCollisionByProperty({collides: true})
             trees2Layer?.setCollisionByProperty({collides: true})
             trees3Layer?.setCollisionByProperty({collides: true})
@@ -161,6 +163,7 @@ export default class Forest extends Phaser.Scene {
               if (grassLayer) this.physics.add.collider(this.slimes, grassLayer);
               if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
               if (pathsLayer) this.physics.add.collider(this.slimes, pathsLayer)
+              if (borderLayer) this.physics.add.collider(this.slimes, borderLayer)
               if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
               if (trees2Layer) this.physics.add.collider(this.slimes, trees2Layer);
               if (trees3Layer) this.physics.add.collider(this.slimes, trees3Layer);
@@ -195,6 +198,11 @@ export default class Forest extends Phaser.Scene {
           this.physics.add.collider(
             playerCharacters as Phaser.GameObjects.GameObject[],
             pathsLayer
+          );
+          if (borderLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            borderLayer
           );
         if (treesLayer)
           this.physics.add.collider(

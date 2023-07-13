@@ -464,7 +464,7 @@ export default class Game extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
-          Scene:this.scene.key,
+          scene:this.scene.key,
         });
         character.projectilesToSend = {};
       }
@@ -485,7 +485,7 @@ export default class Game extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
-              Scene:this.scene.key,
+              scene:this.scene.key,
             };
           } else {
             this.dataToSend[entry[0]] = {

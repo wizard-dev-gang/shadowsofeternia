@@ -30,9 +30,11 @@ declare global {
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
-  private _health: number;
+  public _health: number;
   public maxHealth: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
+  public exp: number = 0;
+  public level: number = 1;
 
   private keys: WASDKeys = {
     W: undefined,

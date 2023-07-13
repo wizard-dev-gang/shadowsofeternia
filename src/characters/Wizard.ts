@@ -33,6 +33,8 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
   public _health: number;
   public maxHealth: number;
   public projectiles?: Phaser.Physics.Arcade.Group;
+  public exp: number = 0;
+  public level: number = 1;
   private keys: WASDKeys = {
     W: undefined,
     A: undefined,

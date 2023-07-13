@@ -10,6 +10,9 @@ import { Archer } from "../characters/Archer";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { Potion } from "../characters/Potion";
+import { getDatabase, ref, onValue } from "firebase/database";
+import { useRef } from "react";
+import { setupFirebaseAuth } from "../utils/gameOnAuth";
 
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
@@ -19,6 +22,14 @@ export class CollisionHandler {
   Npc_wizard!: Phaser.Physics.Arcade.Group;
   add: GameObjects.GameObjectFactory;
   potion: Potion;
+  private man?: Player; //Rogue Character
+  private barb?: Barb; //Barbarian Character
+  private archer?: Archer; //Archer Character
+  private wizard?: Wizard; //Wizard Character
+
+  //Firebase
+  playerId: string | null;
+  playerRef!: any;
 
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
@@ -27,7 +38,8 @@ export class CollisionHandler {
     time: Phaser.Time.Clock,
     Npc_wizard: Phaser.Physics.Arcade.Group,
     add: GameObjects.GameObjectFactory,
-    potion: Potion
+    potion: Potion,
+    playerId: string | null
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -36,8 +48,9 @@ export class CollisionHandler {
     this.Npc_wizard = Npc_wizard;
     this.add = add;
     this.potion = potion;
+    this.playerId = playerId;
   }
-
+  
   // Method to handle collision between projectiles and walls
   handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -74,32 +87,45 @@ export class CollisionHandler {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
     }
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+    if (character) {
+      character.exp ++ 
+      console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+  }})
   }
 
-  handleProjectileSlimeCollision(
+    private handleProjectileSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const slime = obj2 as Slime;
-
-    // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile);
-    projectile.destroy();
-
-    // Stop the slime from moving
-    slime.isMoving = false;
-
-    // Play slime death animation
-    if (slime.anims) {
-      slime.anims.play("slime-death");
-    }
-
-    // Kill and hide the slime after the animation completes
-    this.time.delayedCall(1000, () => {
-      this.slimes.killAndHide(slime);
-      slime.destroy();
-    });
+  
+      // Kill and hide the projectile
+      this.projectiles.killAndHide(projectile);
+      projectile.destroy();
+  
+      // Stop the slime from moving
+      slime.isMoving = false;
+  
+      // Play slime death animation
+      if (slime.anims) {
+        slime.anims.play("slime-death");
+      }
+  
+      // Kill and hide the slime after the animation completes
+      this.time.delayedCall(1000, () => {
+        this.slimes.killAndHide(slime);
+        slime.destroy();
+      });
+        // Log players' x
+  const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+  playerCharacters.forEach((character) => {
+    if (character) {
+      character.exp ++ 
+      console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+  }})
   }
 
   // Method to handle collision between player and enemy characters

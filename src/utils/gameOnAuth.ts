@@ -135,6 +135,12 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           playerName.y = otherPlayer.y - 20;
         }
       });
+      onValue(gameInstance.playerRef, (snapshot) => {
+        const playerData = snapshot.val();
+        if (playerData && playerData.exp) {
+          gameInstance.exp = playerData.exp; // Update the player's exp value
+        }
+      });
     }
   });
 };

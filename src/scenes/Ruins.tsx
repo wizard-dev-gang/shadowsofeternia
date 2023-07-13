@@ -81,13 +81,13 @@ export default class Ruins extends Phaser.Scene {
 
     const map = this.make.tilemap({ key: "ruinsMap" });
     const structureTiles = map.addTilesetImage("Ruins-Structures", "structures");
-    const waterTiles = map.addTilesetImage("Ruins-Blood", "water");
+    const waterTiles = map.addTilesetImage("Ruins-Blood", "redWater");
     const terrainTiles = map.addTilesetImage("Ruins-Terrain", "ruinsTerrain");
     const templeTiles = map.addTilesetImage("Ancient-Temple", "temple");
 
     if (structureTiles && templeTiles && waterTiles && terrainTiles) {
-    const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const groundLayer = map.createLayer("Ground", structureTiles, 0, 0);
+      const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const pathLayer = map.createLayer("Paths", structureTiles, 0, 0);
       const platformLayer = map.createLayer("Platform-Ground", terrainTiles, 0, 0);
       const templeLayer = map.createLayer("Temple", templeTiles, 0, 0);

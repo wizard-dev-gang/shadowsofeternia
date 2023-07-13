@@ -131,7 +131,7 @@ export default class Game extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-          // this.enemyCount++;
+          this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 
@@ -340,7 +340,20 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      this.Npc_wizard.get(1876, 1028, "npcWizard");
+      // this.Npc_wizard.get(1876, 1028, "npcWizard");
+      // this.Npc_wizard.get(1576, 1028, "npcWizard");
+
+      // Create an instance of Npc_wizard with specific text
+      const npc1 = this.Npc_wizard.get(1876, 1028, "npcWizard");
+      npc1.text = "Hello, I am a wizard";
+
+      const npc2 = this.Npc_wizard.get(1776, 1028, "npcWizard");
+      npc2.text = "Hello, I am also a  wizard";
+
+      const npc3 = this.Npc_wizard.get(1676, 1028, "npcWizard");
+      npc3.text =
+        "You've seen three wizards and don't know what they look like?";
+
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
       );
@@ -428,13 +441,14 @@ export default class Game extends Phaser.Scene {
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
         )
       ) {
-        this.physics.overlap(
-          character,
-          this.Npc_wizard,
-          this.collisionHandler.handlePlayerNpcCollision,
-          undefined,
-          this
-        );
+        console.log("Player pushed E."),
+          this.physics.overlap(
+            character,
+            this.Npc_wizard,
+            this.collisionHandler.handlePlayerNpcCollision,
+            undefined,
+            this
+          );
       }
       // Update the player's data in the database
       if (this.playerRef) {

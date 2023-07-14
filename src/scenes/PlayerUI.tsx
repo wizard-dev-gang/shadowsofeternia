@@ -25,6 +25,11 @@ export default class PlayerUI extends Phaser.Scene {
       this.handlePlayerHealthChanged,
       this
     );
+    sceneEvents.on(
+      "player-max-health-changed",
+      this.handlePlayerMaxHealthChanged,
+      this
+    );
 
     this.bar = new HealthBar(this, x, y, fullWidth)
       .withLeftCap(this.add.image(0, 0, "healthBar-left-cap"))
@@ -44,4 +49,9 @@ export default class PlayerUI extends Phaser.Scene {
     //Requires two arguments, health and duration(ms)
     this.bar.animateToFill(health / 10, 1000);
   }
+  private handlePlayerMaxHealthChanged(maxHealth: number) {
+    console.log("Player's max health changed:", maxHealth);
+    // Update the width of the health bar to match the new max health value
+    this.bar.layout();
+  }  
 }

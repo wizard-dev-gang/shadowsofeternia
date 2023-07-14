@@ -90,11 +90,13 @@ export default class Boss extends Phaser.Scene{
         const wallsLayer = map.createLayer("Walls", structureTiles, 0, 0)
         const platformLayer = map.createLayer("Platforms", groundTiles, 0 ,0)
         const propsLayer = map.createLayer("Props", propTiles, 0 ,0)
+        const borderLayer = map.createLayer("Border", structureTiles, 0 ,0)
 
         groundLayer?.setCollisionByProperty({collides: true})
         wallsLayer?.setCollisionByProperty({collides: true})
         platformLayer?.setCollisionByProperty({collides: true})
         propsLayer?.setCollisionByProperty({collides: true})
+        borderLayer?.setCollisionByProperty({collides: true})
 
         if (this.characterName === "barb") {
             this.barb = this.add.barb(1100, 600, "barb");
@@ -145,6 +147,11 @@ export default class Boss extends Phaser.Scene{
               this.physics.add.collider(
                 playerCharacters as Phaser.GameObjects.GameObject[],
                 propsLayer
+              );
+              if (borderLayer)
+              this.physics.add.collider(
+                playerCharacters as Phaser.GameObjects.GameObject[],
+                borderLayer
               );
     
             // Add text for player name

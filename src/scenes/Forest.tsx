@@ -280,6 +280,7 @@ export default class Forest extends Phaser.Scene {
         "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
 
       // this.potion.get(800, 2900, "Potion");
+        
     }
   }
 
@@ -301,6 +302,13 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+
+    const ruinsX = character.x >= 647 && character.x <= 990;
+    const ruinsY = character.y <= 35 && character.y >= 27;
+    if (ruinsX && ruinsY) {
+      this.scene.start("ruins", { characterName: this.characterName });
+      return;
+    }
 
     if (this.playerName) {
       // Update the player's name position horizontally

@@ -12,6 +12,8 @@ import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
+import { Npc_wizard } from "../characters/Npc";
+import "../characters/Npc";
 
 export default class Forest extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -252,6 +254,33 @@ export default class Forest extends Phaser.Scene {
         },
       });
       this.potion.get(800, 2800, "Potion");
+
+      this.Npc_wizard = this.physics.add.group({
+        classType: Npc_wizard,
+        createCallback: (go) => {
+          const NpcGo = go as Npc_wizard;
+          if (NpcGo.body) {
+            NpcGo.body.onCollide = true;
+          }
+          // Adjust the hitbox size here
+          const hitboxWidth = 70; // Set the desired hitbox width
+          const hitboxHeight = 70; // Set the desired hitbox height
+          NpcGo.body.setSize(hitboxWidth, hitboxHeight);
+
+          // Set the hitbox offset here
+          const offsetX = hitboxWidth * -0.25; // Set the desired X offset
+          const offsetY = hitboxHeight * -0.25; // Set the desired Y offset
+          NpcGo.body.setOffset(offsetX, offsetY);
+        },
+      });
+
+      // Create an instance of Npc_wizard with specific text
+      const npc1 = this.Npc_wizard.get(800, 2950, "npcWizard");
+      npc1.text =
+        "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
+
+      // this.potion.get(800, 2900, "Potion");
+        
     }
   }
 
@@ -304,19 +333,19 @@ export default class Forest extends Phaser.Scene {
         undefined,
         this
       );
-      // if (
-      //   Phaser.Input.Keyboard.JustDown(
-      //     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-      //   )
-      // ) {
-      //   this.physics.overlap(
-      //     character,
-      //     this.Npc_wizard,
-      //     this.collisionHandler.handlePlayerNpcCollision,
-      //     undefined,
-      //     this
-      //   );
-      // }
+      if (
+        Phaser.Input.Keyboard.JustDown(
+          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+        )
+      ) {
+        this.physics.overlap(
+          character,
+          this.Npc_wizard,
+          this.collisionHandler.handlePlayerNpcCollision as any,
+          undefined,
+          this
+        );
+      }
       if (this.playerRef) {
         update(this.playerRef, {
           x: character.x,

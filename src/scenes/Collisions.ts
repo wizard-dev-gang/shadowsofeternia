@@ -10,9 +10,9 @@ import { Archer } from "../characters/Archer";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { Potion } from "../characters/Potion";
-import { getDatabase, ref, onValue } from "firebase/database";
-import { useRef } from "react";
-import { setupFirebaseAuth } from "../utils/gameOnAuth";
+// import { getDatabase, ref, onValue } from "firebase/database";
+// import { useRef } from "react";
+// import { setupFirebaseAuth } from "../utils/gameOnAuth";
 
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
@@ -50,7 +50,7 @@ export class CollisionHandler {
     this.potion = potion;
     this.playerId = playerId;
   }
-  
+
   // Method to handle collision between projectiles and walls
   handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -89,43 +89,45 @@ export class CollisionHandler {
     }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
-    if (character) {
-      character.exp ++ 
-      console.log(`${character.constructor.name}'s exp: ${character.exp}`);
-  }})
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
+    });
   }
 
-    private handleProjectileSlimeCollision(
+  handleProjectileSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1 as Phaser.Physics.Arcade.Image;
     const slime = obj2 as Slime;
-  
-      // Kill and hide the projectile
-      this.projectiles.killAndHide(projectile);
-      projectile.destroy();
-  
-      // Stop the slime from moving
-      slime.isMoving = false;
-  
-      // Play slime death animation
-      if (slime.anims) {
-        slime.anims.play("slime-death");
+
+    // Kill and hide the projectile
+    this.projectiles.killAndHide(projectile);
+    projectile.destroy();
+
+    // Stop the slime from moving
+    slime.isMoving = false;
+
+    // Play slime death animation
+    if (slime.anims) {
+      slime.anims.play("slime-death");
+    }
+
+    // Kill and hide the slime after the animation completes
+    this.time.delayedCall(1000, () => {
+      this.slimes.killAndHide(slime);
+      slime.destroy();
+    });
+    // Log players' x
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
       }
-  
-      // Kill and hide the slime after the animation completes
-      this.time.delayedCall(1000, () => {
-        this.slimes.killAndHide(slime);
-        slime.destroy();
-      });
-        // Log players' x
-  const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
-  playerCharacters.forEach((character) => {
-    if (character) {
-      character.exp ++ 
-      console.log(`${character.constructor.name}'s exp: ${character.exp}`);
-  }})
+    });
   }
 
   // Method to handle collision between player and enemy characters
@@ -202,7 +204,7 @@ export class CollisionHandler {
       console.log("Interacting with the NPC Wizard");
 
       const npcX = npc.x;
-      const npcY = npc.y;
+      const npcY = npc.y + 50;
 
       const textX = npcX;
       const textY = npcY;
@@ -212,10 +214,10 @@ export class CollisionHandler {
         fontSize: "11px",
         color: "#000000",
         padding: {
-          left: 10,
-          right: 20,
-          top: 10,
-          bottom: 10,
+          left: 42,
+          right: 42,
+          top: 42,
+          bottom: 42,
         },
       });
       text.setWordWrapWidth(200);

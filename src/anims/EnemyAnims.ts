@@ -114,4 +114,69 @@ export const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
     repeat: -1,
     frameRate: 6,
   });
+
+  //Boss animations
+  anims.create({
+    key: "boss-idle-down",
+    frames: [{ key: "boss", frame: "boss-walk-down-01.png" }],
+  });
+
+  anims.create({
+    key: "boss-stomp",
+    frames: anims.generateFrameNames("boss", {
+      start: 1,
+      end: 2,
+      prefix: "boss-walk-down-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "boss-walk-down",
+    frames: anims.generateFrameNames("boss", {
+      start: 1,
+      end: 3,
+      prefix: "boss-walk-down-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "boss-walk-up",
+    frames: anims.generateFrameNames("boss", {
+      start: 1,
+      end: 3,
+      prefix: "boss-walk-up-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "boss-walk-left",
+    frames: anims.generateFrameNames("boss", {
+      start: 1,
+      end: 3,
+      prefix: "boss-walk-left-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+  anims.create({
+    key: "boss-walk-right",
+    frames: anims.generateFrameNames("boss", {
+      start: 1,
+      end: 3,
+      prefix: "boss-walk-right-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
 };

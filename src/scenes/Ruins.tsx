@@ -84,12 +84,15 @@ export default class Ruins extends Phaser.Scene {
     const waterTiles = map.addTilesetImage("Ruins-Blood", "redWater");
     const terrainTiles = map.addTilesetImage("Ruins-Terrain", "ruinsTerrain");
     const templeTiles = map.addTilesetImage("Ancient-Temple", "temple");
+    const propTiles = map.addTilesetImage("Ruins-Props", "ruinsProps")
 
-    if (structureTiles && templeTiles && waterTiles && terrainTiles) {
-      const groundLayer = map.createLayer("Ground", structureTiles, 0, 0);
+    if (structureTiles && templeTiles && waterTiles && terrainTiles && propTiles) {
+      const groundLayer = map.createLayer("Ground", terrainTiles, 0, 0);
       const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const pathLayer = map.createLayer("Paths", structureTiles, 0, 0);
+      const grassLayer = map.createLayer("Grass", terrainTiles, 0 ,0)
       const platformLayer = map.createLayer("Platform-Ground", terrainTiles, 0, 0);
+      const propsLayer = map.createLayer("Props", propTiles)
       const templeLayer = map.createLayer("Temple", templeTiles, 0, 0);
 
       waterLayer?.setCollisionByProperty({ collides: true });
@@ -97,6 +100,8 @@ export default class Ruins extends Phaser.Scene {
       pathLayer?.setCollisionByProperty({ collides: true });
       platformLayer?.setCollisionByProperty({ collides: true });
       templeLayer?.setCollisionByProperty({ collides: true });
+      grassLayer?.setCollisionByProperty({ collides: true });
+      propsLayer?.setCollisionByProperty({ collides: true });
     
 
     if (this.characterName === "barb") {
@@ -243,6 +248,16 @@ export default class Ruins extends Phaser.Scene {
           this.physics.add.collider(
             playerCharacters as Phaser.GameObjects.GameObject[],
             pathLayer
+          );
+          if (grassLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            grassLayer
+          );
+          if (propsLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            propsLayer
           );
         if (platformLayer)
           this.physics.add.collider(

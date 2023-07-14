@@ -80,7 +80,7 @@ export default class Boss extends Phaser.Scene{
     createEnemyAnims(this.anims);
     createPotionAnims(this.anims);
 
-    this.map = this.make.tilemap({key: "bossMap"})
+    const map = this.make.tilemap({key: "bossMap"})
     const groundTiles = map.addTilesetImage("Ruins-Terrain", "bossRuinsTerrain")
     const structureTiles = map.addTilesetImage("Ruins-Structures", "bossStructures")
     const propTiles = map.addTilesetImage("Ruins-Props", "bossRuinsProps")

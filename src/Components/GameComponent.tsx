@@ -6,6 +6,7 @@ import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
 import ChooseCharacterScene from "../scenes/ChooseCharacter";
 import Ruins from "../scenes/Ruins";
+import Boss from "../scenes/Boss";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -29,7 +30,7 @@ function GameComponent() {
         },
       }, 
       
-      scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, PlayerUI],
+      scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, Boss, PlayerUI],
 
       scale: {
         zoom: 2.69,

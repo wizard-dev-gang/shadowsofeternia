@@ -12,6 +12,7 @@ import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
+import Game from './Game'
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 
@@ -29,6 +30,9 @@ export default class Forest extends Phaser.Scene {
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
+  private forestEntranceX!: number;
+  private forestEntranceY!: number;
+  private game?: Game
 
   // Firebase variables
   public characterName?: string;
@@ -56,6 +60,7 @@ export default class Forest extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
+    this.game = data.game
   }
   create() {
     const collisionHandler = new CollisionHandler(
@@ -118,6 +123,9 @@ export default class Forest extends Phaser.Scene {
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
+      this.forestEntranceX = 2070; 
+      this.forestEntranceY = 29; 
+
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
@@ -176,7 +184,6 @@ export default class Forest extends Phaser.Scene {
 
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
-        console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -186,7 +193,6 @@ export default class Forest extends Phaser.Scene {
         );
       }
       if (playerCharacters && this.playerSlimeCollider) {
-        console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -302,6 +308,15 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+
+    const forestX = character.x >= 709 && character.x <= 825;
+    const forestY = character.y <= 3152 && character.y >= 3140;
+    if (forestX && forestY) {
+      if (this.game) this.game.sceneFrom = 'forest'
+      this.scene.switch("game");
+      // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
+      return;
+    }
 
     const ruinsX = character.x >= 647 && character.x <= 990;
     const ruinsY = character.y <= 35 && character.y >= 27;

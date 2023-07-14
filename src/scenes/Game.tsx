@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
@@ -20,6 +21,7 @@ import { createPotionAnims } from "../anims/PotionAnims";
 import { Resurrect } from "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 
+
 export default class Game extends Phaser.Scene {
   private man?: Player; //Rogue Character
   private barb?: Barb; //Barbarian Character
@@ -34,6 +36,12 @@ export default class Game extends Phaser.Scene {
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public collisionHandler: CollisionHandler;
   public potion!: Potion;
+  public sceneFrom?: string
+  public miniMapBackground?: Phaser.GameObjects.Rectangle
+  // public miniMapBorder?: Phaser.GameObjects.Rectangle;
+  public miniMapLocation?: Phaser.GameObjects.Arc
+  public map?: Phaser.Tilemaps.Tilemap
+  public miniMapForest?: Phaser.GameObjects.Arc
   public exp: number = 0;
   public resurrect!: Resurrect;
 
@@ -44,6 +52,8 @@ export default class Game extends Phaser.Scene {
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
   public playerNames!: Map<any, any>; // Map to store player names
   public playerName?: Phaser.GameObjects.Text; // Text object to display the current player's name
+  public playerLevels!: Map<any, any>; // Map to store player levels
+  public playerLevel?: Phaser.GameObjects.Text; // Text object to display the current player's level
   public enemies!: Map<any, any>; // Map to store enemies in the game
   public enemyDB!: any;
   public dataToSend: any = {};
@@ -56,17 +66,19 @@ export default class Game extends Phaser.Scene {
     this.enemies = new Map();
     this.collisionHandler = new CollisionHandler();
   }
-
+  
   preload() {
     // const cursors = this.input.keyboard?.createCursorKeys();
   }
-  init(data?: { name: string }) {
-    console.log("init data", data);
-    console.log(this.input);
+  init(data?: { name: string, from?: string}) {
+    // console.log("init data", data);
+    // console.log(this.input);
     this.characterName = data?.name;
   }
-
+  
   create() {
+    
+
     const collisionHandler = new CollisionHandler(
       this.projectiles,
       this.skeletons,
@@ -80,6 +92,8 @@ export default class Game extends Phaser.Scene {
     );
     this.scene.run("player-ui");
 
+    // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);aw
+
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
 
@@ -92,6 +106,8 @@ export default class Game extends Phaser.Scene {
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
+    this.map = map
+    // console.log('map', map.width, map.height, map.widthInPixels, map.heightInPixels)
     const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain");
     const propTiles = map.addTilesetImage("Grasslands-Props", "props");
     const waterTiles = map.addTilesetImage("Grasslands-Water", "water");
@@ -114,25 +130,26 @@ export default class Game extends Phaser.Scene {
       fenceLayer?.setCollisionByProperty({ collides: true });
       pathLayer?.setCollisionByProperty({ colldes: false });
       houseLayer?.setCollisionByProperty({ collides: true });
+      const spawnPosition = this.sceneFrom === 'forest'? { x: 2080, y: 59 }: { x: 2000, y: 1100 }
 
       // Create the player character and define spawn position
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(2000, 1100, "barb");
+        this.barb = this.add.barb(spawnPosition.x, spawnPosition.y, "barb");
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(2000, 1100, "archer");
+        this.archer = this.add.archer(spawnPosition.x, spawnPosition.y, "archer");
         this.cameras.main.startFollow(this.archer);
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(2000, 1100, "wizard");
+        this.wizard = this.add.wizard(spawnPosition.x, spawnPosition.y, "wizard");
         this.cameras.main.startFollow(this.wizard);
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(2000, 1100, "man");
+        this.man = this.add.player(spawnPosition.x, spawnPosition.y, "man");
         this.cameras.main.startFollow(this.man);
       }
 
       // Create an array of that holds all characters to be targeted if needed
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
-
+      
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
         classType: Skeleton,
@@ -264,10 +281,8 @@ export default class Game extends Phaser.Scene {
           this
         );
       }
-      console.log("creating enemy colliders...");
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
-        console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -279,7 +294,6 @@ export default class Game extends Phaser.Scene {
 
       // Handle collisions
       if (playerCharacters && this.playerSlimeCollider) {
-        console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -321,12 +335,22 @@ export default class Game extends Phaser.Scene {
         // Add text for player name
         this.playerName = this.add
           .text(0, 0, "You", {
-            fontSize: "10px",
+            fontSize: "14px",
             color: "#ffffff",
             stroke: "#000000",
-            strokeThickness: 2,
+            strokeThickness: 1,
           })
           .setOrigin(0.5, 1);
+
+        // Add text for player level
+        this.playerLevel = this.add
+        .text(0, 0, "Level: 1", {
+          fontSize: "12px",
+          color: "#FFD700",
+          stroke: "#000000",
+          strokeThickness: 1,
+        })
+        .setOrigin(0.5, 1)
       }
       this.Npc_wizard = this.physics.add.group({
         classType: Npc_wizard,
@@ -400,6 +424,11 @@ export default class Game extends Phaser.Scene {
       this.resurrect.get(2060, 1100, "Resurrect");
       this.potion.get(2062, 1023, "Potion");
       this.slimes.get(2000, 1000, "slime");
+      this.slimes.get(2000, 1000, "slime");
+      this.slimes.get(2000, 1000, "slime");
+      this.slimes.get(2000, 1000, "slime");
+      this.slimes.get(2000, 1000, "slime");
+      this.slimes.get(2000, 1000, "slime");
     }
 
     // Add a skeleton to the group
@@ -423,74 +452,164 @@ export default class Game extends Phaser.Scene {
   }
 
   private levelUpPlayer(player: Player) {
-    if (player.exp >= player.level * 10) {
-      player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
-      player._health *= 1.25; // Increase the player's HP by 1.25 times
-      player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
-      player.level++;
+    const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *=1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
-      // Update the player's exp and HP in the database
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
   private levelUpBarb(player: Barb) {
-    if (player.exp >= player.level * 10) {
-      player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
-      player._health *= 1.25; // Increase the player's HP by 1.25 times
-      player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
-      player.level++;
+    const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *=1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
-      // Update the player's exp and HP in the database
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
   private levelUpArcher(player: Archer) {
-    if (player.exp >= player.level * 10) {
-      player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
-      player._health *= 1.25; // Increase the player's HP by 1.25 times
-      player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
-      player.level++;
+    const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *=1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
-      // Update the player's exp and HP in the database
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
   private levelUpWizard(player: Wizard) {
-    if (player.exp >= player.level * 10) {
-      player.exp -= player.level * 10; // Decrease the player's exp by current level * 10
-      player._health *= 1.25; // Increase the player's HP by 1.25 times
-      player._health = Math.round(player._health); // Round the player's HP to the nearest whole number
-      player.level++;
+    const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *=1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
-      // Update the player's exp and HP in the database
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+  private updatePlayerMaxHealth(maxHealth: number) {
+    // Update the player's max health value in the database
+    if (this.playerRef) {
+      update(this.playerRef, {
+        maxHealth: maxHealth,
+      });
+    }
+    this.miniMapBackground = this.add.rectangle(2000, 1100, 72, 72, Phaser.Display.Color.GetColor(12,70,9))
+    this.miniMapLocation = this.add.circle(0, 0, 2, Phaser.Display.Color.GetColor(255,0,0))
+    this.miniMapForest = this.add.circle(0, 0, 2, Phaser.Display.Color.GetColor(0,255,0))
+    // this.miniMapBorder = this.add.rectangle(2000, 1100, 76, 76, 0xffffff).setStrokeStyle(2, 0x000000);
 
+
+    const q = this.input.keyboard?.addKey('Q')
+    q?.on('down', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
+        this.miniMapBackground.visible = !this.miniMapBackground.visible
+        this.miniMapLocation.visible = !this.miniMapLocation.visible
+        this.miniMapForest.visible = !this.miniMapForest.visible
+      }
+    })
+  }
+  
   update() {
     this.updateIterations++;
     let character;
@@ -514,19 +633,25 @@ export default class Game extends Phaser.Scene {
     }
     if (!character) return;
 
+    
+    
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
-      this.scene.start("forest", { characterName: this.characterName });
+    this.scene.start("forest", { characterName: this.characterName, game: this });
       update(this.playerRef, { scene: "forest" });
       return;
     }
+
 
     if (this.playerName) {
       // Update the player's name position horizontally
       this.playerName.x = character.x;
       // Position of the name above the player
-      this.playerName.y = character.y - 10;
+      this.playerName.y = character.y - 20;
+
+      this.playerLevel.x = this.playerName.x
+      this.playerLevel.y = character.y - 10
 
       //Handle Collision Between Player and Resurrect
       this.physics.add.collider(
@@ -622,6 +747,36 @@ export default class Game extends Phaser.Scene {
         update(this.enemyDB, this.dataToSend);
       }
     }
+
+    
+    if (this.miniMapBackground && this.miniMapLocation && this.map && this.miniMapForest){
+      const backgroundLocation = this.getMiniLocation(this.map.widthInPixels/2, this.map.heightInPixels/2, character)
+      this.miniMapBackground.x = backgroundLocation.x 
+      this.miniMapBackground.y = backgroundLocation.y
+      // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
+        
+        const playerLocation = this.getMiniLocation(character.x, character.y, character)
+        this.miniMapLocation.x = playerLocation.x
+        this.miniMapLocation.y = playerLocation.y
+        const forestLocation = this.getMiniLocation(2070, 29, character)
+        this.miniMapForest.x = forestLocation.x
+        this.miniMapForest.y = forestLocation.y
+    }
+  }
+  getMiniLocation(x: number, y: number, character: Player | Barb | Wizard | Archer) {
+    if (this.miniMapBackground && this.map) {
+
+      const centerX = character.x + 120
+      const centerY = character.y + 90
+
+      const ratio = this.miniMapBackground.width/this.map.widthInPixels
+      const distanceX = x - this.map.widthInPixels/2
+      const distanceY = y - this.map.heightInPixels/2
+      const ratioX = distanceX * ratio
+      const ratioY = distanceY * ratio
+      return {x: centerX + ratioX, y: centerY + ratioY}
+    }
+    return {x: 0, y: 0}
 
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {

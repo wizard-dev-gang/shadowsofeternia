@@ -20,8 +20,8 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           // Now handle the remaining players in Firebase
           for (const enemyId in enemiesData) {
             const enemyData = enemiesData[enemyId];
-            console.log(enemyData.scene, user)
-            if (enemyData.scene != playerScene) continue
+            //console.log(enemyData.scene, user)
+            if (enemyData.scene != playerScene || !enemyData.isAlive) continue
 
             let enemy = gameInstance.enemies.get(enemyId);
 
@@ -82,7 +82,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           
           // Skip if player is not online
           if (!playerData.online) continue;
-          console.log(playerScene)
+          //console.log(playerScene,playerData.scene)
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
           if (playerData?.scene === undefined) continue
           if (playerData.scene != playerScene) continue

@@ -297,6 +297,12 @@ export default class Ruins extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+    const bossX = character.x >= 1734 && character.x <= 1765;
+    const bossY = character.y <= 440 && character.y >= 412;
+    if (bossX && bossY) {
+      this.scene.start("boss", { characterName: this.characterName });
+      return;
+    }
     
 
     if (this.playerName) {

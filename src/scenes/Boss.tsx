@@ -99,16 +99,16 @@ export default class Boss extends Phaser.Scene{
         borderLayer?.setCollisionByProperty({collides: true})
 
         if (this.characterName === "barb") {
-            this.barb = this.add.barb(1100, 600, "barb");
+            this.barb = this.add.barb(600, 1150, "barb");
             this.cameras.main.startFollow(this.barb);
           } else if (this.characterName === "archer") {
-            this.archer = this.add.archer(1100, 600, "archer");
+            this.archer = this.add.archer(600, 1150, "archer");
             this.cameras.main.startFollow(this.archer);
           } else if (this.characterName === "wizard") {
-            this.wizard = this.add.wizard(1100, 600, "wizard");
+            this.wizard = this.add.wizard(600, 1150, "wizard");
             this.cameras.main.startFollow(this.wizard);
           } else if (this.characterName === "rogue") {
-            this.man = this.add.player(1100, 600, "man");
+            this.man = this.add.player(600, 1150, "man");
             this.cameras.main.startFollow(this.man);
           }
 

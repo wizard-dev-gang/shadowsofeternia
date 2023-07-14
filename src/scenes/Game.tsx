@@ -503,7 +503,7 @@ export default class Game extends Phaser.Scene {
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
       this.scene.start("forest", { characterName: this.characterName });
-      update(this.playerRef, { Scene: "forest" });
+      update(this.playerRef, { scene: "forest" });
       return;
     }
 
@@ -565,7 +565,7 @@ export default class Game extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
-          Scene: this.scene.key,
+          scene:this.scene.key,
         });
         character.projectilesToSend = {};
       }
@@ -586,6 +586,7 @@ export default class Game extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+              scene:this.scene.key,
             };
           } else {
             this.dataToSend[entry[0]] = {

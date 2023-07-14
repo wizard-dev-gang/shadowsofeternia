@@ -2,6 +2,7 @@ import Phaser, { GameObjects } from "phaser";
 import { Slime } from "../enemies/Slime";
 import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
+import { Boss } from "../enemies/Boss";
 import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
 import "../characters/Archer";
@@ -20,6 +21,7 @@ import { update } from "firebase/database";
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
   skeletons: Phaser.Physics.Arcade.Group;
+  bosses: Phaser.Physics.Arcade.Group;
   slimes: Phaser.Physics.Arcade.Group;
   time: Phaser.Time.Clock;
   Npc_wizard!: Phaser.Physics.Arcade.Group;
@@ -37,6 +39,7 @@ export class CollisionHandler {
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
     skeletons: Phaser.Physics.Arcade.Group,
+    bosses: Phaser.Physics.Arcade.Group,
     slimes: Phaser.Physics.Arcade.Group,
     time: Phaser.Time.Clock,
     Npc_wizard: Phaser.Physics.Arcade.Group,
@@ -46,6 +49,7 @@ export class CollisionHandler {
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
+    this.bosses = bosses;
     this.slimes = slimes;
     this.time = time;
     this.Npc_wizard = Npc_wizard;
@@ -63,6 +67,40 @@ export class CollisionHandler {
       const projectile = obj1 as Phaser.GameObjects.Image;
       projectile.destroy();
     }
+  }
+
+  // Method to handle collision between projectiles and Boss
+  handleProjectileBossCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
+  ) {
+    const projectile = obj1;
+    const boss = obj2;
+    // Kill and hide the projectile
+    this.projectiles.killAndHide(projectile as GameObjects.Image);
+    projectile.destroy();
+    const dx =
+      (boss as Phaser.GameObjects.Image).x -
+      (projectile as Phaser.GameObjects.Image).x;
+    const dy =
+      (boss as Phaser.GameObjects.Image).y -
+      (projectile as Phaser.GameObjects.Image).y;
+
+    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+    (boss as Boss).setVelocity(dir.x, dir.y);
+    (boss as Boss).getHealth();
+    (boss as Boss).handleDamage(dir);
+    if ((boss as Boss).getHealth() <= 0) {
+      this.bosses.killAndHide(boss);
+      (boss.isAlive = false), boss.destroy();
+    }
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
+    });
   }
 
   // Method to handle collision between projectiles and skeleton
@@ -132,6 +170,34 @@ export class CollisionHandler {
       }
     });
 }
+
+  // Method to handle collision between player and boss characters
+  handlePlayerBossCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  ) {
+    console.log("handleplayerEnemyCollision");
+    if (
+      (obj1 instanceof Player || Barb || Wizard || Archer) &&
+      obj2 instanceof Boss
+    ) {
+      const man = (obj1 as Player) || Barb || Wizard || Archer;
+      const boss = obj2 as Boss;
+
+      const dx =
+        (man as Phaser.GameObjects.Image).x -
+        (boss as Phaser.GameObjects.Image).x;
+      const dy =
+        (man as Phaser.GameObjects.Image).y -
+        (boss as Phaser.GameObjects.Image).y;
+
+      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+      man.setVelocity(dir.x, dir.y);
+      man.handleDamage(dir);
+      // console.log(man._health);
+      sceneEvents.emit("player-health-changed", man.getHealth());
+    }
+  }
 
   // Method to handle collision between player and enemy characters
   handlePlayerEnemyCollision(

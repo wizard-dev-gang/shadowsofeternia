@@ -2,10 +2,7 @@ import Phaser from "phaser";
 // import Game from "../scenes/Game";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { getAuth } from "firebase/auth";
-import {
-  removeEnemyFromDatabase,
-  removeAllEnemiesFromDatabase,
-} from "../../functions/lib/enemySupport";
+import { removeAllEnemiesFromDatabase } from "../../functions/lib/enemySupport";
 import {
   getDatabase,
   ref,
@@ -354,13 +351,13 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
     character4.on("pointerdown", async () => {
       this.startGame("wizard");
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("wizard", this);
-        if (isCharacterAvailable) {
-          char4Text.setText("Wizard (Selected)");
-          hasChosenCharacter = true;
-        }
-      }
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("wizard", this);
+      //   if (isCharacterAvailable) {
+      //     char4Text.setText("Wizard (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
   }
 

@@ -58,7 +58,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-    this._health = 10;
+    this._health = 5;
     this.maxHealth = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({

@@ -57,7 +57,7 @@ export class CollisionHandler {
     this.potion = potion;
     this.playerId = playerId;
   }
-  
+
   // Method to handle collision between projectiles and walls
   handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -169,7 +169,7 @@ export class CollisionHandler {
         console.log(`${character.constructor.name}'s exp: ${character.exp}`);
       }
     });
-}
+  }
 
   // Method to handle collision between player and boss characters
   handlePlayerBossCollision(
@@ -273,7 +273,7 @@ export class CollisionHandler {
       console.log("Interacting with the NPC Wizard");
 
       const npcX = npc.x;
-      const npcY = npc.y + 50;
+      const npcY = npc.y + 55;
 
       const textX = npcX;
       const textY = npcY;
@@ -357,14 +357,18 @@ export class CollisionHandler {
       resurrect instanceof Phaser.GameObjects.GameObject &&
       player.isDead
     ) {
-      // Perform actions for interacting with the resurrect
-      player.increaseHealth(5);
-      sceneEvents.emit("player-health-changed", player.getHealth());
-      console.log("Resurrect Picked Up, New HP:", player.getHealth());
-      player.isDead = false;
+      if (player.isDead === true) {
+        // Perform actions for interacting with the resurrect
+        player.increaseHealth(5);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+        console.log("Resurrect Picked Up, New HP:", player.getHealth());
+        player.isDead = false;
 
-      // Remove the resurrect from the scene
-      resurrect.destroy();
+        // Remove the resurrect from the scene
+        resurrect.destroy();
+      } else {
+        return;
+      }
     }
   }
 }

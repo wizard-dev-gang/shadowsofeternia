@@ -61,7 +61,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
     this.isDead = false;
-    this._health = 10;
+    this._health = 5;
     this.maxHealth = 10;
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({

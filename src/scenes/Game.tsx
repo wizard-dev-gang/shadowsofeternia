@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
@@ -430,6 +429,8 @@ export default class Game extends Phaser.Scene {
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
     }
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
     this.skeletons.get(2000, 1210, "jacked-skeleton");
     this.skeletons.get(2000, 1210, "jacked-skeleton");
     // Add a skeleton to the group

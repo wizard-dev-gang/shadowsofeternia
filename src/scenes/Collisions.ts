@@ -109,7 +109,7 @@ export class CollisionHandler {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const skeleton = obj2;
+    const skeleton = obj2 as Phaser.GameObjects.Image;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
@@ -124,10 +124,20 @@ export class CollisionHandler {
     (skeleton as Skeleton).setVelocity(dir.x, dir.y);
     (skeleton as Skeleton).getHealth();
     (skeleton as Skeleton).handleDamage(dir);
+
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
+
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log("THIS IS THE DROP CHANCE VALUE", dropChance)
+      // Check if the drop chance is less than or equal to 0.2 (20%)
+      if (dropChance <= 0.2) {
+      // Drop a potion at the skeleton's position
+      this.potion.get(skeleton.x, skeleton.y, 'potion');
     }
+  }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
       if (character) {
@@ -160,6 +170,14 @@ export class CollisionHandler {
     this.time.delayedCall(1000, () => {
       this.slimes.killAndHide(slime);
       slime.destroy();
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log(dropChance)
+      // Check if the drop chance is less than or equal to 0.1 (10%)
+      if (dropChance <= 0.1) {
+      // Drop a potion at the slime's position
+      this.potion.get(slime.x, slime.y, 'potion');
+      }
     });
     // Log players' x
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];

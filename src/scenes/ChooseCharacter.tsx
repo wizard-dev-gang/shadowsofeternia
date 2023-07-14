@@ -344,13 +344,13 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     });
     character3.on("pointerdown", async () => {
       this.startGame("archer");
-      if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("archer", this);
-        if (isCharacterAvailable) {
-          char3Text.setText("Archer (Selected)");
-          hasChosenCharacter = true;
-        }
-      }
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("archer", this);
+      //   if (isCharacterAvailable) {
+      //     char3Text.setText("Archer (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
     });
     character4.on("pointerdown", async () => {
       this.startGame("wizard");

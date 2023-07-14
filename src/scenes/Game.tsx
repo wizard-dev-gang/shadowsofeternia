@@ -18,6 +18,8 @@ import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
+import { Resurrect } from "../characters/Resurrect";
+import { createResurrectAnims } from "../anims/ResurrectAnims";
 
 
 export default class Game extends Phaser.Scene {
@@ -41,6 +43,7 @@ export default class Game extends Phaser.Scene {
   public map?: Phaser.Tilemaps.Tilemap
   public miniMapForest?: Phaser.GameObjects.Arc
   public exp: number = 0;
+  public resurrect!: Resurrect;
 
   // Firebase variables
   public characterName?: string;
@@ -85,6 +88,7 @@ export default class Game extends Phaser.Scene {
       this.add,
       this.potion,
       this.playerId
+      // this.resurrect
     );
     this.scene.run("player-ui");
 
@@ -98,6 +102,7 @@ export default class Game extends Phaser.Scene {
     createEnemyAnims(this.anims);
     createNpcAnims(this.anims);
     createPotionAnims(this.anims);
+    createResurrectAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
@@ -407,6 +412,16 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
+      this.resurrect = this.physics.add.group({
+        classType: Resurrect,
+        createCallback: (go) => {
+          const ResGo = go as Resurrect;
+          if (ResGo.body) {
+            ResGo.body.onCollide = true;
+          }
+        },
+      });
+      this.resurrect.get(2060, 1100, "Resurrect");
       this.potion.get(2062, 1023, "Potion");
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
@@ -638,6 +653,15 @@ export default class Game extends Phaser.Scene {
       this.playerLevel.x = this.playerName.x
       this.playerLevel.y = character.y - 10
 
+      //Handle Collision Between Player and Resurrect
+      this.physics.add.collider(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
+
       //Handle Collision Between Player and Potions
       this.physics.overlap(
         character,
@@ -690,7 +714,7 @@ export default class Game extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
-          scene:this.scene.key,
+          scene: this.scene.key,
         });
         character.projectilesToSend = {};
       }
@@ -711,7 +735,7 @@ export default class Game extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
-              scene:this.scene.key,
+              scene: this.scene.key,
             };
           } else {
             this.dataToSend[entry[0]] = {

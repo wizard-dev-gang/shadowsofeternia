@@ -10,7 +10,9 @@ import { Archer } from "../characters/Archer";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { Potion } from "../characters/Potion";
+import { Resurrect } from "../characters/Resurrect";
 import { update } from "firebase/database";
+
 // import { getDatabase, ref, onValue } from "firebase/database";
 // import { useRef } from "react";
 // import { setupFirebaseAuth } from "../utils/gameOnAuth";
@@ -244,35 +246,59 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     potion: Potion
   ) {
-    // Perform actions for interacting with the potion
-
+    // Check if the player is alive
     if (
-      player instanceof Player ||
-      player instanceof Barb ||
-      player instanceof Wizard ||
-      player instanceof Archer ||
-      potion instanceof Phaser.GameObjects.GameObject
+      (player instanceof Player ||
+        player instanceof Barb ||
+        player instanceof Wizard ||
+        player instanceof Archer) &&
+      !player.isDead
     ) {
-      if (player instanceof Player) {
+      // Apply potion effects only if the player is alive
+      if (player instanceof Player && player.isDead === false) {
         player.increaseHealth(5);
         sceneEvents.emit("player-health-changed", player.getHealth());
         console.log("Potion Picked Up HP:", player.getHealth());
-      } else if (player instanceof Barb) {
+      } else if (player instanceof Barb && player.isDead === false) {
         player.increaseHealth(5);
         sceneEvents.emit("player-health-changed", player.getHealth());
         console.log("Potion Picked Up HP:", player.getHealth());
-      } else if (player instanceof Wizard) {
+      } else if (player instanceof Wizard && player.isDead === false) {
         player.increaseHealth(5);
         sceneEvents.emit("player-health-changed", player.getHealth());
         console.log("Potion Picked Up HP:", player.getHealth());
-      } else if (player instanceof Archer) {
+      } else if (player instanceof Archer && player.isDead === false) {
         player.increaseHealth(5);
         sceneEvents.emit("player-health-changed", player.getHealth());
         console.log("Potion Picked Up HP:", player.getHealth());
       }
-    }
 
-    // Remove the potion from the scene
-    potion.destroy();
+      // Remove the potion only if the player is alive
+      potion.destroy();
+    }
+  }
+
+  handlePlayerResurrectCollision(
+    player: Phaser.GameObjects.GameObject,
+    resurrect: Resurrect
+  ) {
+    // Check if the player is dead
+    if (
+      (player instanceof Player ||
+        player instanceof Barb ||
+        player instanceof Wizard ||
+        player instanceof Archer) &&
+      resurrect instanceof Phaser.GameObjects.GameObject &&
+      player.isDead
+    ) {
+      // Perform actions for interacting with the resurrect
+      player.increaseHealth(5);
+      sceneEvents.emit("player-health-changed", player.getHealth());
+      console.log("Resurrect Picked Up, New HP:", player.getHealth());
+      player.isDead = false;
+
+      // Remove the resurrect from the scene
+      resurrect.destroy();
+    }
   }
 }

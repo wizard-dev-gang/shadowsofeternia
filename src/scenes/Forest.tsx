@@ -12,6 +12,7 @@ import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
+import Game from './Game'
 
 export default class Forest extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -29,7 +30,7 @@ export default class Forest extends Phaser.Scene {
   public potion!: Potion;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
-
+  private game?: Game
 
   // Firebase variables
   public characterName?: string;
@@ -57,6 +58,7 @@ export default class Forest extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
+    this.game = data.game
   }
   create() {
     const collisionHandler = new CollisionHandler(
@@ -179,7 +181,6 @@ export default class Forest extends Phaser.Scene {
 
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
-        console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -189,7 +190,6 @@ export default class Forest extends Phaser.Scene {
         );
       }
       if (playerCharacters && this.playerSlimeCollider) {
-        console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -309,14 +309,13 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-    // console.log("x", character.x)
-    // console.log("y", character.y)
 
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;
     if (forestX && forestY) {
+      if (this.game) this.game.sceneFrom = 'forest'
       this.scene.switch("game");
-      this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
+      // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
       return;
     }
 

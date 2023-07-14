@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
@@ -18,6 +19,7 @@ import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
 
+
 export default class Game extends Phaser.Scene {
   private man?: Player; //Rogue Character
   private barb?: Barb; //Barbarian Character
@@ -32,6 +34,12 @@ export default class Game extends Phaser.Scene {
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public collisionHandler: CollisionHandler;
   public potion!: Potion;
+  public sceneFrom?: string
+  public miniMapBackground?: Phaser.GameObjects.Rectangle
+  // public miniMapBorder?: Phaser.GameObjects.Rectangle;
+  public miniMapLocation?: Phaser.GameObjects.Arc
+  public map?: Phaser.Tilemaps.Tilemap
+  public miniMapForest?: Phaser.GameObjects.Arc
   public exp: number = 0;
 
   // Firebase variables
@@ -55,17 +63,19 @@ export default class Game extends Phaser.Scene {
     this.enemies = new Map();
     this.collisionHandler = new CollisionHandler();
   }
-
+  
   preload() {
     // const cursors = this.input.keyboard?.createCursorKeys();
   }
-  init(data?: { name: string }) {
-    console.log("init data", data);
-    console.log(this.input);
+  init(data?: { name: string, from?: string}) {
+    // console.log("init data", data);
+    // console.log(this.input);
     this.characterName = data?.name;
   }
-
+  
   create() {
+    
+
     const collisionHandler = new CollisionHandler(
       this.projectiles,
       this.skeletons,
@@ -78,6 +88,8 @@ export default class Game extends Phaser.Scene {
     );
     this.scene.run("player-ui");
 
+    // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);aw
+
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
 
@@ -89,6 +101,8 @@ export default class Game extends Phaser.Scene {
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
+    this.map = map
+    // console.log('map', map.width, map.height, map.widthInPixels, map.heightInPixels)
     const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain");
     const propTiles = map.addTilesetImage("Grasslands-Props", "props");
     const waterTiles = map.addTilesetImage("Grasslands-Water", "water");
@@ -111,25 +125,26 @@ export default class Game extends Phaser.Scene {
       fenceLayer?.setCollisionByProperty({ collides: true });
       pathLayer?.setCollisionByProperty({ colldes: false });
       houseLayer?.setCollisionByProperty({ collides: true });
+      const spawnPosition = this.sceneFrom === 'forest'? { x: 2080, y: 59 }: { x: 2000, y: 1100 }
 
       // Create the player character and define spawn position
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(2000, 1100, "barb");
+        this.barb = this.add.barb(spawnPosition.x, spawnPosition.y, "barb");
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(2000, 1100, "archer");
+        this.archer = this.add.archer(spawnPosition.x, spawnPosition.y, "archer");
         this.cameras.main.startFollow(this.archer);
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(2000, 1100, "wizard");
+        this.wizard = this.add.wizard(spawnPosition.x, spawnPosition.y, "wizard");
         this.cameras.main.startFollow(this.wizard);
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(2000, 1100, "man");
+        this.man = this.add.player(spawnPosition.x, spawnPosition.y, "man");
         this.cameras.main.startFollow(this.man);
       }
 
       // Create an array of that holds all characters to be targeted if needed
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
-
+      
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
         classType: Skeleton,
@@ -261,10 +276,8 @@ export default class Game extends Phaser.Scene {
           this
         );
       }
-      console.log("creating enemy colliders...");
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
-        console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -276,7 +289,6 @@ export default class Game extends Phaser.Scene {
 
       // Handle collisions
       if (playerCharacters && this.playerSlimeCollider) {
-        console.log("create playersilmecollider");
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -567,12 +579,25 @@ export default class Game extends Phaser.Scene {
         maxHealth: maxHealth,
       });
     }
-  }
+    this.miniMapBackground = this.add.rectangle(2000, 1100, 72, 72, Phaser.Display.Color.GetColor(12,70,9))
+    this.miniMapLocation = this.add.circle(0, 0, 2, Phaser.Display.Color.GetColor(255,0,0))
+    this.miniMapForest = this.add.circle(0, 0, 2, Phaser.Display.Color.GetColor(0,255,0))
+    // this.miniMapBorder = this.add.rectangle(2000, 1100, 76, 76, 0xffffff).setStrokeStyle(2, 0x000000);
 
+
+    const q = this.input.keyboard?.addKey('Q')
+    q?.on('down', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
+        this.miniMapBackground.visible = !this.miniMapBackground.visible
+        this.miniMapLocation.visible = !this.miniMapLocation.visible
+        this.miniMapForest.visible = !this.miniMapForest.visible
+      }
+    })
+  }
+  
   update() {
     this.updateIterations++;
     let character;
-
 
     if (this.man) {
       this.man.update();
@@ -593,13 +618,16 @@ export default class Game extends Phaser.Scene {
     }
     if (!character) return;
 
+    
+    
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
-      this.scene.start("forest", { characterName: this.characterName });
+    this.scene.start("forest", { characterName: this.characterName, game: this });
       update(this.playerRef, { scene: "forest" });
       return;
     }
+
 
     if (this.playerName) {
       // Update the player's name position horizontally
@@ -695,6 +723,36 @@ export default class Game extends Phaser.Scene {
         update(this.enemyDB, this.dataToSend);
       }
     }
+
+    
+    if (this.miniMapBackground && this.miniMapLocation && this.map && this.miniMapForest){
+      const backgroundLocation = this.getMiniLocation(this.map.widthInPixels/2, this.map.heightInPixels/2, character)
+      this.miniMapBackground.x = backgroundLocation.x 
+      this.miniMapBackground.y = backgroundLocation.y
+      // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
+        
+        const playerLocation = this.getMiniLocation(character.x, character.y, character)
+        this.miniMapLocation.x = playerLocation.x
+        this.miniMapLocation.y = playerLocation.y
+        const forestLocation = this.getMiniLocation(2070, 29, character)
+        this.miniMapForest.x = forestLocation.x
+        this.miniMapForest.y = forestLocation.y
+    }
+  }
+  getMiniLocation(x: number, y: number, character: Player | Barb | Wizard | Archer) {
+    if (this.miniMapBackground && this.map) {
+
+      const centerX = character.x + 120
+      const centerY = character.y + 90
+
+      const ratio = this.miniMapBackground.width/this.map.widthInPixels
+      const distanceX = x - this.map.widthInPixels/2
+      const distanceY = y - this.map.heightInPixels/2
+      const ratioX = distanceX * ratio
+      const ratioY = distanceY * ratio
+      return {x: centerX + ratioX, y: centerY + ratioY}
+    }
+    return {x: 0, y: 0}
 
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {

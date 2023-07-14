@@ -343,7 +343,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       // }
     });
     character3.on("pointerdown", async () => {
-      // this.startGame("archer");
+      this.startGame("archer");
       if (!hasChosenCharacter) {
         const isCharacterAvailable = await writeUserData("archer", this);
         if (isCharacterAvailable) {
@@ -353,7 +353,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       }
     });
     character4.on("pointerdown", async () => {
-      // this.startGame("wizard");
+      this.startGame("wizard");
       if (!hasChosenCharacter) {
         const isCharacterAvailable = await writeUserData("wizard", this);
         if (isCharacterAvailable) {

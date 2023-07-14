@@ -10,7 +10,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
       const db = getDatabase(); // Get the Firebase database object
       gameInstance.playerRef = ref(db, `players/${gameInstance.playerId}`); // Reference to the current player in Firebase
       gameInstance.enemyDB = ref(db, `enemies`); // Reference to enemies in Firebase
-
+      let playerScene: any;
       const otherPlayersRef = ref(db, "players"); // Reference to other players in Firebase
 
       if (gameInstance.characterName !== "rogue") {
@@ -20,6 +20,8 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           // Now handle the remaining players in Firebase
           for (const enemyId in enemiesData) {
             const enemyData = enemiesData[enemyId];
+            //console.log(enemyData.scene, user)
+            if (enemyData.scene != playerScene || !enemyData.isAlive) continue
 
             let enemy = gameInstance.enemies.get(enemyId);
 
@@ -56,7 +58,7 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
 
       onValue(otherPlayersRef, (snapshot) => {
         const playersData = snapshot.val();
-
+        playerScene = playersData[gameInstance.playerId].scene
         gameInstance.otherPlayers.forEach((otherPlayer, playerId) => {
           const playerData = playersData[playerId];
 
@@ -77,12 +79,13 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           if (playerId === gameInstance.playerId) continue; // Skip the current player
 
           const playerData = playersData[playerId];
-
+          
           // Skip if player is not online
           if (!playerData.online) continue;
-
+          //console.log(playerScene,playerData.scene)
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
-
+          if (playerData?.scene === undefined) continue
+          if (playerData.scene != playerScene) continue
           // Create or update other players
           if (!otherPlayer) {
             otherPlayer = gameInstance.add.player(
@@ -133,6 +136,12 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           // Player name position
           playerName.x = otherPlayer.x;
           playerName.y = otherPlayer.y - 20;
+        }
+      });
+      onValue(gameInstance.playerRef, (snapshot) => {
+        const playerData = snapshot.val();
+        if (playerData && playerData.exp) {
+          gameInstance.exp = playerData.exp; // Update the player's exp value
         }
       });
     }

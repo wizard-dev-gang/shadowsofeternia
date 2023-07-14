@@ -30,9 +30,15 @@ declare global {
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
-  private _health: number;
+  public _health: number;
   public maxHealth: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
+  public exp: number = 0;
+  public level: number = 1;
+  private throwStartTime: number | null = null;
+  public lastProjectileTime?: number = 0;
+  public projectileCooldown?: number = 1000; // cooldown in milliseconds
+  public projectileLife?: number = 800; // projectile is removed after this amount of time
 
   private keys: WASDKeys = {
     W: undefined,
@@ -116,6 +122,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
+    const currentTime = this.scene.time.now;
+  
+    if (this.lastProjectileTime && this.projectileCooldown && currentTime < this.lastProjectileTime + this.projectileCooldown) {
+      return;
+  }
+
+  this.lastProjectileTime = currentTime;
+
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
       direction = direction ? direction : parts[2];
@@ -152,6 +166,21 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     if (!projectile) {
       return;
     }
+
+    let hitboxWidth = 0;
+    let hitboxHeight = 0;
+
+    if (direction === "up" || direction === "down") {
+        hitboxWidth = projectile.width * 0.30; 
+        hitboxHeight = projectile.height * 0.42;
+    } else {
+        hitboxWidth = projectile.width * 0.42; 
+        hitboxHeight = projectile.height * 0.30;
+    }
+
+    projectile.body?.setSize(hitboxWidth, hitboxHeight);
+
+
     projectile.setActive(true);
     projectile.setVisible(true);
 
@@ -168,7 +197,34 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
       attackObj: attackObj,
     };
     this.projectileCount++;
+
+    if (this.projectileLife) {
+      this.scene.time.addEvent({
+        delay: this.projectileLife,
+        callback: () => {
+          if (this.projectiles) {
+            this.projectiles.remove(projectile, true, true); // Remove from group, and destroy the GameObject
+          }
+        },
+        loop: false
+      });
+    }
+
+
+    const velocityMultiplier = 1 + (this.getThrowDuration() / 1000); // Increase velocity by 1 unit per second
+    const velocityX = vec.x * 300 * velocityMultiplier;
+    const velocityY = vec.y * 300 * velocityMultiplier;
+    projectile.setVelocity(velocityX, velocityY);
+    console.log(projectile.x, projectile.y, direction);
+    
+    
   }
+  private getThrowDuration() {
+   if (this.throwStartTime !== null) {
+     return Date.now() - this.throwStartTime;
+   }
+   return 0;
+ }
 
   preUpdate(t: number, dt: number): void {
     super.preUpdate(t, dt);
@@ -194,40 +250,38 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    // if (this.keys.Space?.isDown) {
-    //   const slash = `barb-attack-${this.lastMove}`;
-    //   this.anims.play(slash, true);
-    //   this.setVelocity(0, 0);
-    //   this.throwProjectile();
-    // }
-    const speed = 200;
-    if (this.keys.A?.isDown) {
-      this.anims.play("archer-walk-left", true);
-      this.setVelocity(-speed, 0);
-      this.lastMove = "left";
-    } else if (this.keys.D?.isDown) {
-      this.anims.play("archer-walk-right", true);
-      this.setVelocity(speed, 0);
-      this.lastMove = "right";
-    } else if (this.keys.W?.isDown) {
-      this.anims.play("archer-walk-up", true);
-      this.setVelocity(0, -speed);
-      this.lastMove = "up";
-    } else if (this.keys.S?.isDown) {
-      this.anims.play("archer-walk-down", true);
-      this.setVelocity(0, speed);
-      this.lastMove = "down";
-    } else if (this.keys.Space?.isDown) {
-      const slash = `archer-attack-${this.lastMove}`;
-      this.anims.play(slash, true);
-      this.setVelocity(0, 0);
-      this.throwProjectile();
-    } else {
-      const idle = `archer-idle-${this.lastMove}`;
-      this.play(idle);
-      this.setVelocity(0, 0);
-    }
+
+      const speed = 200;
+
+  if (this.keys.Space?.isDown && this.throwStartTime === null) {
+    // Track when projectile was thrown
+    this.throwStartTime = Date.now();
+    //If space bar is released and start time is not null then allow player to throw arrow
+  } else if (!this.keys.Space?.isDown && this.throwStartTime !== null) { 
+    this.throwProjectile();
+    this.throwStartTime = null; //Resets start time to null so more arrows aren't thrown
+  } else if (this.keys.A?.isDown) {
+    this.anims.play("archer-walk-left", true);
+    this.setVelocity(-speed, 0);
+    this.lastMove = "left";
+  } else if (this.keys.D?.isDown) {
+    this.anims.play("archer-walk-right", true);
+    this.setVelocity(speed, 0);
+    this.lastMove = "right";
+  } else if (this.keys.W?.isDown) {
+    this.anims.play("archer-walk-up", true);
+    this.setVelocity(0, -speed);
+    this.lastMove = "up";
+  } else if (this.keys.S?.isDown) {
+    this.anims.play("archer-walk-down", true);
+    this.setVelocity(0, speed);
+    this.lastMove = "down";
+  } else {
+    const idle = `archer-idle-${this.lastMove}`;
+    this.play(idle);
+    this.setVelocity(0, 0);
   }
+}
 }
 
 Phaser.GameObjects.GameObjectFactory.register(

@@ -30,10 +30,12 @@ declare global {
 export default class Barb extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
-  private _health: number;
+  public _health: number;
   public maxHealth: number;
   private projectiles?: Phaser.Physics.Arcade.Group;
   private lastThrowTime = 0;
+  public exp: number = 0;
+  public level: number = 1;
 
   private keys: WASDKeys = {
     W: undefined,

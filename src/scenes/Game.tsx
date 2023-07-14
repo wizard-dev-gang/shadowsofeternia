@@ -470,12 +470,26 @@ export default class Game extends Phaser.Scene {
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
-      if (this.playerRef) { 
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
   private levelUpArcher(player: Archer) {
@@ -490,12 +504,26 @@ export default class Game extends Phaser.Scene {
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
-      if (this.playerRef) { 
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
   private levelUpWizard(player: Wizard) {
@@ -510,12 +538,26 @@ export default class Game extends Phaser.Scene {
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
-      if (this.playerRef) { 
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
+      // Update the player's max health in the health bar
+    if (this.scene.isActive("player-ui")) {
+      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
+    }
+
+    this.updatePlayerMaxHealth(player.maxHealth)
+
+    if (this.playerRef) { 
+      update(this.playerRef, {
+        exp: player.exp,
+        hp: player._health,
+        maxHealth: player.maxHealth,
+        level: player.level
         });
       }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
   private updatePlayerMaxHealth(maxHealth: number) {

@@ -94,6 +94,7 @@ export default class Ruins extends Phaser.Scene {
       const platformLayer = map.createLayer("Platform-Ground", terrainTiles, 0, 0);
       const propsLayer = map.createLayer("Props", propTiles)
       const templeLayer = map.createLayer("Temple", templeTiles, 0, 0);
+      const borderLayer = map.createLayer("Border", structureTiles, 0 ,0);
 
       waterLayer?.setCollisionByProperty({ collides: true });
       groundLayer?.setCollisionByProperty({ collides: true });
@@ -102,6 +103,7 @@ export default class Ruins extends Phaser.Scene {
       templeLayer?.setCollisionByProperty({ collides: true });
       grassLayer?.setCollisionByProperty({ collides: true });
       propsLayer?.setCollisionByProperty({ collides: true });
+      borderLayer?.setCollisionByProperty({collides: true});
     
 
     if (this.characterName === "barb") {
@@ -268,6 +270,11 @@ export default class Ruins extends Phaser.Scene {
           this.physics.add.collider(
             playerCharacters as Phaser.GameObjects.GameObject[],
             templeLayer
+          );
+          if (borderLayer)
+          this.physics.add.collider(
+            playerCharacters as Phaser.GameObjects.GameObject[],
+            borderLayer
           );
 
         // Add text for player name

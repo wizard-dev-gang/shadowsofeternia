@@ -10,6 +10,7 @@ import { Archer } from "../characters/Archer";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { Potion } from "../characters/Potion";
+import { update } from "firebase/database";
 // import { getDatabase, ref, onValue } from "firebase/database";
 // import { useRef } from "react";
 // import { setupFirebaseAuth } from "../utils/gameOnAuth";
@@ -50,7 +51,7 @@ export class CollisionHandler {
     this.potion = potion;
     this.playerId = playerId;
   }
-
+  
   // Method to handle collision between projectiles and walls
   handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -128,7 +129,7 @@ export class CollisionHandler {
         console.log(`${character.constructor.name}'s exp: ${character.exp}`);
       }
     });
-  }
+}
 
   // Method to handle collision between player and enemy characters
   handlePlayerEnemyCollision(

@@ -10,6 +10,9 @@ import { Archer } from "../characters/Archer";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { Potion } from "../characters/Potion";
+// import { getDatabase, ref, onValue } from "firebase/database";
+// import { useRef } from "react";
+// import { setupFirebaseAuth } from "../utils/gameOnAuth";
 
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
@@ -19,6 +22,14 @@ export class CollisionHandler {
   Npc_wizard!: Phaser.Physics.Arcade.Group;
   add: GameObjects.GameObjectFactory;
   potion: Potion;
+  private man?: Player; //Rogue Character
+  private barb?: Barb; //Barbarian Character
+  private archer?: Archer; //Archer Character
+  private wizard?: Wizard; //Wizard Character
+
+  //Firebase
+  playerId: string | null;
+  playerRef!: any;
 
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
@@ -27,7 +38,8 @@ export class CollisionHandler {
     time: Phaser.Time.Clock,
     Npc_wizard: Phaser.Physics.Arcade.Group,
     add: GameObjects.GameObjectFactory,
-    potion: Potion
+    potion: Potion,
+    playerId: string | null
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -36,6 +48,7 @@ export class CollisionHandler {
     this.Npc_wizard = Npc_wizard;
     this.add = add;
     this.potion = potion;
+    this.playerId = playerId;
   }
 
   // Method to handle collision between projectiles and walls
@@ -74,6 +87,13 @@ export class CollisionHandler {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
     }
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
+    });
   }
 
   handleProjectileSlimeCollision(
@@ -99,6 +119,14 @@ export class CollisionHandler {
     this.time.delayedCall(1000, () => {
       this.slimes.killAndHide(slime);
       slime.destroy();
+    });
+    // Log players' x
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
     });
   }
 
@@ -176,7 +204,7 @@ export class CollisionHandler {
       console.log("Interacting with the NPC Wizard");
 
       const npcX = npc.x;
-      const npcY = npc.y;
+      const npcY = npc.y + 50;
 
       const textX = npcX;
       const textY = npcY;
@@ -186,10 +214,10 @@ export class CollisionHandler {
         fontSize: "11px",
         color: "#000000",
         padding: {
-          left: 10,
-          right: 20,
-          top: 10,
-          bottom: 10,
+          left: 42,
+          right: 42,
+          top: 42,
+          bottom: 42,
         },
       });
       text.setWordWrapWidth(200);

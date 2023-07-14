@@ -38,6 +38,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
   public lastProjectileTime?: number = 0;
   public projectileCooldown?: number = 1000; // cooldown in milliseconds
   public projectileLife?: number = 800; // projectile is removed after this amount of time
+  public isDead: boolean = false;
 
   private keys: WASDKeys = {
     W: undefined,
@@ -88,7 +89,11 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {
-    if (this._health <= 0) {
+    if (
+      this.isDead ||
+      this._health <= 0 ||
+      this.healthState === HealthState.DEAD
+    ) {
       return;
     }
     if (this.healthState === HealthState.DAMAGE) {
@@ -99,17 +104,18 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
-      this.healthState = HealthState.DEAD;
+      this.isDead = true;
+
+      // Start the "death-ghost" animation
       this.play("death-ghost");
     } else {
       this.setVelocity(dir.x, dir.y);
-
       this.setTint(0xff0000);
-
       this.healthState = HealthState.DAMAGE;
       this.damageTime = 0;
     }
   }
+
   private throwProjectile(
     direction?: string,
     xLoc?: number,
@@ -121,12 +127,16 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     }
 
     const currentTime = this.scene.time.now;
-  
-    if (this.lastProjectileTime && this.projectileCooldown && currentTime < this.lastProjectileTime + this.projectileCooldown) {
-      return;
-  }
 
-  this.lastProjectileTime = currentTime;
+    if (
+      this.lastProjectileTime &&
+      this.projectileCooldown &&
+      currentTime < this.lastProjectileTime + this.projectileCooldown
+    ) {
+      return;
+    }
+
+    this.lastProjectileTime = currentTime;
 
     if (this.anims.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
@@ -189,7 +199,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             this.projectiles.remove(projectile, true, true); // Remove from group, and destroy the GameObject
           }
         },
-        loop: false
+        loop: false,
       });
     }
   }
@@ -211,10 +221,10 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    if (
-      this.healthState === HealthState.DAMAGE ||
-      this.healthState === HealthState.DEAD
-    ) {
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    } else if (this.isDead) {
+      this.moveAsGhost();
       return;
     }
     if (this.keys.Space?.isDown) {
@@ -240,6 +250,39 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
       this.lastMove = "down";
     } else {
       const idle = `wizard-idle-${this.lastMove}`;
+      this.play(idle);
+      this.setVelocity(0, 0);
+    }
+  }
+
+  moveAsGhost() {
+    const speed = 200;
+    if (this.keys.A?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(-speed, 0);
+      this.lastMove = "left";
+    } else if (this.keys.D?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(speed, 0);
+      this.lastMove = "right";
+    } else if (this.keys.W?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(0, -speed);
+      this.lastMove = "up";
+    } else if (this.keys.S?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(0, speed);
+      this.lastMove = "down";
+    } else {
+      this.setVelocity(0, 0);
+    }
+
+    if (this.isDead) {
+      if (this.anims.currentAnim && this.anims.currentAnim.frames[1]) {
+        this.anims.pause(this.anims.currentAnim.frames[1]);
+      }
+    } else {
+      const idle = `archer-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
     }

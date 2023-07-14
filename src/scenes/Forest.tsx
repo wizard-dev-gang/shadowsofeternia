@@ -65,7 +65,8 @@ export default class Forest extends Phaser.Scene {
       this.time,
       this.Npc_wizard,
       this.add,
-      this.potion
+      this.potion,
+      this.playerId
     );
     this.scene.run("player-ui");
 
@@ -280,7 +281,6 @@ export default class Forest extends Phaser.Scene {
         "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
 
       // this.potion.get(800, 2900, "Potion");
-        
     }
   }
 

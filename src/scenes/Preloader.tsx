@@ -14,6 +14,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("healthBar-right-cap", "ui/healthBar-right-cap.png");
     this.load.image("text-bubble", "ui/text-bubble.png");
     this.load.atlas("Potion", "ui/Potion.png", "ui/Potion.json");
+    this.load.atlas("Resurrect", "ui/Resurrect.png", "ui/Resurrect.json");
     // this.load.image("tiles", "/tiles/Grasslands-Terrain.png")
     // this.load.tilemapTiledJSON("town-map", "/tiles/town-map.json")
     // this.load.image("houses", "/tiles/Grasslands-Props.png")

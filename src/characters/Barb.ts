@@ -36,6 +36,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   private lastThrowTime = 0;
   public exp: number = 0;
   public level: number = 1;
+  public isDead: boolean = false;
 
   private keys: WASDKeys = {
     W: undefined,
@@ -87,7 +88,11 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleDamage(dir: Phaser.Math.Vector2) {
-    if (this._health <= 0) {
+    if (
+      this.isDead ||
+      this._health <= 0 ||
+      this.healthState === HealthState.DEAD
+    ) {
       return;
     }
     if (this.healthState === HealthState.DAMAGE) {
@@ -98,13 +103,13 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
-      this.healthState = HealthState.DEAD;
+      this.isDead = true;
+
+      // Start the "death-ghost" animation
       this.play("death-ghost");
     } else {
       this.setVelocity(dir.x, dir.y);
-
       this.setTint(0xff0000);
-
       this.healthState = HealthState.DAMAGE;
       this.damageTime = 0;
     }
@@ -196,10 +201,10 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    if (
-      this.healthState === HealthState.DAMAGE ||
-      this.healthState === HealthState.DEAD
-    ) {
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    } else if (this.isDead) {
+      this.moveAsGhost();
       return;
     }
 
@@ -262,6 +267,39 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
 
     if (!isMoving) {
       const idle = `barb-idle-${this.lastMove}`;
+      this.play(idle);
+      this.setVelocity(0, 0);
+    }
+  }
+
+  moveAsGhost() {
+    const speed = 200;
+    if (this.keys.A?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(-speed, 0);
+      this.lastMove = "left";
+    } else if (this.keys.D?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(speed, 0);
+      this.lastMove = "right";
+    } else if (this.keys.W?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(0, -speed);
+      this.lastMove = "up";
+    } else if (this.keys.S?.isDown) {
+      this.anims.play(this.anims.currentAnim, true);
+      this.setVelocity(0, speed);
+      this.lastMove = "down";
+    } else {
+      this.setVelocity(0, 0);
+    }
+
+    if (this.isDead) {
+      if (this.anims.currentAnim && this.anims.currentAnim.frames[1]) {
+        this.anims.pause(this.anims.currentAnim.frames[1]);
+      }
+    } else {
+      const idle = `archer-idle-${this.lastMove}`;
       this.play(idle);
       this.setVelocity(0, 0);
     }

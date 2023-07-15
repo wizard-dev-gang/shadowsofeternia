@@ -61,7 +61,7 @@ export class CollisionHandler {
     this.playerId = playerId;
     this.dog = dog;
   }
-  
+
   // Method to handle collision between projectiles and walls
   handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -113,7 +113,7 @@ export class CollisionHandler {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const skeleton = obj2;
+    const skeleton = obj2 as Phaser.GameObjects.Image;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
@@ -128,10 +128,20 @@ export class CollisionHandler {
     (skeleton as Skeleton).setVelocity(dir.x, dir.y);
     (skeleton as Skeleton).getHealth();
     (skeleton as Skeleton).handleDamage(dir);
+
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
+
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log("THIS IS THE DROP CHANCE VALUE", dropChance)
+      // Check if the drop chance is less than or equal to 0.2 (20%)
+      if (dropChance <= 0.2) {
+      // Drop a potion at the skeleton's position
+      this.potion.get(skeleton.x, skeleton.y, 'potion');
     }
+  }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
       if (character) {
@@ -164,6 +174,14 @@ export class CollisionHandler {
     this.time.delayedCall(1000, () => {
       this.slimes.killAndHide(slime);
       slime.destroy();
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log(dropChance)
+      // Check if the drop chance is less than or equal to 0.1 (10%)
+      if (dropChance <= 0.1) {
+      // Drop a potion at the slime's position
+      this.potion.get(slime.x, slime.y, 'potion');
+      }
     });
     // Log players' x
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
@@ -173,7 +191,7 @@ export class CollisionHandler {
         console.log(`${character.constructor.name}'s exp: ${character.exp}`);
       }
     });
-}
+  }
 
   // Method to handle collision between player and boss characters
   handlePlayerBossCollision(
@@ -277,7 +295,7 @@ export class CollisionHandler {
       console.log("Interacting with the NPC Wizard");
 
       const npcX = npc.x;
-      const npcY = npc.y + 50;
+      const npcY = npc.y + 55;
 
       const textX = npcX;
       const textY = npcY;
@@ -421,14 +439,18 @@ export class CollisionHandler {
       resurrect instanceof Phaser.GameObjects.GameObject &&
       player.isDead
     ) {
-      // Perform actions for interacting with the resurrect
-      player.increaseHealth(5);
-      sceneEvents.emit("player-health-changed", player.getHealth());
-      console.log("Resurrect Picked Up, New HP:", player.getHealth());
-      player.isDead = false;
+      if (player.isDead === true) {
+        // Perform actions for interacting with the resurrect
+        player.increaseHealth(5);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+        console.log("Resurrect Picked Up, New HP:", player.getHealth());
+        player.isDead = false;
 
-      // Remove the resurrect from the scene
-      resurrect.destroy();
+        // Remove the resurrect from the scene
+        resurrect.destroy();
+      } else {
+        return;
+      }
     }
   }
 }

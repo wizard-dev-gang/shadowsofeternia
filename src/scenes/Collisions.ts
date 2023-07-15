@@ -13,6 +13,7 @@ import "../characters/Npc";
 import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
 import { update } from "firebase/database";
+import { Dog } from "../characters/Dog";
 
 // import { getDatabase, ref, onValue } from "firebase/database";
 // import { useRef } from "react";
@@ -31,6 +32,7 @@ export class CollisionHandler {
   private barb?: Barb; //Barbarian Character
   private archer?: Archer; //Archer Character
   private wizard?: Wizard; //Wizard Character
+  dog: Phaser.Physics.Arcade.Group;
 
   //Firebase
   playerId: string | null;
@@ -45,7 +47,8 @@ export class CollisionHandler {
     Npc_wizard: Phaser.Physics.Arcade.Group,
     add: GameObjects.GameObjectFactory,
     potion: Potion,
-    playerId: string | null
+    playerId: string | null,
+    dog:Phaser.Physics.Arcade.Group
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -56,6 +59,7 @@ export class CollisionHandler {
     this.add = add;
     this.potion = potion;
     this.playerId = playerId;
+    this.dog = dog;
   }
   
   // Method to handle collision between projectiles and walls
@@ -304,6 +308,66 @@ export class CollisionHandler {
       this.time.delayedCall(3000, () => {
         text.destroy();
         background.destroy();
+      });
+    }
+  }
+
+  handlePlayerDogCollision(
+    player: Phaser.GameObjects.GameObject,
+    dog: Phaser.GameObjects.GameObject
+  ) {
+    // Check if the player is interacting with the dog
+    if (
+      player instanceof Player ||
+      player instanceof Barb ||
+      player instanceof Wizard ||
+      player instanceof Archer ||
+      (dog instanceof Dog && dog instanceof Dog)
+    ) {
+      // Perform actions for interacting with the NPC
+      console.log("Interacting with the Dog");
+
+      // Stop the dog from moving
+      if (dog instanceof Dog) {
+      dog.isMoving = false;
+      }
+
+      const dogX = dog.x;
+      const dogY = dog.y + 50;
+
+      const textX = dogX;
+      const textY = dogY - 30;
+
+      // Add text on the screen
+      const text = this.add.text(textX, textY, dog.text, {
+        fontSize: "11px",
+        color: "#000000",
+        padding: {
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: 20,
+        },
+      });
+      text.setWordWrapWidth(200);
+      text.setLineSpacing(1);
+      text.setOrigin(0.5, 1.4);
+      text.setDepth(1);
+
+      // Add a background image behind the text
+      const background = this.add.image(textX, textY, "text-bubble");
+      background.setDisplaySize(text.width, text.height);
+      background.setOrigin(0.53, 1.5);
+      background.setDepth(0);
+
+      // Remove the text after a certain delay
+      this.time.delayedCall(500, () => {
+        text.destroy();
+        background.destroy();
+        // allow the dog to move
+        if (dog instanceof Dog) {
+        dog.isMoving = true;
+        }
       });
     }
   }

@@ -134,6 +134,18 @@ export const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
   });
 
   anims.create({
+    key: "boss-spin",
+    frames: anims.generateFrameNames("boss", {
+      start: 1,
+      end: 5,
+      prefix: "boss-spin-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
     key: "boss-walk-down",
     frames: anims.generateFrameNames("boss", {
       start: 1,
@@ -178,5 +190,69 @@ export const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
     }),
     repeat: -1,
     frameRate: 7,
+  });
+
+  //Baby Skeleton animations
+  anims.create({
+    key: "baby-skeleton-idle-down",
+    frames: [{ key: "baby-skeleton", frame: "baby-skeleton-walk-down-01.png" }],
+  });
+
+  anims.create({
+    key: "baby-skeleton-walk-down",
+    frames: anims.generateFrameNames("baby-skeleton", {
+      start: 1,
+      end: 3,
+      prefix: "baby-skeleton-walk-down-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "baby-skeleton-walk-up",
+    frames: anims.generateFrameNames("baby-skeleton", {
+      start: 1,
+      end: 3,
+      prefix: "baby-skeleton-walk-up-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+
+  anims.create({
+    key: "baby-skeleton-walk-left",
+    frames: anims.generateFrameNames("baby-skeleton", {
+      start: 1,
+      end: 3,
+      prefix: "baby-skeleton-walk-left-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+  anims.create({
+    key: "baby-skeleton-walk-right",
+    frames: anims.generateFrameNames("baby-skeleton", {
+      start: 1,
+      end: 3,
+      prefix: "baby-skeleton-walk-right-0",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 7,
+  });
+  anims.create({
+    key: "baby-skeleton-death",
+    frames: anims.generateFrameNames("slime", {
+      start: 1,
+      end: 6,
+      prefix: "slime-death-00",
+      suffix: ".png",
+    }),
+    repeat: -1,
+    frameRate: 6,
   });
 };

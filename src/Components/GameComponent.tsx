@@ -6,7 +6,7 @@ import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
 import ChooseCharacterScene from "../scenes/ChooseCharacter";
 import Ruins from "../scenes/Ruins";
-import Boss from "../scenes/Boss";
+import BossMap from "../scenes/BossMap";
 
 function GameComponent() {
   const phaserGameRef = React.useRef<Phaser.Game | null>(null);
@@ -20,8 +20,8 @@ function GameComponent() {
     phaserGameRef.current = new Phaser.Game({
       type: Phaser.AUTO, // The renderer type (auto-detected)
       parent: "game-content", // The ID or element where the game canvas will be appended
-      width: 400,
-      height: 300,
+      width: 600,
+      height: 500,
       physics: {
         default: "arcade", // The default physics system
         arcade: {
@@ -30,7 +30,7 @@ function GameComponent() {
         },
       }, 
       
-      scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, Boss, PlayerUI],
+      scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, BossMap, PlayerUI],
 
       scale: {
         zoom: 2.69,

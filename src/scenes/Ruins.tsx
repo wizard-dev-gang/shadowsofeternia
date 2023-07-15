@@ -27,8 +27,6 @@ export default class Ruins extends Phaser.Scene {
   private wizard?: Wizard; //Wizard Character
   public projectiles!: Phaser.Physics.Arcade.Group;
   public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
-  public boss!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
-  private boss2: any
   private slimes!: Phaser.Physics.Arcade.Group; //  Group to manage slime enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
@@ -147,47 +145,6 @@ export default class Ruins extends Phaser.Scene {
           this.enemies.set(this.enemyCount, skeleGo);
         },
       });
-
-      this.boss = this.physics.add.group({
-        classType: Boss,
-        createCallback: (go) => {
-          const skeleGo = go as Boss;
-          this.enemyCount++;
-          if (skeleGo.body) {
-            skeleGo.body.onCollide = true;
-
-            // Adjust the hitbox size here
-            const hitboxWidth = 40; // Set the desired hitbox width
-            const hitboxHeight = 55; // Set the desired hitbox height
-            skeleGo.body.setSize(hitboxWidth, hitboxHeight);
-
-            // Set the hitbox offset here
-            const offsetX = 12; // Set the desired X offset
-            const offsetY = 8; // Set the desired Y offset
-            skeleGo.body.setOffset(offsetX, offsetY);
-          }
-          this.enemies.set(this.enemyCount, skeleGo);
-        },
-      });
-
-      this.boss.get(2506, 2854, "boss");
-      console.log(this.enemies)
-      sceneEvents.on(
-        "boss-stomp",
-        () => {
-
-          const boss = this.enemies.get(1)
-          boss.body.setSize(80, 110);
-          this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-              boss.body.setSize(40, 55);
-              boss.isStomp = false
-            },
-            loop: false
-          });
-        }
-      );
 
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
@@ -376,62 +333,7 @@ export default class Ruins extends Phaser.Scene {
                   this
                 );
               }
-        
-              // Handle collisions between boss and house layers
-              if (this.boss && pathLayer) {
-                this.physics.add.collider(this.boss, pathLayer);
-                this.physics.add.collider(
-                  this.projectiles,
-                  pathLayer,
-                  collisionHandler.handleProjectileWallCollision,
-                  undefined,
-                  this
-                );
-              }
-              // Handle collisions between boss and fences
-              if (this.boss && platformLayer) {
-                this.physics.add.collider(this.boss, platformLayer);
-                this.physics.add.collider(
-                  this.projectiles,
-                  platformLayer,
-                  collisionHandler.handleProjectileWallCollision,
-                  undefined,
-                  this
-                );
-              }
-              // Handle collisions between boss and trees
-              if (this.boss && templeLayer) {
-                this.physics.add.collider(this.boss, templeLayer);
-                this.physics.add.collider(
-                  this.projectiles,
-                  templeLayer,
-                  collisionHandler.handleProjectileWallCollision,
-                  undefined,
-                  this
-                );
-              }
 
-              if (playerCharacters && this.boss) {
-                this.physics.add.collider(
-                  playerCharacters as Phaser.GameObjects.GameObject[],
-                  this.boss,
-                  this.collisionHandler.handlePlayerBossCollision as any,
-                  undefined,
-                  this
-                );
-              }
-              console.log("creating enemy colliders...");
-              // Handle collisions between player and enemy characters
-              if (playerCharacters && this.playerEnemiesCollider) {
-                console.log("create playerenemiescollider");
-                this.playerEnemiesCollider = this.physics.add.collider(
-                  this.boss,
-                  playerCharacters as Phaser.GameObjects.GameObject[],
-                  this.collisionHandler.handlePlayerEnemyCollision as any,
-                  undefined,
-                  this
-                );
-              }
 
       if (playerCharacters) {
         //if statements are to satisfy TypeScipt compiler
@@ -523,7 +425,7 @@ export default class Ruins extends Phaser.Scene {
     const bossX = character.x >= 1734 && character.x <= 1765;
     const bossY = character.y <= 440 && character.y >= 412;
     if (bossX && bossY) {
-      this.scene.start("boss", { characterName: this.characterName });
+      this.scene.start("bossMap", { characterName: this.characterName });
       return;
     }
     

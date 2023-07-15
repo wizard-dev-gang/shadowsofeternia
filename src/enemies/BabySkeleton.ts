@@ -1,13 +1,11 @@
 import Phaser from "phaser";
-import { sceneEvents } from "../events/EventsCenter";
 
 enum Direction {
   UP,
   DOWN,
   LEFT,
   RIGHT,
-  STOMP,
-  SPIN
+  STOP
 }
 
 enum HealthState {
@@ -25,7 +23,7 @@ const randomDirection = (exclude: Direction) => {
   return newDirection;
 };
 
-export default class Boss extends Phaser.Physics.Arcade.Sprite {
+export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
   private healthState = HealthState.IDLE
@@ -33,8 +31,6 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   private currentTarget:any = {x: 0, y:0,distance:Number(500)}
   public isAlive:boolean = true
-  public isStomp = false
-  public enemyType = 'boss'
 
   constructor(
     scene: Phaser.Scene,
@@ -44,9 +40,9 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-    this._health = 10;
-    this.anims.play("boss-idle-down");
-    
+    this._health = 1;
+    this.anims.play("enemy-idle-down");
+
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,
       this.handleTileCollision,
@@ -58,17 +54,15 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
       delay: 1000,
       callback: () => {
         let newNum = Math.random()
-        if (newNum >= .4) {
-          this.seekAndDestroy()
-        } else if (newNum >= .3 && newNum < .4 ) {
-          this.direction = 5
-          this.direction = randomDirection(this.direction);     
-        } else if (newNum >= .1 && newNum < .3 ) {
-          this.currentTarget = {x: 0, y:0,distance:500}
-          this.direction = 4
+        if (newNum >= .7 && this.isAlive) {
+            this.direction = randomDirection(this.direction);
+            
+        } else if (newNum >= .1 && newNum < .7 ) {
+            this.seekAndDestroy()
+          
         } else {
-          this.currentTarget = {x: 0, y:0,distance:500}
-          this.direction = 5
+          this.currentTarget = {x: 0, y:0,distance:Number(500)}
+          
         }
       },
       loop: true,
@@ -121,7 +115,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  handleDamage(dir: Phaser.Math.Vector2) {
+  handleDamage() {
     if (this._health <= 0) {
       return;
     }
@@ -133,13 +127,15 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
 
     if (this._health <= 0) {
       this.setVelocity(0, 0);
+      this.isAlive = false
+      this.direction = 5
+      this.setTint(0xffffff);
+      this.anims.play("baby-skeleton-death", true);
+      this.scene.time.delayedCall(1000, () => {
+          this.destroy(true);
+        })
       this.healthState = HealthState.DEAD;
-      this.anims.play("death-ghost");
     } else {
-      this.setVelocity(dir.x, dir.y);
-
-      this.setTint(0xff0000);
-
       this.healthState = HealthState.DAMAGE;
       this.damageTime = 0;
     }
@@ -173,33 +169,27 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    const speed = 50;
-
+    const speed = 150;
     switch (this.direction) {
       case Direction.UP:
-        this.anims.play("boss-walk-up", true);
+        this.anims.play("baby-skeleton-walk-up", true);
         this.setVelocity(0, -speed);
         break;
       case Direction.DOWN:
-        this.anims.play("boss-walk-down", true);
+        this.anims.play("baby-skeleton-walk-down", true);
         this.setVelocity(0, speed);
         break;
       case Direction.LEFT:
-        this.anims.play("boss-walk-left", true);
+        this.anims.play("baby-skeleton-walk-left", true);
         this.setVelocity(-speed, 0);
         break;
       case Direction.RIGHT:
-        this.anims.play("boss-walk-right", true);
+        this.anims.play("baby-skeleton-walk-right", true);
         this.setVelocity(speed, 0);
         break;
-      case Direction.STOMP:
-        sceneEvents.emit("boss-stomp");
-        this.anims.play("boss-stomp", true);
-        this.setVelocity(0, 0);
-        break;
-      case Direction.SPIN:
-        sceneEvents.emit("boss-spin");
-        this.anims.play("boss-spin", true);
+      case Direction.STOP:
+        this.setTint(0xffffff);
+        this.anims.play("baby-skeleton-death", true);
         this.setVelocity(0, 0);
     }
   }
@@ -214,4 +204,4 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
   }
 }
 
-export { Boss };
+export { BabySkeleton };

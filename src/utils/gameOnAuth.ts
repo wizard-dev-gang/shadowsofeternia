@@ -33,11 +33,25 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
             }
             // Create or update other players
             if (!enemy) {
-              enemy = gameInstance.skeletons.get(
+              let enemySelector = "ph"
+              switch (enemyData.anim.split('-')[0]) {
+                case 'enemy':
+                  enemySelector = 'skeletons'
+                  break
+                case 'slime':
+                  enemySelector = 'slimes'
+                  break
+                case 'boss':
+                  enemySelector = 'boss'
+                  break
+                case 'baby-skeleton':
+                  enemySelector = 'skeletons'
+              }
+              enemy = gameInstance[enemySelector].get(
                 enemyData.x,
                 enemyData.y,
                 "jacked-skeleton"
-              ); // Create a sprite for the other player
+              ); // Create a sprite for the enemy
               gameInstance.enemies.set(enemyId, enemy);
             }
             enemy.x = enemyData.x;
@@ -84,8 +98,9 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
           if (!playerData.online) continue;
           //console.log(playerScene,playerData.scene)
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
-          if (playerData?.scene === undefined) continue
+          if (playerData.scene == undefined) continue
           if (playerData.scene != playerScene) continue
+          //console.log(playerData, playerScene)
           // Create or update other players
           if (!otherPlayer) {
             otherPlayer = gameInstance.add.player(
@@ -109,9 +124,9 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
               projectileData.attackObj
             );
           }
-
+          
           // Play animation and set frame for other players
-          if (playerData.anim && playerData.frame) {
+          if (playerData.anim && playerData.frame && otherPlayer.anims) {
             otherPlayer.anims.play(playerData.anim, true);
             otherPlayer.anims.setCurrentFrame(
               otherPlayer.anims.currentAnim.frames.find(

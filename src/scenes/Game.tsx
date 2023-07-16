@@ -53,6 +53,7 @@ export default class Game extends Phaser.Scene {
   public resurrect!: Resurrect;
   public sceneFrom?: string;
   private dog!: Phaser.Physics.Arcade.Group;
+  private dogBark: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;
@@ -83,6 +84,7 @@ export default class Game extends Phaser.Scene {
     this.load.audio("resurrect", "music/resurrectSound.mp3");
     this.load.audio("potion", "music/potion.mp3");
     this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
+    this.load.audio("dogBark", "/music/dogBark.mp3");
   }
 
   init(data?: { name: string; from?: string }) {
@@ -105,12 +107,14 @@ export default class Game extends Phaser.Scene {
       this.collideSound,
       this.resurrectSound,
       this.potionSound,
-      this.dog
+      this.dog,
+      this.dogBark
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
     this.resurrectSound = this.sound.add("resurrect");
     this.potionSound = this.sound.add("potion");
+    this.dogBark = this.sound.add("dogBark");
 
     // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);
 

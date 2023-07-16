@@ -301,6 +301,16 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
+      if (this.skeletons && propsLayer) {
+        this.physics.add.collider(this.skeletons, propsLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          propsLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
 
       if (playerCharacters) {
         //if statements are to satisfy TypeScipt compiler

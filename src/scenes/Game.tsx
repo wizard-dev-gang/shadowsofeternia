@@ -22,6 +22,7 @@ import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Dog from "../characters/Dog";
 import { createDogAnims } from "../anims/DogAnims";
+import { Goblin } from "../enemies/Goblins"
 
 export default class Game extends Phaser.Scene {
   // Private variables:
@@ -53,6 +54,8 @@ export default class Game extends Phaser.Scene {
   public resurrect!: Resurrect;
   public sceneFrom?: string;
   private dog!: Phaser.Physics.Arcade.Group;
+  private goblin!: Phaser.Physics.Arcade.Group;
+  private playerGoblinCollider?: Phaser.Physics.Arcade.Collider;
   private dogBark: Phaser.Sound.BaseSound;
 
   // Firebase variables
@@ -329,6 +332,34 @@ export default class Game extends Phaser.Scene {
         if (fenceLayer) this.physics.add.collider(this.dog, fenceLayer);
         if (treesLayer) this.physics.add.collider(this.dog, treesLayer);
       }
+      this.goblin = this.physics.add.group({
+        classType: Goblin,
+        createCallback: (go) => {
+          const GoblinGo = go as Goblin;
+          if (GoblinGo.body) {
+            GoblinGo.body.onCollide = true;
+
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; // Set the desired hitbox width
+            const hitboxHeight = 20; // Set the desired hitbox height
+            GoblinGo.body.setSize(hitboxWidth, hitboxHeight);
+
+            // Set the hitbox offset here
+            const offsetX = 6; // Set the desired X offset
+            const offsetY = 14; // Set the desired Y offset
+            GoblinGo.body.setOffset(offsetX, offsetY);
+          }
+        },
+      });
+      this.goblin.get(2080, 1110, "Goblin")
+      if (playerCharacters && this.goblin) {
+        // Handle collisions between goblins and layers
+        if (waterLayer) this.physics.add.collider(this.goblin, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.goblin, groundLayer);
+        if (houseLayer) this.physics.add.collider(this.goblin, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.goblin, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.goblin, treesLayer);
+      }
       if (playerCharacters && this.skeletons) {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -341,7 +372,7 @@ export default class Game extends Phaser.Scene {
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
         this.playerEnemiesCollider = this.physics.add.collider(
-          this.skeletons,
+          this.skeletons || this.goblin,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler as any,
           undefined,
@@ -355,6 +386,16 @@ export default class Game extends Phaser.Scene {
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerSlimeCollision,
+          undefined,
+          this
+        );
+      }
+
+      if (playerCharacters && this.goblin) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblin,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
         );
@@ -807,6 +848,14 @@ export default class Game extends Phaser.Scene {
         this.projectiles,
         this.slimes,
         this.collisionHandler.handleProjectileSlimeCollision as any,
+        undefined,
+        this
+      );
+      // Handle collision between knives and goblins
+      this.physics.overlap(
+        this.projectiles,
+        this.goblin,
+        this.collisionHandler.handleProjectileGoblinCollision as any,
         undefined,
         this
       );

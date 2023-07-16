@@ -104,9 +104,8 @@ export default class Game extends Phaser.Scene {
       this.resurrect,
       this.collideSound,
       this.resurrectSound,
-      this.potionSound
-      this.dog,
-
+      this.potionSound,
+      this.dog
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
@@ -316,8 +315,8 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-      const dog = this.dog.get(2050, 1110, "Dog")
-      dog.text = "Bark!" || "Woof!" || "BARK!"
+      const dog = this.dog.get(2050, 1110, "Dog");
+      dog.text = "Bark!" || "Woof!" || "BARK!";
       if (playerCharacters && this.dog) {
         // Handle collisions between dogs and layers
         if (waterLayer) this.physics.add.collider(this.dog, waterLayer);
@@ -810,13 +809,13 @@ export default class Game extends Phaser.Scene {
             undefined,
             this
           );
-          this.physics.overlap(
-            character,
-            this.dog,
-            this.collisionHandler.handlePlayerDogCollision as any,
-            undefined,
-            this
-          );
+        this.physics.overlap(
+          character,
+          this.dog,
+          this.collisionHandler.handlePlayerDogCollision as any,
+          undefined,
+          this
+        );
       }
       // Update the player's data in the database
       if (this.playerRef) {

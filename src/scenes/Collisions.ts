@@ -54,9 +54,8 @@ export class CollisionHandler {
     resurrect: Resurrect,
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
-    potionSound: Phaser.Sound.BaseSound
-    dog:Phaser.Physics.Arcade.Group
-
+    potionSound: Phaser.Sound.BaseSound,
+    dog: Phaser.Physics.Arcade.Group
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -71,7 +70,6 @@ export class CollisionHandler {
     this.resurrectSound = resurrectSound;
     this.potionSound = potionSound;
     this.dog = dog;
-
   }
 
   // Method to handle collision between projectiles and walls
@@ -147,13 +145,13 @@ export class CollisionHandler {
 
       // Generate a random number between 0 and 1
       const dropChance = Math.random();
-      console.log("THIS IS THE DROP CHANCE VALUE", dropChance)
+      console.log("THIS IS THE DROP CHANCE VALUE", dropChance);
       // Check if the drop chance is less than or equal to 0.2 (20%)
       if (dropChance <= 0.2) {
-      // Drop a potion at the skeleton's position
-      this.potion.get(skeleton.x, skeleton.y, 'potion');
+        // Drop a potion at the skeleton's position
+        this.potion.get(skeleton.x, skeleton.y, "potion");
+      }
     }
-  }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
       if (character) {
@@ -188,11 +186,11 @@ export class CollisionHandler {
       slime.destroy();
       // Generate a random number between 0 and 1
       const dropChance = Math.random();
-      console.log(dropChance)
+      console.log(dropChance);
       // Check if the drop chance is less than or equal to 0.1 (10%)
       if (dropChance <= 0.1) {
-      // Drop a potion at the slime's position
-      this.potion.get(slime.x, slime.y, 'potion');
+        // Drop a potion at the slime's position
+        this.potion.get(slime.x, slime.y, "potion");
       }
     });
     // Log players' x
@@ -361,7 +359,7 @@ export class CollisionHandler {
 
       // Stop the dog from moving
       if (dog instanceof Dog) {
-      dog.isMoving = false;
+        dog.isMoving = false;
       }
 
       const dogX = dog.x;
@@ -398,7 +396,7 @@ export class CollisionHandler {
         background.destroy();
         // allow the dog to move
         if (dog instanceof Dog) {
-        dog.isMoving = true;
+          dog.isMoving = true;
         }
       });
     }

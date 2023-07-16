@@ -22,7 +22,7 @@ import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Dog from "../characters/Dog";
 import { createDogAnims } from "../anims/DogAnims";
-import { Goblin } from "../enemies/Goblins"
+import { Goblin } from "../enemies/Goblins";
 
 export default class Game extends Phaser.Scene {
   // Private variables:
@@ -57,6 +57,9 @@ export default class Game extends Phaser.Scene {
   private goblin!: Phaser.Physics.Arcade.Group;
   private playerGoblinCollider?: Phaser.Physics.Arcade.Collider;
   private dogBark: Phaser.Sound.BaseSound;
+  private slimeDeathSound: Phaser.Sound.BaseSound;
+  private npcHm: Phaser.Sound.BaseSound;
+  private projectileHit: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;
@@ -88,6 +91,10 @@ export default class Game extends Phaser.Scene {
     this.load.audio("potion", "music/potion.mp3");
     this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
     this.load.audio("dogBark", "/music/dogBark.mp3");
+    this.load.audio("slimeDeath", "/music/slimeDeathSound.mp3");
+    this.load.audio("townScene", "/music/townScene.mp3");
+    this.load.audio("npcHm", "/music/npcHm.mp3");
+    this.load.audio("projectileHit", "/music/projectileHit.mp3");
   }
 
   init(data?: { name: string; from?: string }) {
@@ -111,13 +118,25 @@ export default class Game extends Phaser.Scene {
       this.resurrectSound,
       this.potionSound,
       this.dog,
-      this.dogBark
+      this.dogBark,
+      this.slimeDeathSound,
+      this.npcHm,
+      this.projectileHit
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
     this.resurrectSound = this.sound.add("resurrect");
     this.potionSound = this.sound.add("potion");
     this.dogBark = this.sound.add("dogBark");
+    this.slimeDeathSound = this.sound.add("slimeDeath");
+    this.npcHm = this.sound.add("npcHm");
+    this.projectileHit = this.sound.add("projectileHit");
+
+    const backgroundMusic = this.sound.add("townScene", {
+      volume: 0.5,
+      loop: true,
+    });
+    backgroundMusic.play();
 
     // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);
 
@@ -351,7 +370,7 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-      this.goblin.get(2080, 1110, "Goblin")
+      this.goblin.get(2080, 1110, "Goblin");
       if (playerCharacters && this.goblin) {
         // Handle collisions between goblins and layers
         if (waterLayer) this.physics.add.collider(this.goblin, waterLayer);
@@ -806,6 +825,7 @@ export default class Game extends Phaser.Scene {
         projectilesFromDB: character.projectilesToSend,
         scene: "forest",
       });
+      this.sound.stopAll();
       return;
     }
 
@@ -986,6 +1006,5 @@ export default class Game extends Phaser.Scene {
         }
       }
     }
-    
   }
 }

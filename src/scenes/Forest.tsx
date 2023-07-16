@@ -42,6 +42,8 @@ export default class Forest extends Phaser.Scene {
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
+  private slimeDeathSound: Phaser.Sound.BaseSound;
+  private npcHm: Phaser.Sound.BaseSound;
 
 
   // Firebase variables
@@ -70,7 +72,10 @@ export default class Forest extends Phaser.Scene {
     this.load.audio("resurrect", "music/resurrectSound.mp3");
     this.load.audio("potion", "music/potion.mp3");
     this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
-    this.load.audio("dogBark", "/music/dogBark.mp3");
+    this.load.audio("forestScene", "/music/forestScene.mp3");
+    this.load.audio("slimeDeathSound", "/music/slimeDeathSound.mp3");
+    this.load.audio("npcHm", "/music/npcHm.mp3");
+    this.load.audio("projectileHit", "/music/projectileHit.mp3");
   }
 
   init(data: any) {
@@ -91,13 +96,23 @@ export default class Forest extends Phaser.Scene {
       this.collideSound,
       this.resurrectSound,
       this.potionSound,
-      this.dog,
-      this.dogBark
+      this.slimeDeathSound,
+      this.npcHm,
+      this.projectileHit
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
     this.resurrectSound = this.sound.add("resurrect");
     this.potionSound = this.sound.add("potion");
+    this.slimeDeathSound = this.sound.add("slimeDeathSound");
+    this.npcHm = this.sound.add("npcHm");
+    this.projectileHit = this.sound.add("projectileHit");
+
+    const backgroundMusic = this.sound.add("forestScene", {
+      volume: 0.5,
+      loop: true,
+    });
+    backgroundMusic.play();
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
@@ -131,7 +146,6 @@ export default class Forest extends Phaser.Scene {
       trees2Layer?.setCollisionByProperty({ collides: true });
       trees3Layer?.setCollisionByProperty({ collides: true });
 
-     
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
         this.cameras.main.startFollow(this.barb);
@@ -322,7 +336,6 @@ export default class Forest extends Phaser.Scene {
 
       // this.potion.get(800, 2900, "Potion");
     }
-
   }
 
   update() {
@@ -393,6 +406,7 @@ export default class Forest extends Phaser.Scene {
     const ruinsX = character.x >= 647 && character.x <= 990;
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
+      this.sound.stopAll();
       this.scene.start("ruins", { characterName: this.characterName });
       update(this.playerRef, {
         x: character.x,

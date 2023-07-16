@@ -38,6 +38,7 @@ export class CollisionHandler {
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   dog: Phaser.Physics.Arcade.Group;
+  private dogBark: Phaser.Sound.BaseSound;
 
   //Firebase
   playerId: string | null;
@@ -58,7 +59,8 @@ export class CollisionHandler {
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
     potionSound: Phaser.Sound.BaseSound,
-    dog: Phaser.Physics.Arcade.Group
+    dog: Phaser.Physics.Arcade.Group,
+    dogBark: Phaser.Sound.BaseSound
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -74,6 +76,7 @@ export class CollisionHandler {
     this.resurrectSound = resurrectSound;
     this.potionSound = potionSound;
     this.dog = dog;
+    this.dogBark = dogBark;
   }
 
   // Method to handle collision between projectiles and walls
@@ -362,6 +365,7 @@ export class CollisionHandler {
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the Dog");
+      this.dogBark.play();
 
       // Stop the dog from moving
       if (dog instanceof Dog) {

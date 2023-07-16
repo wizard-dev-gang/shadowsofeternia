@@ -29,6 +29,7 @@ declare global {
 
 export default class Barb extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
+  private playerDeadSound?: Phaser.Sound.BaseSound;
   private damageTime = 0;
   public _health: number;
   public maxHealth: number;
@@ -59,6 +60,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame);
     this._health = 5;
     this.maxHealth = 10;
+    this.playerDeadSound = scene.sound.add("playerDeadSound");
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
         W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -104,6 +106,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
     if (this._health <= 0) {
       this.setVelocity(0, 0);
       this.isDead = true;
+      this.playerDeadSound?.play();
 
       // Start the "death-ghost" animation
       this.play("death-ghost");

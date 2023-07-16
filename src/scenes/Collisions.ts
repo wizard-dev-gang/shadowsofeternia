@@ -259,7 +259,7 @@ export class CollisionHandler {
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
-
+    slime.isAlive = false
     // Stop the slime from moving
     slime.isMoving = false;
 

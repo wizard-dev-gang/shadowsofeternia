@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 import Barb from "../characters/Barb";
 import Archer from "../characters/Archer";
@@ -32,14 +33,18 @@ export default class Forest extends Phaser.Scene {
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
   public resurrect!: Resurrect;
+  private enemyCount: number = 0;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
-  private game?: Game;
+
+  private game?: Game
+  private enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   private slimeDeathSound: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
+
 
   // Firebase variables
   public characterName?: string;
@@ -179,6 +184,7 @@ export default class Forest extends Phaser.Scene {
         classType: Slime,
         createCallback: (go) => {
           const slimeGo = go as Slime;
+          this.enemyCount++;
           if (slimeGo.body) {
             slimeGo.body.onCollide = true;
 
@@ -192,6 +198,7 @@ export default class Forest extends Phaser.Scene {
             const offsetY = hitboxHeight / 2; // Set the desired Y offset
             slimeGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount, slimeGo);
         },
       });
 
@@ -328,15 +335,6 @@ export default class Forest extends Phaser.Scene {
       npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
 
       // this.potion.get(800, 2900, "Potion");
-
-      this.slimes.get(1320, 2650, "slime");
-      this.slimes.get(1200, 2800, "slime");
-      this.slimes.get(1805, 2100, "slime");
-      this.slimes.get(1800, 2000, "slime");
-      this.slimes.get(1303, 1373, "slime");
-      this.slimes.get(1305, 1300, "slime");
-      this.slimes.get(847, 276, "slime");
-      this.slimes.get(857, 267, "slime");
     }
   }
 
@@ -359,21 +357,70 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-    // const forestX = character.x >= 709 && character.x <= 825;
-    // const forestY = character.y <= 3152 && character.y >= 3140;
-    // if (forestX && forestY) {
-    //   if (this.game) this.game.sceneFrom = "forest";
-    //   this.scene.switch("game");
-    //   // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
-    //   return;
-    // }
+    if (
+      character.y >= 2690 && character.y <= 2700 &&
+      this.slimes.countActive() === 0
+    ) {
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+    } else if (
+      character.y >= 2455 && character.y <= 2470 &&
+      this.slimes.countActive() <= 4
+    ) {
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      
+    } else if (
+      character.y >= 1660 && character.y <= 1680 &&
+      this.slimes.countActive() <= 8
+    ) {
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+    } else if (
+      character.y >= 710 && character.y <= 730 &&
+      this.slimes.countActive() <= 12
+    ) {
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
+    }
+
+    this.enemiesSpawned = true;
+
+    const forestX = character.x >= 709 && character.x <= 825;
+    const forestY = character.y <= 3152 && character.y >= 3140;
+    if (forestX && forestY) {
+      if (this.game) this.game.sceneFrom = "forest";
+      this.scene.switch("game");
+      // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
+      return;
+    }
 
     const ruinsX = character.x >= 647 && character.x <= 990;
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.sound.stopAll();
       this.scene.start("ruins", { characterName: this.characterName });
-      update(this.playerRef, { scene: "ruins" });
+      update(this.playerRef, {
+        x: character.x,
+        y: character.y,
+        anim: character.anims.currentAnim
+          ? character.anims.currentAnim.key
+          : null,
+        frame: character.anims.currentFrame
+          ? character.anims.currentFrame.frame.name
+          : null,
+        online: true,
+        projectilesFromDB: character.projectilesToSend,
+        scene: "ruins",
+      });
       return;
     }
 
@@ -464,6 +511,17 @@ export default class Forest extends Phaser.Scene {
           }
         }
         update(this.enemyDB, this.dataToSend);
+      }
+    }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers, {
+            x: character.x,
+            y: character.y,
+          });
+        }
       }
     }
   }

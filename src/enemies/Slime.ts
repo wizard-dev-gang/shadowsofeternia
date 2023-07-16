@@ -19,6 +19,8 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
   public isMoving = true;
+  private currentTarget:any = {x: 0, y:0,distance:Number(1000)};
+  public isAlive:boolean = true;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -43,12 +45,62 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
     this.moveEvent = scene.time.addEvent({
       delay: 1000,
       callback: () => {
-        this.direction = randomDirection(this.direction);
+        let newNum = Math.random()
+        if (newNum >= .3 && this.isAlive) {
+          this.seekAndDestroy()
+          
+        } else if (newNum >= 0 && newNum < .3 ) {
+          this.direction = randomDirection(this.direction);
+          this.currentTarget = {x: 0, y:0,distance:Number(1000)}
+          
+        }
       },
       loop: true,
     });
   }
 
+  findTarget(playerData:Map<any,any>, host:any) {
+    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y)
+    if(this.currentTarget.id === "host" || (distance < 1000 && distance< this.currentTarget.distance)) {
+      this.currentTarget = {
+        id:'host',
+        x:host.x,
+        y:host.y,
+        distance:distance
+      }
+    }
+
+    for (const entry of playerData.entries()) {
+      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)
+      if(this.currentTarget.id === entry[0]) {
+        this.currentTarget = {
+          id:entry[0],
+          x:entry[1].x,
+          y:entry[1].y,
+          distance:distance
+        }
+      }
+      if  (distance < 1000 && distance< this.currentTarget.distance) {
+        this.currentTarget = {
+          id:entry[0],
+          x:entry[1].x,
+          y:entry[1].y,
+          distance:distance
+        }
+      }
+    }
+  }
+
+  seekAndDestroy() {
+    
+    if(Math.abs(this.x - this.currentTarget.x) > Math.abs(this.y - this.currentTarget.y)){
+      this.x > this.currentTarget.x ? this.direction = 2 : this.direction = 3 
+    }
+    else 
+    {
+      this.y > this.currentTarget.y ? this.direction = 0 : this.direction = 1
+    }
+  }
   destroy(fromScene?: boolean) {
     this.moveEvent.destroy();
     super.destroy(fromScene);

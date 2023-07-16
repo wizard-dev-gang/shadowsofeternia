@@ -17,7 +17,6 @@ import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 
-
 export default class Forest extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player;
@@ -36,6 +35,9 @@ export default class Forest extends Phaser.Scene {
   private forestEntranceX!: number;
   private forestEntranceY!: number;
   private game?: Game;
+  private collideSound: Phaser.Sound.BaseSound;
+  private resurrectSound: Phaser.Sound.BaseSound;
+  private potionSound: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;
@@ -59,6 +61,11 @@ export default class Forest extends Phaser.Scene {
 
   preload() {
     // this.cursors = this.input.keyboard?.createCursorKeys();
+    this.load.audio("enemyCollide", "music/playerDmg2.mp3");
+    this.load.audio("resurrect", "music/resurrectSound.mp3");
+    this.load.audio("potion", "music/potion.mp3");
+    this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
+    this.load.audio("dogBark", "/music/dogBark.mp3");
   }
 
   init(data: any) {
@@ -74,9 +81,18 @@ export default class Forest extends Phaser.Scene {
       this.Npc_wizard,
       this.add,
       this.potion,
-      this.playerId
+      this.playerId,
+      this.resurrect,
+      this.collideSound,
+      this.resurrectSound,
+      this.potionSound,
+      this.dog,
+      this.dogBark
     );
     this.scene.run("player-ui");
+    this.collideSound = this.sound.add("enemyCollide");
+    this.resurrectSound = this.sound.add("resurrect");
+    this.potionSound = this.sound.add("potion");
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
@@ -171,7 +187,7 @@ export default class Forest extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.slimes,
-          this.collisionHandler.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
         );
@@ -200,7 +216,7 @@ export default class Forest extends Phaser.Scene {
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.collisionHandler.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
         );
@@ -393,7 +409,7 @@ export default class Forest extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
-          scene:this.scene.key,
+          scene: this.scene.key,
         });
         character.projectilesToSend = {};
       }

@@ -212,6 +212,17 @@ export default class Ruins extends Phaser.Scene {
                 );
               }
 
+              if (this.skeletons && borderLayer) {
+                this.physics.add.collider(this.skeletons, borderLayer);
+                this.physics.add.collider(
+                  this.projectiles,
+                  borderLayer,
+                  collisionHandler.handleProjectileWallCollision,
+                  undefined,
+                  this
+                );
+              }
+
               if (playerCharacters && this.skeletons) {
                 this.physics.add.collider(
                   playerCharacters as Phaser.GameObjects.GameObject[],
@@ -296,7 +307,34 @@ export default class Ruins extends Phaser.Scene {
           }
         },
       });
-      this.potion.get(800, 2800, "Potion");
+    //   this.potion.get(800, 2800, "Potion");
+      this.skeletons.get(2475, 2583, "skeleton")
+
+      this.skeletons.get(1967, 3000, "skeleton")
+
+      this.skeletons.get(1590, 2430, "skeleton")
+
+      this.skeletons.get(1248, 1750, "skeleton")
+
+      this.skeletons.get(888, 2060, "skeleton")
+
+      this.skeletons.get(1334, 2330, "skeleton")
+
+      this.skeletons.get(1531, 2800, "skeleton")
+
+      this.skeletons.get(144, 2583, "skeleton")
+
+      this.skeletons.get(184, 1133, "skeleton")
+
+      this.skeletons.get(1044, 213, "skeleton")
+
+      this.skeletons.get(1580, 1470, "skeleton")
+
+      this.skeletons.get(2230, 2000, "skeleton")
+
+      this.skeletons.get(3010, 1890, "skeleton")
+
+      this.skeletons.get(1800, 830, "skeleton")
     }
 }
   

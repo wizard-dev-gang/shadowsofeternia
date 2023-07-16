@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { Game } from "phaser";
 
 export interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
@@ -126,13 +127,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     direction?: string,
     xLoc?: number,
     yLoc?: number,
-    attackObj?: string
+    attackObj?: string,
+    gameInstance?:Game
   ) {
     if (!this.projectiles) {
       return;
     }
 
-    const currentTime = this.scene.time.now;
+    const currentTime = gameInstance? gameInstance.time.now :this.scene.time.now;
 
     if (
       this.lastProjectileTime &&

@@ -231,7 +231,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
       this.throwProjectile();
     }
 
-    const speed = 100;
+    const speed = 200;
     if (this.keys.A?.isDown) {
       this.anims.play("wizard-walk-left", true);
       this.setVelocity(-speed, 0);

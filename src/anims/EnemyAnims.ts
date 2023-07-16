@@ -179,4 +179,56 @@ export const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
     repeat: -1,
     frameRate: 7,
   });
+  //Goblin Anims
+    anims.create({
+      key: "goblin-idle-down",
+      frames: [{ key: "goblin", frame: "goblin-down-001.png" }],
+    });
+
+    anims.create({
+      key: "goblin-down",
+      frames: anims.generateFrameNames("goblin", {
+        start: 1,
+        end: 3,
+        prefix: "goblin-down-00",
+        suffix: ".png",
+      }),
+      repeat: -1,
+      frameRate: 9,
+    });
+
+    anims.create({
+      key: "goblin-up",
+      frames: anims.generateFrameNames("goblin", {
+        start: 1,
+        end: 3,
+        prefix: "goblin-up-00",
+        suffix: ".png",
+      }),
+      repeat: -1,
+      frameRate: 9,
+    });
+
+    anims.create({
+      key: "goblin-left",
+      frames: anims.generateFrameNames("goblin", {
+        start: 1,
+        end: 3,
+        prefix: "goblin-left-00",
+        suffix: ".png",
+      }),
+      repeat: -1,
+      frameRate: 9,
+    });
+    anims.create({
+      key: "goblin-right",
+      frames: anims.generateFrameNames("goblin", {
+        start: 1,
+        end: 3,
+        prefix: "goblin-right-00",
+        suffix: ".png",
+      }),
+      repeat: -1,
+      frameRate: 9,
+    });
 };

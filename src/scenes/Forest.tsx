@@ -148,6 +148,7 @@ export default class Forest extends Phaser.Scene {
         classType: Slime,
         createCallback: (go) => {
           const slimeGo = go as Slime;
+          this.enemyCount++;
           if (slimeGo.body) {
             slimeGo.body.onCollide = true;
 
@@ -161,6 +162,7 @@ export default class Forest extends Phaser.Scene {
             const offsetY = hitboxHeight / 2; // Set the desired Y offset
             slimeGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount, slimeGo);
         },
       });
 
@@ -423,6 +425,17 @@ export default class Forest extends Phaser.Scene {
           }
         }
         update(this.enemyDB, this.dataToSend);
+      }
+    }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers, {
+            x: character.x,
+            y: character.y,
+          });
+        }
       }
     }
   }

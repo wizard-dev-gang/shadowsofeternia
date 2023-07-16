@@ -29,6 +29,9 @@ export class CollisionHandler {
   private barb?: Barb; //Barbarian Character
   private archer?: Archer; //Archer Character
   private wizard?: Wizard; //Wizard Character
+  private collideSound: Phaser.Sound.BaseSound;
+  private resurrectSound: Phaser.Sound.BaseSound;
+  private potionSound: Phaser.Sound.BaseSound;
 
   //Firebase
   playerId: string | null;
@@ -42,7 +45,11 @@ export class CollisionHandler {
     Npc_wizard: Phaser.Physics.Arcade.Group,
     add: GameObjects.GameObjectFactory,
     potion: Potion,
-    playerId: string | null
+    playerId: string | null,
+    resurrect: Resurrect,
+    collideSound: Phaser.Sound.BaseSound,
+    resurrectSound: Phaser.Sound.BaseSound,
+    potionSound: Phaser.Sound.BaseSound
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -52,6 +59,9 @@ export class CollisionHandler {
     this.add = add;
     this.potion = potion;
     this.playerId = playerId;
+    this.collideSound = collideSound;
+    this.resurrectSound = resurrectSound;
+    this.potionSound = potionSound;
   }
 
   // Method to handle collision between projectiles and walls
@@ -158,6 +168,7 @@ export class CollisionHandler {
       man.handleDamage(dir);
       // console.log(man._health);
       sceneEvents.emit("player-health-changed", man.getHealth());
+      this.collideSound.play();
     }
   }
 
@@ -187,6 +198,7 @@ export class CollisionHandler {
         man.setVelocity(dir.x, dir.y);
         man.handleDamage(dir);
         sceneEvents.emit("player-health-changed", man.getHealth());
+        this.collideSound.play();
       }
     }
   }
@@ -274,6 +286,7 @@ export class CollisionHandler {
       }
 
       // Remove the potion only if the player is alive
+      this.potionSound.play();
       potion.destroy();
     }
   }
@@ -288,21 +301,17 @@ export class CollisionHandler {
         player instanceof Barb ||
         player instanceof Wizard ||
         player instanceof Archer) &&
-      resurrect instanceof Phaser.GameObjects.GameObject &&
+      resurrect instanceof Resurrect &&
       player.isDead
     ) {
-      if (player.isDead === true) {
-        // Perform actions for interacting with the resurrect
-        player.increaseHealth(5);
-        sceneEvents.emit("player-health-changed", player.getHealth());
-        console.log("Resurrect Picked Up, New HP:", player.getHealth());
-        player.isDead = false;
+      // Perform actions for interacting with the resurrect
+      player.increaseHealth(5);
+      sceneEvents.emit("player-health-changed", player.getHealth());
+      console.log("Resurrect Picked Up, New HP:", player.getHealth());
+      player.isDead = false;
 
-        // Remove the resurrect from the scene
-        resurrect.destroy();
-      } else {
-        return;
-      }
+      this.resurrectSound.play();
+      resurrect.destroy();
     }
   }
 }

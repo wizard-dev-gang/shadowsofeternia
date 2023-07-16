@@ -298,7 +298,17 @@ export default class Forest extends Phaser.Scene {
         "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
 
       // this.potion.get(800, 2900, "Potion");
+
+      this.slimes.get(1320, 2650, "slime");
+      this.slimes.get(1200, 2800, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1800, 2000, "slime");
+      this.slimes.get(1303, 1373, "slime");
+      this.slimes.get(1305, 1300, "slime");
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
     }
+
 
   }
 
@@ -321,15 +331,69 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-    const enemySpawn1X = character.x >=850  && character.x <=850.3
-    const enemySpawn1Y = character.y >= 2830 && character.y <= 2950
-    if(enemySpawn1X && enemySpawn1Y){
-      this.slimes.get(1320, 2650, "slime");
-      this.slimes.get(990, 2800, "slime");
-      // this.slimes.get(1000, 2790, "slime");
-      // this.slimes.get(800, 3350, "slime");
-      return
-    }
+    // // const enemySpawn1X = character.x >=850  && character.x <=850.2
+    // // const enemySpawn1Y = character.y >= 2690 && character.y <= 2950
+    // // if(enemySpawn1X && enemySpawn1Y){
+    // //   this.slimes.get(1320, 2650, "slime");
+    // //   this.slimes.get(1200, 2800, "slime");
+    // //   // this.slimes.get(1000, 2790, "slime");
+    // //   // this.slimes.get(800, 3350, "slime");
+    // //   return
+    // // }
+    // // console.log("X:", character.x)
+    // // console.log("Y:", character.y)
+    // const enemySpawn1X = character.x >=850  && character.x <=850.2
+    // const enemySpawn1Y = character.y >= 2690 && character.y <= 2950
+    // const enemySpawn2X = character.x >=1640  && character.x <=2000
+    // const enemySpawn2Y = character.y >= 2456 && character.y <= 2456.4
+    // const enemySpawn3X = character.x >=1258  && character.x <=2100
+    // const enemySpawn3Y = character.y >= 1660 && character.y <= 1660.4
+    // const enemySpawn4X = character.x >=394  && character.x <=1970
+    // const enemySpawn4Y = character.y >= 713 && character.y <= 713.4
+    // if(enemySpawn1X && enemySpawn1Y){
+    //   this.slimes.get(1320, 2650, "slime");
+    //   this.slimes.get(1200, 2800, "slime");
+    //   // this.slimes.get(1000, 2790, "slime");
+    //   // this.slimes.get(800, 3350, "slime");
+    //   return
+    // } else if(enemySpawn2X && enemySpawn2Y){
+    //   this.slimes.get(1805, 2100, "slime");
+    //   this.slimes.get(1800, 2000, "slime");
+    //   // this.slimes.get(1000, 2790, "slime");
+    //   // this.slimes.get(800, 3350, "slime");
+    //   return
+    // }else if(enemySpawn3X && enemySpawn3Y){
+      // this.slimes.get(1303, 1373, "slime");
+      // this.slimes.get(1305, 1300, "slime");
+    //   // this.slimes.get(1000, 2790, "slime");
+    //   // this.slimes.get(800, 3350, "slime");
+    //   return
+    // } else if(enemySpawn4X && enemySpawn4Y){
+      // this.slimes.get(847, 276, "slime");
+      // this.slimes.get(857, 267, "slime");
+    //   // this.slimes.get(1000, 2790, "slime");
+    //   // this.slimes.get(800, 3350, "slime");
+    //   return
+    // }
+    // const enemySpawn3X = character.x >=1258  && character.x <=2100
+    // const enemySpawn3Y = character.y >= 1660 && character.y <= 1660.4
+    // if(enemySpawn3X && enemySpawn3Y){
+    //   this.slimes.get(1303, 1373, "slime");
+    //   this.slimes.get(1305, 1300, "slime");
+    //   // this.slimes.get(1000, 2790, "slime");
+    //   // this.slimes.get(800, 3350, "slime");
+    //   return
+    // }
+
+    // const enemySpawn4X = character.x >=394  && character.x <=1970
+    // const enemySpawn4Y = character.y >= 713 && character.y <= 713.4
+    // if(enemySpawn4X && enemySpawn4Y){
+    //   this.slimes.get(847, 276, "slime");
+    //   this.slimes.get(857, 267, "slime");
+    //   // this.slimes.get(1000, 2790, "slime");
+    //   // this.slimes.get(800, 3350, "slime");
+    //   return
+    // }
 
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;

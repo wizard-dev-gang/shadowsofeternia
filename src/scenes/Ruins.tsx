@@ -140,7 +140,7 @@ export default class Ruins extends Phaser.Scene {
       const groundLayer = map.createLayer("Ground", terrainTiles, 0, 0);
       const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const pathLayer = map.createLayer("Paths", structureTiles, 0, 0);
-      const grassLayer = map.createLayer("Grass", terrainTiles, 0, 0);
+      const grassLayer = map.createLayer("Grass", propTiles, 0, 0);
       const platformLayer = map.createLayer(
         "Platform-Ground",
         terrainTiles,

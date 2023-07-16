@@ -1,3 +1,4 @@
+
 import Phaser from "phaser";
 import Barb from "../characters/Barb";
 import Archer from "../characters/Archer";
@@ -34,10 +35,13 @@ export default class Forest extends Phaser.Scene {
   public resurrect!: Resurrect;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
-  private game?: Game;
+
+  private game?: Game
+  private enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
+
 
   // Firebase variables
   public characterName?: string;
@@ -314,15 +318,6 @@ export default class Forest extends Phaser.Scene {
       npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
 
       // this.potion.get(800, 2900, "Potion");
-
-      this.slimes.get(1320, 2650, "slime");
-      this.slimes.get(1200, 2800, "slime");
-      this.slimes.get(1805, 2100, "slime");
-      this.slimes.get(1800, 2000, "slime");
-      this.slimes.get(1303, 1373, "slime");
-      this.slimes.get(1305, 1300, "slime");
-      this.slimes.get(847, 276, "slime");
-      this.slimes.get(857, 267, "slime");
     }
 
   }
@@ -345,6 +340,43 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+
+    if (
+      character.y >= 2690 && character.y <= 2700 &&
+      this.slimes.countActive() === 0
+    ) {
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+    } else if (
+      character.y >= 2455 && character.y <= 2470 &&
+      this.slimes.countActive() <= 4
+    ) {
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      
+    } else if (
+      character.y >= 1660 && character.y <= 1680 &&
+      this.slimes.countActive() <= 8
+    ) {
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+    } else if (
+      character.y >= 710 && character.y <= 730 &&
+      this.slimes.countActive() <= 12
+    ) {
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
+    }
+
+    this.enemiesSpawned = true;
 
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;

@@ -777,7 +777,7 @@ export default class Game extends Phaser.Scene {
       return {x: centerX + ratioX, y: centerY + ratioY}
     }
     return {x: 0, y: 0}
-
+  
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
@@ -788,5 +788,6 @@ export default class Game extends Phaser.Scene {
         }
       }
     }
+    
   }
 }

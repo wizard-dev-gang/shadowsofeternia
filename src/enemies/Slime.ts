@@ -41,7 +41,7 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
     );
 
     this.moveEvent = scene.time.addEvent({
-      delay: 2000,
+      delay: 1000,
       callback: () => {
         this.direction = randomDirection(this.direction);
       },

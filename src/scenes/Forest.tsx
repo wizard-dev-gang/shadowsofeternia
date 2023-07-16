@@ -107,6 +107,7 @@ export default class Forest extends Phaser.Scene {
       trees2Layer?.setCollisionByProperty({ collides: true });
       trees3Layer?.setCollisionByProperty({ collides: true });
 
+     
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
         this.cameras.main.startFollow(this.barb);
@@ -123,8 +124,18 @@ export default class Forest extends Phaser.Scene {
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
-      this.forestEntranceX = 2070; 
-      this.forestEntranceY = 29; 
+      // this.forestEntranceX = 2070; 
+      // this.forestEntranceY = 29; 
+      // const enemySpawn1X = playerCharacters.x >=850 && playerCharacters.x <= 870
+      // const enemySpawn1Y = playerCharacters.y >= 2830 && playerCharacters.y <= 2950
+      // console.log("PC X & Y", playerCharacters.x)
+      // if(enemySpawn1X && enemySpawn1Y){
+      //   this.slimes.get(1320, 2650, "slime");
+      //   // this.slimes.get(990, 2800, "slime");
+      //   // this.slimes.get(1000, 2790, "slime");
+      //   // this.slimes.get(800, 3350, "slime");
+      //   return
+      // }
 
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
@@ -161,7 +172,7 @@ export default class Forest extends Phaser.Scene {
       });
 
       // Add a slime to the group
-      this.slimes.get(800, 3150, "slime");
+      // this.slimes.get(800, 3150, "slime");
       if (playerCharacters && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
@@ -288,6 +299,7 @@ export default class Forest extends Phaser.Scene {
 
       // this.potion.get(800, 2900, "Potion");
     }
+
   }
 
   update() {
@@ -308,6 +320,16 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
+
+    const enemySpawn1X = character.x >=850  && character.x <=850.3
+    const enemySpawn1Y = character.y >= 2830 && character.y <= 2950
+    if(enemySpawn1X && enemySpawn1Y){
+      this.slimes.get(1320, 2650, "slime");
+      this.slimes.get(990, 2800, "slime");
+      // this.slimes.get(1000, 2790, "slime");
+      // this.slimes.get(800, 3350, "slime");
+      return
+    }
 
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;

@@ -33,7 +33,7 @@ function GameComponent() {
       scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, Boss, PlayerUI],
 
       scale: {
-        zoom: 2.69,
+        zoom: 2.5,
       },
     });
   }, []);

@@ -18,32 +18,40 @@ import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
 import { Resurrect } from "../characters/Resurrect";
+import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Dog from "../characters/Dog";
 import { createDogAnims } from "../anims/DogAnims";
 
 export default class Game extends Phaser.Scene {
-  private man?: Player; //Rogue Character
-  private barb?: Barb; //Barbarian Character
-  private archer?: Archer; //Archer Character
-  private wizard?: Wizard; //Wizard Character
-  public projectiles!: Phaser.Physics.Arcade.Group;
-  public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
-  private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
-  private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
-  private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
+  // Private variables:
+  private archer?: Archer;
+  private barb?: Barb;
+  private collideSound: Phaser.Sound.BaseSound;
   private enemyCount: number = 0;
+
+  private man?: Player;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
+  private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider;
+  private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
+  private resurrectSound: Phaser.Sound.BaseSound;
+  private potionSound: Phaser.Sound.BaseSound;
+  private skeletons!: Phaser.Physics.Arcade.Group;
+  private slimes!: Phaser.Physics.Arcade.Group;
+  private wizard?: Wizard;
+
+  // Public variables:
   public collisionHandler: CollisionHandler;
-  public potion!: Potion;
-  public sceneFrom?: string;
+  public exp: number = 0;
+  public map?: Phaser.Tilemaps.Tilemap;
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
   // public miniMapBorder?: Phaser.GameObjects.Rectangle;
-  public miniMapLocation?: Phaser.GameObjects.Arc;
-  public map?: Phaser.Tilemaps.Tilemap;
   public miniMapForest?: Phaser.GameObjects.Arc;
-  public exp: number = 0;
+  public miniMapLocation?: Phaser.GameObjects.Arc;
+  public potion!: Potion;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   public resurrect!: Resurrect;
+  public sceneFrom?: string;
   private dog!: Phaser.Physics.Arcade.Group;
 
   // Firebase variables
@@ -66,11 +74,17 @@ export default class Game extends Phaser.Scene {
     this.playerNames = new Map();
     this.enemies = new Map();
     this.collisionHandler = new CollisionHandler();
+    // this.load.audio("enemyCollide", "audio/playerDmg2.mp3");
   }
 
   preload() {
     // const cursors = this.input.keyboard?.createCursorKeys();
+    this.load.audio("enemyCollide", "music/playerDmg2.mp3");
+    this.load.audio("resurrect", "music/resurrectSound.mp3");
+    this.load.audio("potion", "music/potion.mp3");
+    this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
   }
+
   init(data?: { name: string; from?: string }) {
     // console.log("init data", data);
     // console.log(this.input);
@@ -78,7 +92,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    const collisionHandler = new CollisionHandler(
+    this.collisionHandler = new CollisionHandler(
       this.projectiles,
       this.skeletons,
       this.slimes,
@@ -87,10 +101,17 @@ export default class Game extends Phaser.Scene {
       this.add,
       this.potion,
       this.playerId,
+      this.resurrect,
+      this.collideSound,
+      this.resurrectSound,
+      this.potionSound
       this.dog,
-      this.resurrect
+
     );
     this.scene.run("player-ui");
+    this.collideSound = this.sound.add("enemyCollide");
+    this.resurrectSound = this.sound.add("resurrect");
+    this.potionSound = this.sound.add("potion");
 
     // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);
 
@@ -206,7 +227,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           groundLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -218,7 +239,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           houseLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -229,7 +250,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           fenceLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -240,7 +261,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           treesLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -319,7 +340,7 @@ export default class Game extends Phaser.Scene {
         this.playerEnemiesCollider = this.physics.add.collider(
           this.skeletons,
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.collisionHandler.handlePlayerEnemyCollision as any,
+          this.collisionHandler as any,
           undefined,
           this
         );
@@ -385,6 +406,7 @@ export default class Game extends Phaser.Scene {
           })
           .setOrigin(0.5, 1);
       }
+
       this.Npc_wizard = this.physics.add.group({
         classType: Npc_wizard,
         createCallback: (go) => {
@@ -403,6 +425,8 @@ export default class Game extends Phaser.Scene {
           NpcGo.body.setOffset(offsetX, offsetY);
         },
       });
+
+      // #region NPC Text
 
       // Create an instance of Npc_wizard with specific text
       const npc1 = this.Npc_wizard.get(1880, 1142, "npcWizard");
@@ -431,7 +455,8 @@ export default class Game extends Phaser.Scene {
 
       const npc7 = this.Npc_wizard.get(2080, 146, "npcWizard");
       npc7.text =
-        "Beware the Skeleton King! An ageless tyrant, defeated only by the bravest of warriors. Unite, fight, conquer!";
+        "Greetings, traveler! Be warned, the path ahead weaves through an enchanted forest fraught with peril. Once you venture forth, the veil of return shall close behind you, locking away the safety of the town. Be prepared!";
+      //#endregion
 
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
@@ -455,7 +480,9 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
+
       this.resurrect.get(2060, 1100, "Resurrect");
+
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
@@ -475,6 +502,7 @@ export default class Game extends Phaser.Scene {
       //this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
+
   // Method to update player's experience
   public updatePlayerExp(exp: number) {
     this.exp = exp;
@@ -523,6 +551,7 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private levelUpBarb(player: Barb) {
     const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
@@ -559,6 +588,7 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private levelUpArcher(player: Archer) {
     const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
@@ -595,6 +625,7 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private levelUpWizard(player: Wizard) {
     const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
@@ -631,6 +662,7 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private updatePlayerMaxHealth(maxHealth: number) {
     // Update the player's max health value in the database
     if (this.playerRef) {
@@ -695,6 +727,20 @@ export default class Game extends Phaser.Scene {
       this.levelUpWizard(this.wizard);
     }
     if (!character) return;
+
+    // Handle Collision Between Player and Resurrect
+    if (character && character.isDead) {
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
+      this.resurrect.setVisible(true);
+    } else {
+      this.resurrect.setVisible(false);
+    }
 
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y <= 35 && character.y >= 28.8;
@@ -846,6 +892,7 @@ export default class Game extends Phaser.Scene {
       this.miniMapForest.y = forestLocation.y;
     }
   }
+
   getMiniLocation(
     x: number,
     y: number,

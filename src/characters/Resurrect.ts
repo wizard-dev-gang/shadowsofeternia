@@ -1,4 +1,8 @@
 import Phaser from "phaser";
+import Player from "./Player";
+import Archer from "./Archer";
+import Barb from "./Barb";
+import Wizard from "./Wizard";
 
 class Resurrect extends Phaser.Physics.Arcade.Sprite {
   constructor(
@@ -10,6 +14,7 @@ class Resurrect extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
     scene.add.existing(this);
+
     this.anims.play("Resurrect");
   }
 

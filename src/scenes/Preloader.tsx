@@ -35,11 +35,11 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("redWater", "/tiles/Ruins-Blood.png");
     this.load.tilemapTiledJSON("ruinsMap", "tiles/ruinsMap.json");
 
-  // Boss map prelaod
-  this.load.image("bossStructures", "/tiles/Ruins-Structures.png")
-  this.load.image("bossRuinsTerrain", "/tiles/Ruins-Terrain.png")
-  this.load.image("bossRuinsProps", "/tiles/Ruins-Props.png")
-  this.load.tilemapTiledJSON("bossMap", "tiles/bossMap.json")
+    // Boss map prelaod
+    this.load.image("bossStructures", "/tiles/Ruins-Structures.png");
+    this.load.image("bossRuinsTerrain", "/tiles/Ruins-Terrain.png");
+    this.load.image("bossRuinsProps", "/tiles/Ruins-Props.png");
+    this.load.tilemapTiledJSON("bossMap", "tiles/bossMap.json");
 
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");
@@ -69,6 +69,10 @@ export default class Preloader extends Phaser.Scene {
       "character/npcWizard.png",
       "character/npcWizard.json"
     );
+    this.load.audio("enemyCollide", "music/playerDmg2.mp3");
+    this.load.audio("lobbyMusic", "music/loopMusic.mp3");
+    this.load.audio("resurrect", "music/resurrectSound.mp3");
+    this.load.audio("potion", "music/potion.mp3");
   }
 
   create() {

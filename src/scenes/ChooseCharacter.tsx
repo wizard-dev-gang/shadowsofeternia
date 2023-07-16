@@ -131,6 +131,8 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     super("chooseCharacter");
   }
 
+  private backgroundMusic?: Phaser.Sound.BaseSound;
+
   preload() {
     this.load.image("pansbg", "/assets/pansbg.png");
 
@@ -156,9 +158,19 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       "/assets/fonts/Joystix.png",
       "/assets/fonts/Joystix.fnt"
     );
+
+    this.load.audio("lobbyMusic", "/music/loopMusic.mp3");
   }
 
   create() {
+    const backgroundMusic = this.sound.add("lobbyMusic");
+
+    // Configure the audio to loop
+    backgroundMusic.setLoop(true);
+
+    // Play the audio
+    backgroundMusic.play();
+
     // this.textures.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     let hasChosenCharacter = false; // This is okay to be unassigned for now. It will be assigned when the user chooses a character.
@@ -362,6 +374,7 @@ export default class ChooseCharacterScene extends Phaser.Scene {
   }
 
   startGame(name?: string) {
+    this.sound.stopAll();
     removeAllEnemiesFromDatabase();
     this.scene.start("game", {
       name,

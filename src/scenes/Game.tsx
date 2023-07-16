@@ -20,6 +20,8 @@ import { createPotionAnims } from "../anims/PotionAnims";
 import { Resurrect } from "../characters/Resurrect";
 import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
+import Dog from "../characters/Dog";
+import { createDogAnims } from "../anims/DogAnims";
 
 export default class Game extends Phaser.Scene {
   // Private variables:
@@ -50,6 +52,7 @@ export default class Game extends Phaser.Scene {
   public projectiles!: Phaser.Physics.Arcade.Group;
   public resurrect!: Resurrect;
   public sceneFrom?: string;
+  private dog!: Phaser.Physics.Arcade.Group;
 
   // Firebase variables
   public characterName?: string;
@@ -102,6 +105,8 @@ export default class Game extends Phaser.Scene {
       this.collideSound,
       this.resurrectSound,
       this.potionSound
+      this.dog,
+
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
@@ -119,6 +124,7 @@ export default class Game extends Phaser.Scene {
     createNpcAnims(this.anims);
     createPotionAnims(this.anims);
     createResurrectAnims(this.anims);
+    createDogAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
@@ -301,6 +307,25 @@ export default class Game extends Phaser.Scene {
         if (fenceLayer) this.physics.add.collider(this.slimes, fenceLayer);
         if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
       }
+      this.dog = this.physics.add.group({
+        classType: Dog,
+        createCallback: (go) => {
+          const DogGo = go as Dog;
+          if (DogGo.body) {
+            DogGo.body.onCollide = true;
+          }
+        },
+      });
+      const dog = this.dog.get(2050, 1110, "Dog")
+      dog.text = "Bark!" || "Woof!" || "BARK!"
+      if (playerCharacters && this.dog) {
+        // Handle collisions between dogs and layers
+        if (waterLayer) this.physics.add.collider(this.dog, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.dog, groundLayer);
+        if (houseLayer) this.physics.add.collider(this.dog, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.dog, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.dog, treesLayer);
+      }
       if (playerCharacters && this.skeletons) {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -465,7 +490,10 @@ export default class Game extends Phaser.Scene {
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
     }
-
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
     // Add a skeleton to the group
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
@@ -779,6 +807,13 @@ export default class Game extends Phaser.Scene {
             character,
             this.Npc_wizard,
             this.collisionHandler.handlePlayerNpcCollision as any,
+            undefined,
+            this
+          );
+          this.physics.overlap(
+            character,
+            this.dog,
+            this.collisionHandler.handlePlayerDogCollision as any,
             undefined,
             this
           );

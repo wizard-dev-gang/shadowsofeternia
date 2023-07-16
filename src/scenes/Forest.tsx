@@ -332,6 +332,7 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.scene.start("ruins", { characterName: this.characterName });
+      update(this.playerRef, { scene: "ruins" });
       return;
     }
 
@@ -392,6 +393,7 @@ export default class Forest extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
+          scene:this.scene.key,
         });
         character.projectilesToSend = {};
       }

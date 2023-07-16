@@ -2,6 +2,7 @@ import Phaser, { GameObjects } from "phaser";
 import { Slime } from "../enemies/Slime";
 import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
+import { Boss } from "../enemies/Boss";
 import { sceneEvents } from "../events/EventsCenter";
 import { Barb } from "../characters/Barb";
 import "../characters/Archer";
@@ -12,6 +13,7 @@ import "../characters/Npc";
 import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
 import { update } from "firebase/database";
+import { Dog } from "../characters/Dog";
 
 // import { getDatabase, ref, onValue } from "firebase/database";
 // import { useRef } from "react";
@@ -20,6 +22,7 @@ import { update } from "firebase/database";
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
   skeletons: Phaser.Physics.Arcade.Group;
+  bosses: Phaser.Physics.Arcade.Group;
   slimes: Phaser.Physics.Arcade.Group;
   time: Phaser.Time.Clock;
   Npc_wizard!: Phaser.Physics.Arcade.Group;
@@ -32,6 +35,7 @@ export class CollisionHandler {
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
+  dog: Phaser.Physics.Arcade.Group;
 
   //Firebase
   playerId: string | null;
@@ -40,6 +44,7 @@ export class CollisionHandler {
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
     skeletons: Phaser.Physics.Arcade.Group,
+    bosses: Phaser.Physics.Arcade.Group,
     slimes: Phaser.Physics.Arcade.Group,
     time: Phaser.Time.Clock,
     Npc_wizard: Phaser.Physics.Arcade.Group,
@@ -50,9 +55,12 @@ export class CollisionHandler {
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
     potionSound: Phaser.Sound.BaseSound
+    dog:Phaser.Physics.Arcade.Group
+
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
+    this.bosses = bosses;
     this.slimes = slimes;
     this.time = time;
     this.Npc_wizard = Npc_wizard;
@@ -62,6 +70,8 @@ export class CollisionHandler {
     this.collideSound = collideSound;
     this.resurrectSound = resurrectSound;
     this.potionSound = potionSound;
+    this.dog = dog;
+
   }
 
   // Method to handle collision between projectiles and walls
@@ -75,13 +85,47 @@ export class CollisionHandler {
     }
   }
 
+  // Method to handle collision between projectiles and Boss
+  handleProjectileBossCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
+  ) {
+    const projectile = obj1;
+    const boss = obj2;
+    // Kill and hide the projectile
+    this.projectiles.killAndHide(projectile as GameObjects.Image);
+    projectile.destroy();
+    const dx =
+      (boss as Phaser.GameObjects.Image).x -
+      (projectile as Phaser.GameObjects.Image).x;
+    const dy =
+      (boss as Phaser.GameObjects.Image).y -
+      (projectile as Phaser.GameObjects.Image).y;
+
+    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+    (boss as Boss).setVelocity(dir.x, dir.y);
+    (boss as Boss).getHealth();
+    (boss as Boss).handleDamage(dir);
+    if ((boss as Boss).getHealth() <= 0) {
+      this.bosses.killAndHide(boss);
+      (boss.isAlive = false), boss.destroy();
+    }
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
+    });
+  }
+
   // Method to handle collision between projectiles and skeleton
   handleProjectileSkeletonCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const skeleton = obj2;
+    const skeleton = obj2 as Phaser.GameObjects.Image;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
@@ -96,10 +140,20 @@ export class CollisionHandler {
     (skeleton as Skeleton).setVelocity(dir.x, dir.y);
     (skeleton as Skeleton).getHealth();
     (skeleton as Skeleton).handleDamage(dir);
+
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
+
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log("THIS IS THE DROP CHANCE VALUE", dropChance)
+      // Check if the drop chance is less than or equal to 0.2 (20%)
+      if (dropChance <= 0.2) {
+      // Drop a potion at the skeleton's position
+      this.potion.get(skeleton.x, skeleton.y, 'potion');
     }
+  }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
       if (character) {
@@ -132,6 +186,14 @@ export class CollisionHandler {
     this.time.delayedCall(1000, () => {
       this.slimes.killAndHide(slime);
       slime.destroy();
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log(dropChance)
+      // Check if the drop chance is less than or equal to 0.1 (10%)
+      if (dropChance <= 0.1) {
+      // Drop a potion at the slime's position
+      this.potion.get(slime.x, slime.y, 'potion');
+      }
     });
     // Log players' x
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
@@ -141,6 +203,34 @@ export class CollisionHandler {
         console.log(`${character.constructor.name}'s exp: ${character.exp}`);
       }
     });
+  }
+
+  // Method to handle collision between player and boss characters
+  handlePlayerBossCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  ) {
+    console.log("handleplayerEnemyCollision");
+    if (
+      (obj1 instanceof Player || Barb || Wizard || Archer) &&
+      obj2 instanceof Boss
+    ) {
+      const man = (obj1 as Player) || Barb || Wizard || Archer;
+      const boss = obj2 as Boss;
+
+      const dx =
+        (man as Phaser.GameObjects.Image).x -
+        (boss as Phaser.GameObjects.Image).x;
+      const dy =
+        (man as Phaser.GameObjects.Image).y -
+        (boss as Phaser.GameObjects.Image).y;
+
+      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+      man.setVelocity(dir.x, dir.y);
+      man.handleDamage(dir);
+      // console.log(man._health);
+      sceneEvents.emit("player-health-changed", man.getHealth());
+    }
   }
 
   // Method to handle collision between player and enemy characters
@@ -250,6 +340,66 @@ export class CollisionHandler {
       this.time.delayedCall(3000, () => {
         text.destroy();
         background.destroy();
+      });
+    }
+  }
+
+  handlePlayerDogCollision(
+    player: Phaser.GameObjects.GameObject,
+    dog: Phaser.GameObjects.GameObject
+  ) {
+    // Check if the player is interacting with the dog
+    if (
+      player instanceof Player ||
+      player instanceof Barb ||
+      player instanceof Wizard ||
+      player instanceof Archer ||
+      (dog instanceof Dog && dog instanceof Dog)
+    ) {
+      // Perform actions for interacting with the NPC
+      console.log("Interacting with the Dog");
+
+      // Stop the dog from moving
+      if (dog instanceof Dog) {
+      dog.isMoving = false;
+      }
+
+      const dogX = dog.x;
+      const dogY = dog.y + 50;
+
+      const textX = dogX;
+      const textY = dogY - 30;
+
+      // Add text on the screen
+      const text = this.add.text(textX, textY, dog.text, {
+        fontSize: "11px",
+        color: "#000000",
+        padding: {
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: 20,
+        },
+      });
+      text.setWordWrapWidth(200);
+      text.setLineSpacing(1);
+      text.setOrigin(0.5, 1.4);
+      text.setDepth(1);
+
+      // Add a background image behind the text
+      const background = this.add.image(textX, textY, "text-bubble");
+      background.setDisplaySize(text.width, text.height);
+      background.setOrigin(0.53, 1.5);
+      background.setDepth(0);
+
+      // Remove the text after a certain delay
+      this.time.delayedCall(500, () => {
+        text.destroy();
+        background.destroy();
+        // allow the dog to move
+        if (dog instanceof Dog) {
+        dog.isMoving = true;
+        }
       });
     }
   }

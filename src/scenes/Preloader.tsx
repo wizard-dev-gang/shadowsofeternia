@@ -35,11 +35,11 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("redWater", "/tiles/Ruins-Blood.png");
     this.load.tilemapTiledJSON("ruinsMap", "tiles/ruinsMap.json");
 
-  // Boss map prelaod
-  this.load.image("bossStructures", "/tiles/Ruins-Structures.png")
-  this.load.image("bossRuinsTerrain", "/tiles/Ruins-Terrain.png")
-  this.load.image("bossRuinsProps", "/tiles/Ruins-Props.png")
-  this.load.tilemapTiledJSON("bossMap", "tiles/bossMap.json")
+    // Boss map prelaod
+    this.load.image("bossStructures", "/tiles/Ruins-Structures.png");
+    this.load.image("bossRuinsTerrain", "/tiles/Ruins-Terrain.png");
+    this.load.image("bossRuinsProps", "/tiles/Ruins-Props.png");
+    this.load.tilemapTiledJSON("bossMap", "tiles/bossMap.json");
 
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");
@@ -48,11 +48,22 @@ export default class Preloader extends Phaser.Scene {
       "enemies/jacked-skeleton.png",
       "enemies/jacked-skeleton.json"
     );
+    this.load.atlas(
+      "boss",
+      "enemies/boss.png",
+      "enemies/boss.json"
+    );
+    this.load.atlas(
+      "baby-skeleton",
+      "enemies/baby-skeleton.png",
+      "enemies/baby-skeleton.json"
+    );
     this.load.image("arrow", "weapons/weapon-arrow.png");
     this.load.image("knife", "weapons/weapon_knife.png");
     this.load.image("fireball", "weapons/weapon-fireball.png");
     this.load.image("slash", "weapons/slash.png");
     // this.load.image("rogue", "")
+    this.load.atlas("Dog", "character/Dog.png", "character/Dog.json")
     this.load.atlas("barb", "character/barb.png", "character/barb.json");
     this.load.atlas("archer", "character/archer.png", "character/archer.json");
     this.load.atlas("wizard", "character/wizard.png", "character/wizard.json");
@@ -63,6 +74,10 @@ export default class Preloader extends Phaser.Scene {
       "character/npcWizard.png",
       "character/npcWizard.json"
     );
+    this.load.audio("enemyCollide", "music/playerDmg2.mp3");
+    this.load.audio("lobbyMusic", "music/loopMusic.mp3");
+    this.load.audio("resurrect", "music/resurrectSound.mp3");
+    this.load.audio("potion", "music/potion.mp3");
   }
 
   create() {

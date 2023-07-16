@@ -11,10 +11,12 @@ import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
+import { Resurrect } from "../characters/Resurrect";
 import { createPotionAnims } from "../anims/PotionAnims";
-import Game from './Game'
+import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
+
 
 export default class Forest extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -30,9 +32,10 @@ export default class Forest extends Phaser.Scene {
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
+  public resurrect!: Resurrect;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
-  private game?: Game
+  private game?: Game;
 
   // Firebase variables
   public characterName?: string;
@@ -60,7 +63,7 @@ export default class Forest extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
-    this.game = data.game
+    this.game = data.game;
   }
   create() {
     const collisionHandler = new CollisionHandler(
@@ -120,22 +123,13 @@ export default class Forest extends Phaser.Scene {
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
         this.cameras.main.startFollow(this.man);
+        this.cameras.main.startFollow(this.man);
       }
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
-      // this.forestEntranceX = 2070; 
-      // this.forestEntranceY = 29; 
-      // const enemySpawn1X = playerCharacters.x >=850 && playerCharacters.x <= 870
-      // const enemySpawn1Y = playerCharacters.y >= 2830 && playerCharacters.y <= 2950
-      // console.log("PC X & Y", playerCharacters.x)
-      // if(enemySpawn1X && enemySpawn1Y){
-      //   this.slimes.get(1320, 2650, "slime");
-      //   // this.slimes.get(990, 2800, "slime");
-      //   // this.slimes.get(1000, 2790, "slime");
-      //   // this.slimes.get(800, 3350, "slime");
-      //   return
-      // }
+      this.forestEntranceX = 2070;
+      this.forestEntranceY = 29;
 
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
@@ -297,6 +291,12 @@ export default class Forest extends Phaser.Scene {
       npc1.text =
         "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
 
+      const npc2 = this.Npc_wizard.get(1455, 1466, "npcWizard");
+      npc2.text = "The path ahead splits in two, adventurer. Choose wisely!";
+
+      const npc3 = this.Npc_wizard.get(840, 178, "npcWizard");
+      npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
+
       // this.potion.get(800, 2900, "Potion");
 
       this.slimes.get(1320, 2650, "slime");
@@ -308,7 +308,6 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(847, 276, "slime");
       this.slimes.get(857, 267, "slime");
     }
-
 
   }
 
@@ -331,74 +330,10 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-    // // const enemySpawn1X = character.x >=850  && character.x <=850.2
-    // // const enemySpawn1Y = character.y >= 2690 && character.y <= 2950
-    // // if(enemySpawn1X && enemySpawn1Y){
-    // //   this.slimes.get(1320, 2650, "slime");
-    // //   this.slimes.get(1200, 2800, "slime");
-    // //   // this.slimes.get(1000, 2790, "slime");
-    // //   // this.slimes.get(800, 3350, "slime");
-    // //   return
-    // // }
-    // // console.log("X:", character.x)
-    // // console.log("Y:", character.y)
-    // const enemySpawn1X = character.x >=850  && character.x <=850.2
-    // const enemySpawn1Y = character.y >= 2690 && character.y <= 2950
-    // const enemySpawn2X = character.x >=1640  && character.x <=2000
-    // const enemySpawn2Y = character.y >= 2456 && character.y <= 2456.4
-    // const enemySpawn3X = character.x >=1258  && character.x <=2100
-    // const enemySpawn3Y = character.y >= 1660 && character.y <= 1660.4
-    // const enemySpawn4X = character.x >=394  && character.x <=1970
-    // const enemySpawn4Y = character.y >= 713 && character.y <= 713.4
-    // if(enemySpawn1X && enemySpawn1Y){
-    //   this.slimes.get(1320, 2650, "slime");
-    //   this.slimes.get(1200, 2800, "slime");
-    //   // this.slimes.get(1000, 2790, "slime");
-    //   // this.slimes.get(800, 3350, "slime");
-    //   return
-    // } else if(enemySpawn2X && enemySpawn2Y){
-    //   this.slimes.get(1805, 2100, "slime");
-    //   this.slimes.get(1800, 2000, "slime");
-    //   // this.slimes.get(1000, 2790, "slime");
-    //   // this.slimes.get(800, 3350, "slime");
-    //   return
-    // }else if(enemySpawn3X && enemySpawn3Y){
-      // this.slimes.get(1303, 1373, "slime");
-      // this.slimes.get(1305, 1300, "slime");
-    //   // this.slimes.get(1000, 2790, "slime");
-    //   // this.slimes.get(800, 3350, "slime");
-    //   return
-    // } else if(enemySpawn4X && enemySpawn4Y){
-      // this.slimes.get(847, 276, "slime");
-      // this.slimes.get(857, 267, "slime");
-    //   // this.slimes.get(1000, 2790, "slime");
-    //   // this.slimes.get(800, 3350, "slime");
-    //   return
-    // }
-    // const enemySpawn3X = character.x >=1258  && character.x <=2100
-    // const enemySpawn3Y = character.y >= 1660 && character.y <= 1660.4
-    // if(enemySpawn3X && enemySpawn3Y){
-    //   this.slimes.get(1303, 1373, "slime");
-    //   this.slimes.get(1305, 1300, "slime");
-    //   // this.slimes.get(1000, 2790, "slime");
-    //   // this.slimes.get(800, 3350, "slime");
-    //   return
-    // }
-
-    // const enemySpawn4X = character.x >=394  && character.x <=1970
-    // const enemySpawn4Y = character.y >= 713 && character.y <= 713.4
-    // if(enemySpawn4X && enemySpawn4Y){
-    //   this.slimes.get(847, 276, "slime");
-    //   this.slimes.get(857, 267, "slime");
-    //   // this.slimes.get(1000, 2790, "slime");
-    //   // this.slimes.get(800, 3350, "slime");
-    //   return
-    // }
-
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;
     if (forestX && forestY) {
-      if (this.game) this.game.sceneFrom = 'forest'
+      if (this.game) this.game.sceneFrom = "forest";
       this.scene.switch("game");
       // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
       return;
@@ -408,6 +343,7 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.scene.start("ruins", { characterName: this.characterName });
+      update(this.playerRef, { scene: "ruins" });
       return;
     }
 
@@ -416,6 +352,15 @@ export default class Forest extends Phaser.Scene {
       this.playerName.x = character.x;
       // Position of the name above the player
       this.playerName.y = character.y - 10;
+
+      //Handle Collision Between Player and Resurrect
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
 
       //Handle Collision Between Player and Potions
       this.physics.overlap(
@@ -459,6 +404,7 @@ export default class Forest extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
+          scene:this.scene.key,
         });
         character.projectilesToSend = {};
       }

@@ -15,6 +15,7 @@ import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
 import { update } from "firebase/database";
 import { Dog } from "../characters/Dog";
+import { Goblin } from "../enemies/Goblins"
 
 // import { getDatabase, ref, onValue } from "firebase/database";
 // import { useRef } from "react";
@@ -38,6 +39,7 @@ export class CollisionHandler {
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   dog: Phaser.Physics.Arcade.Group;
+  goblin: Phaser.Physics.Arcade.Group;
   private dogBark: Phaser.Sound.BaseSound;
 
   //Firebase
@@ -55,11 +57,12 @@ export class CollisionHandler {
     add: GameObjects.GameObjectFactory,
     potion: Potion,
     playerId: string | null,
+    dog: Phaser.Physics.Arcade.Group,
+    goblin: Phaser.Physics.Arcade.Group,
     resurrect: Resurrect,
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
     potionSound: Phaser.Sound.BaseSound,
-    dog: Phaser.Physics.Arcade.Group,
     dogBark: Phaser.Sound.BaseSound
   ) {
     this.projectiles = projectiles;
@@ -76,6 +79,7 @@ export class CollisionHandler {
     this.resurrectSound = resurrectSound;
     this.potionSound = potionSound;
     this.dog = dog;
+    this.goblin = goblin;
     this.dogBark = dogBark;
   }
 
@@ -197,6 +201,38 @@ export class CollisionHandler {
       }
     });
   }
+  handleProjectileGoblinCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
+  ) {
+    const projectile = obj1;
+    const goblin = obj2;
+    // Kill and hide the projectile
+    this.projectiles.killAndHide(projectile as GameObjects.Image);
+    projectile.destroy();
+    const dx =
+      (goblin as Phaser.GameObjects.Image).x -
+      (projectile as Phaser.GameObjects.Image).x;
+    const dy =
+      (goblin as Phaser.GameObjects.Image).y -
+      (projectile as Phaser.GameObjects.Image).y;
+
+    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+    (goblin as Goblin).setVelocity(dir.x, dir.y);
+    (goblin as Goblin).getHealth();
+    (goblin as Goblin).handleDamage(dir);
+    if ((goblin as Goblin).getHealth() <= 0) {
+      this.goblin.killAndHide(goblin);
+      (goblin.isAlive = false), goblin.destroy();
+    }
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
+    });
+  }
 
   handleProjectileSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
@@ -299,7 +335,32 @@ export class CollisionHandler {
       }
     }
   }
+  handlePlayerGoblinCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  ) {
+    console.log("handleplayerGoblinCollision");
+    if (
+      (obj1 instanceof Player || Barb || Wizard || Archer) &&
+      obj2 instanceof Goblin
+    ) {
+      const man = (obj1 as Player) || Barb || Wizard || Archer;
+      const goblin = obj2 as Goblin;
 
+      const dx =
+        (man as Phaser.GameObjects.Image).x -
+        (goblin as Phaser.GameObjects.Image).x;
+      const dy =
+        (man as Phaser.GameObjects.Image).y -
+        (goblin as Phaser.GameObjects.Image).y;
+
+      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+      man.setVelocity(dir.x, dir.y);
+      man.handleDamage(dir);
+      // console.log(man._health);
+      sceneEvents.emit("player-health-changed", man.getHealth());
+    }
+  }
   handlePlayerNpcCollision(
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject

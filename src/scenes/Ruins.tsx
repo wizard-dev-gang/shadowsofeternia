@@ -189,7 +189,31 @@ export default class Ruins extends Phaser.Scene {
           character.setProjectiles(this.projectiles);
         }
       });
-      // Handle collisions between skeletons and ground layers
+     
+
+      if (playerCharacters && this.skeletons) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.skeletons,
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+      console.log("creating enemy colliders...");
+      // Handle collisions between player and enemy characters
+      if (playerCharacters && this.playerEnemiesCollider) {
+        console.log("create playerenemiescollider");
+        this.playerEnemiesCollider = this.physics.add.collider(
+          this.skeletons,
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+      
+            // Handle collisions between skeletons and ground layers
       if (this.skeletons && groundLayer) {
         this.physics.add.collider(this.skeletons, groundLayer);
         this.physics.add.collider(
@@ -200,6 +224,7 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
+      
       if (this.skeletons && waterLayer) {
         this.physics.add.collider(this.skeletons, waterLayer);
         this.physics.add.collider(
@@ -233,6 +258,7 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
+      
       // Handle collisions between skeletons and trees
       if (this.skeletons && templeLayer) {
         this.physics.add.collider(this.skeletons, templeLayer);
@@ -244,126 +270,17 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
-
-      if (playerCharacters && this.skeletons) {
-        this.physics.add.collider(
-          playerCharacters as Phaser.GameObjects.GameObject[],
-          this.skeletons,
-          this.collisionHandler.handlePlayerEnemyCollision as any,
-          undefined,
-          this
-        );
-      }
-      console.log("creating enemy colliders...");
-      // Handle collisions between player and enemy characters
-      if (playerCharacters && this.playerEnemiesCollider) {
-        console.log("create playerenemiescollider");
-        this.playerEnemiesCollider = this.physics.add.collider(
-          this.skeletons,
-          playerCharacters as Phaser.GameObjects.GameObject[],
-          this.collisionHandler.handlePlayerEnemyCollision as any,
-          undefined,
-          this
-        );
-      }
-
-      // Handle collisions between skeletons and ground layers
-      if (this.skeletons && groundLayer) {
-        this.physics.add.collider(this.skeletons, groundLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          groundLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
-      if (this.skeletons && waterLayer) {
-        this.physics.add.collider(this.skeletons, waterLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          waterLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
-
-      // Handle collisions between skeletons and house layers
-      if (this.skeletons && pathLayer) {
-        this.physics.add.collider(this.skeletons, pathLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          pathLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
-      // Handle collisions between skeletons and fences
-      if (this.skeletons && platformLayer) {
-        this.physics.add.collider(this.skeletons, platformLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          platformLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
-      // Handle collisions between skeletons and trees
-      if (this.skeletons && templeLayer) {
-        this.physics.add.collider(this.skeletons, templeLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          templeLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
-
-      if (playerCharacters && this.skeletons) {
-        this.physics.add.collider(
-          playerCharacters as Phaser.GameObjects.GameObject[],
-          this.skeletons,
-          this.collisionHandler.handlePlayerEnemyCollision as any,
-          undefined,
-          this
-        );
-      }
-      console.log("creating enemy colliders...");
-      // Handle collisions between player and enemy characters
-      if (playerCharacters && this.playerEnemiesCollider) {
-        console.log("create playerenemiescollider");
-        this.playerEnemiesCollider = this.physics.add.collider(
-          this.skeletons,
-          playerCharacters as Phaser.GameObjects.GameObject[],
-          this.collisionHandler.handlePlayerEnemyCollision as any,
-          undefined,
-          this
-        );
-      } // Handle collisions between skeletons and ground layers
-      if (this.skeletons && groundLayer) {
-        this.physics.add.collider(this.skeletons, groundLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          groundLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
-      if (this.skeletons && waterLayer) {
-        this.physics.add.collider(this.skeletons, waterLayer);
-        this.physics.add.collider(
-          this.projectiles,
-          waterLayer,
-          collisionHandler.handleProjectileWallCollision,
-          undefined,
-          this
-        );
-      }
+      
+                    if (this.skeletons && borderLayer) {
+                this.physics.add.collider(this.skeletons, borderLayer);
+                this.physics.add.collider(
+                  this.projectiles,
+                  borderLayer,
+                  collisionHandler.handleProjectileWallCollision,
+                  undefined,
+                  this
+                );
+              }
 
       if (playerCharacters) {
         //if statements are to satisfy TypeScipt compiler
@@ -427,7 +344,34 @@ export default class Ruins extends Phaser.Scene {
           }
         },
       });
-      this.potion.get(800, 2800, "Potion");
+    //   this.potion.get(800, 2800, "Potion");
+      this.skeletons.get(2475, 2583, "skeleton")
+
+      this.skeletons.get(1967, 3000, "skeleton")
+
+      this.skeletons.get(1590, 2430, "skeleton")
+
+      this.skeletons.get(1248, 1750, "skeleton")
+
+      this.skeletons.get(888, 2060, "skeleton")
+
+      this.skeletons.get(1334, 2330, "skeleton")
+
+      this.skeletons.get(1531, 2800, "skeleton")
+
+      this.skeletons.get(144, 2583, "skeleton")
+
+      this.skeletons.get(184, 1133, "skeleton")
+
+      this.skeletons.get(1044, 213, "skeleton")
+
+      this.skeletons.get(1580, 1470, "skeleton")
+
+      this.skeletons.get(2230, 2000, "skeleton")
+
+      this.skeletons.get(3010, 1890, "skeleton")
+
+      this.skeletons.get(1800, 830, "skeleton")
     }
   }
 

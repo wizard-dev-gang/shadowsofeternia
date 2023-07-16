@@ -12,8 +12,9 @@ import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
+import { Resurrect } from "../characters/Resurrect";
 import { createPotionAnims } from "../anims/PotionAnims";
-import Game from './Game'
+import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 
@@ -31,10 +32,15 @@ export default class Forest extends Phaser.Scene {
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
+  public resurrect!: Resurrect;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
+
   private game?: Game
   private enemiesSpawned = false;
+  private collideSound: Phaser.Sound.BaseSound;
+  private resurrectSound: Phaser.Sound.BaseSound;
+  private potionSound: Phaser.Sound.BaseSound;
 
 
   // Firebase variables
@@ -59,11 +65,16 @@ export default class Forest extends Phaser.Scene {
 
   preload() {
     // this.cursors = this.input.keyboard?.createCursorKeys();
+    this.load.audio("enemyCollide", "music/playerDmg2.mp3");
+    this.load.audio("resurrect", "music/resurrectSound.mp3");
+    this.load.audio("potion", "music/potion.mp3");
+    this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
+    this.load.audio("dogBark", "/music/dogBark.mp3");
   }
 
   init(data: any) {
     this.characterName = data.characterName;
-    this.game = data.game
+    this.game = data.game;
   }
   create() {
     const collisionHandler = new CollisionHandler(
@@ -74,9 +85,18 @@ export default class Forest extends Phaser.Scene {
       this.Npc_wizard,
       this.add,
       this.potion,
-      this.playerId
+      this.playerId,
+      this.resurrect,
+      this.collideSound,
+      this.resurrectSound,
+      this.potionSound,
+      this.dog,
+      this.dogBark
     );
     this.scene.run("player-ui");
+    this.collideSound = this.sound.add("enemyCollide");
+    this.resurrectSound = this.sound.add("resurrect");
+    this.potionSound = this.sound.add("potion");
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
@@ -123,22 +143,13 @@ export default class Forest extends Phaser.Scene {
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
         this.cameras.main.startFollow(this.man);
+        this.cameras.main.startFollow(this.man);
       }
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
-      // this.forestEntranceX = 2070; 
-      // this.forestEntranceY = 29; 
-      // const enemySpawn1X = playerCharacters.x >=850 && playerCharacters.x <= 870
-      // const enemySpawn1Y = playerCharacters.y >= 2830 && playerCharacters.y <= 2950
-      // console.log("PC X & Y", playerCharacters.x)
-      // if(enemySpawn1X && enemySpawn1Y){
-      //   this.slimes.get(1320, 2650, "slime");
-      //   // this.slimes.get(990, 2800, "slime");
-      //   // this.slimes.get(1000, 2790, "slime");
-      //   // this.slimes.get(800, 3350, "slime");
-      //   return
-      // }
+      this.forestEntranceX = 2070;
+      this.forestEntranceY = 29;
 
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
@@ -181,7 +192,7 @@ export default class Forest extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.slimes,
-          this.collisionHandler.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
         );
@@ -210,7 +221,7 @@ export default class Forest extends Phaser.Scene {
         this.playerSlimeCollider = this.physics.add.collider(
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.collisionHandler.handlePlayerSlimeCollision,
+          this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
         );
@@ -300,6 +311,12 @@ export default class Forest extends Phaser.Scene {
       npc1.text =
         "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
 
+      const npc2 = this.Npc_wizard.get(1455, 1466, "npcWizard");
+      npc2.text = "The path ahead splits in two, adventurer. Choose wisely!";
+
+      const npc3 = this.Npc_wizard.get(840, 178, "npcWizard");
+      npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
+
       // this.potion.get(800, 2900, "Potion");
     }
 
@@ -323,10 +340,6 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
-
-
-    console.log("X:", character.x)
-    console.log("Y:", character.y)
 
     if (
       character.y >= 2690 && character.y <= 2700 &&
@@ -365,11 +378,10 @@ export default class Forest extends Phaser.Scene {
 
     this.enemiesSpawned = true;
 
-
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;
     if (forestX && forestY) {
-      if (this.game) this.game.sceneFrom = 'forest'
+      if (this.game) this.game.sceneFrom = "forest";
       this.scene.switch("game");
       // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
       return;
@@ -379,6 +391,7 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.scene.start("ruins", { characterName: this.characterName });
+      update(this.playerRef, { scene: "ruins" });
       return;
     }
 
@@ -387,6 +400,15 @@ export default class Forest extends Phaser.Scene {
       this.playerName.x = character.x;
       // Position of the name above the player
       this.playerName.y = character.y - 10;
+
+      //Handle Collision Between Player and Resurrect
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
 
       //Handle Collision Between Player and Potions
       this.physics.overlap(
@@ -430,6 +452,7 @@ export default class Forest extends Phaser.Scene {
             : null,
           online: true,
           projectilesFromDB: character.projectilesToSend,
+          scene: this.scene.key,
         });
         character.projectilesToSend = {};
       }

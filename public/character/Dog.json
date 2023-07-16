@@ -1,0 +1,303 @@
+{
+  "frames": {
+    "Dog-walk-left-002.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 30,
+        "h": 23
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 8,
+        "w": 30,
+        "h": 23
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-right-002.png": {
+      "frame": {
+        "x": 30,
+        "y": 0,
+        "w": 30,
+        "h": 23
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 8,
+        "w": 30,
+        "h": 23
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-left-001.png": {
+      "frame": {
+        "x": 60,
+        "y": 0,
+        "w": 30,
+        "h": 22
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 9,
+        "w": 30,
+        "h": 22
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-left-003.png": {
+      "frame": {
+        "x": 90,
+        "y": 0,
+        "w": 30,
+        "h": 22
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 9,
+        "w": 30,
+        "h": 22
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-right-001.png": {
+      "frame": {
+        "x": 120,
+        "y": 0,
+        "w": 30,
+        "h": 22
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 9,
+        "w": 30,
+        "h": 22
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-right-003.png": {
+      "frame": {
+        "x": 150,
+        "y": 0,
+        "w": 30,
+        "h": 22
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 1,
+        "y": 9,
+        "w": 30,
+        "h": 22
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-down-002.png": {
+      "frame": {
+        "x": 180,
+        "y": 0,
+        "w": 17,
+        "h": 30
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 1,
+        "w": 17,
+        "h": 30
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-down-001.png": {
+      "frame": {
+        "x": 60,
+        "y": 22,
+        "w": 17,
+        "h": 29
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 2,
+        "w": 17,
+        "h": 29
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-down-003.png": {
+      "frame": {
+        "x": 0,
+        "y": 23,
+        "w": 17,
+        "h": 29
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 2,
+        "w": 17,
+        "h": 29
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-up-002.png": {
+      "frame": {
+        "x": 17,
+        "y": 23,
+        "w": 17,
+        "h": 28
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 3,
+        "w": 17,
+        "h": 28
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-up-001.png": {
+      "frame": {
+        "x": 34,
+        "y": 23,
+        "w": 17,
+        "h": 27
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 4,
+        "w": 17,
+        "h": 27
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Dog-walk-up-003.png": {
+      "frame": {
+        "x": 34,
+        "y": 50,
+        "w": 17,
+        "h": 27
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 4,
+        "w": 17,
+        "h": 27
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "texture.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 197,
+      "h": 77
+    },
+    "scale": 1
+  }
+}

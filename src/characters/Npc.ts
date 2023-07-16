@@ -36,6 +36,7 @@ export default class Npc_wizard extends Phaser.Physics.Arcade.Sprite {
 
     this.anims.play("Npc_wizard-idle");
     this.text = text;
+    this.setScale(1.2);
 
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,

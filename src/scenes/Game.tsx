@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
@@ -19,31 +18,45 @@ import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
 import { Resurrect } from "../characters/Resurrect";
+import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
-
+import Dog from "../characters/Dog";
+import { createDogAnims } from "../anims/DogAnims";
+import { Goblin } from "../enemies/Goblins"
 
 export default class Game extends Phaser.Scene {
-  private man?: Player; //Rogue Character
-  private barb?: Barb; //Barbarian Character
-  private archer?: Archer; //Archer Character
-  private wizard?: Wizard; //Wizard Character
-  public projectiles!: Phaser.Physics.Arcade.Group;
-  public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
-  private slimes!: Phaser.Physics.Arcade.Group; // Group to manage slime enemies
-  private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
-  private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
+  // Private variables:
+  private archer?: Archer;
+  private barb?: Barb;
+  private collideSound: Phaser.Sound.BaseSound;
   private enemyCount: number = 0;
+
+  private man?: Player;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
+  private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider;
+  private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
+  private resurrectSound: Phaser.Sound.BaseSound;
+  private potionSound: Phaser.Sound.BaseSound;
+  private skeletons!: Phaser.Physics.Arcade.Group;
+  private slimes!: Phaser.Physics.Arcade.Group;
+  private wizard?: Wizard;
+
+  // Public variables:
   public collisionHandler: CollisionHandler;
-  public potion!: Potion;
-  public sceneFrom?: string
-  public miniMapBackground?: Phaser.GameObjects.Rectangle
-  // public miniMapBorder?: Phaser.GameObjects.Rectangle;
-  public miniMapLocation?: Phaser.GameObjects.Arc
-  public map?: Phaser.Tilemaps.Tilemap
-  public miniMapForest?: Phaser.GameObjects.Arc
   public exp: number = 0;
+  public map?: Phaser.Tilemaps.Tilemap;
+  public miniMapBackground?: Phaser.GameObjects.Rectangle;
+  // public miniMapBorder?: Phaser.GameObjects.Rectangle;
+  public miniMapForest?: Phaser.GameObjects.Arc;
+  public miniMapLocation?: Phaser.GameObjects.Arc;
+  public potion!: Potion;
+  public projectiles!: Phaser.Physics.Arcade.Group;
   public resurrect!: Resurrect;
+  public sceneFrom?: string;
+  private dog!: Phaser.Physics.Arcade.Group;
+  private goblin!: Phaser.Physics.Arcade.Group;
+  private playerGoblinCollider?: Phaser.Physics.Arcade.Collider;
+  private dogBark: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;
@@ -65,21 +78,26 @@ export default class Game extends Phaser.Scene {
     this.playerNames = new Map();
     this.enemies = new Map();
     this.collisionHandler = new CollisionHandler();
+    // this.load.audio("enemyCollide", "audio/playerDmg2.mp3");
   }
-  
+
   preload() {
     // const cursors = this.input.keyboard?.createCursorKeys();
+    this.load.audio("enemyCollide", "music/playerDmg2.mp3");
+    this.load.audio("resurrect", "music/resurrectSound.mp3");
+    this.load.audio("potion", "music/potion.mp3");
+    this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
+    this.load.audio("dogBark", "/music/dogBark.mp3");
   }
-  init(data?: { name: string, from?: string}) {
+
+  init(data?: { name: string; from?: string }) {
     // console.log("init data", data);
     // console.log(this.input);
     this.characterName = data?.name;
   }
-  
-  create() {
-    
 
-    const collisionHandler = new CollisionHandler(
+  create() {
+    this.collisionHandler = new CollisionHandler(
       this.projectiles,
       this.skeletons,
       this.slimes,
@@ -87,12 +105,21 @@ export default class Game extends Phaser.Scene {
       this.Npc_wizard,
       this.add,
       this.potion,
-      this.playerId
-      // this.resurrect
+      this.playerId,
+      this.resurrect,
+      this.collideSound,
+      this.resurrectSound,
+      this.potionSound,
+      this.dog,
+      this.dogBark
     );
     this.scene.run("player-ui");
+    this.collideSound = this.sound.add("enemyCollide");
+    this.resurrectSound = this.sound.add("resurrect");
+    this.potionSound = this.sound.add("potion");
+    this.dogBark = this.sound.add("dogBark");
 
-    // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);aw
+    // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
@@ -103,10 +130,11 @@ export default class Game extends Phaser.Scene {
     createNpcAnims(this.anims);
     createPotionAnims(this.anims);
     createResurrectAnims(this.anims);
+    createDogAnims(this.anims);
 
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
-    this.map = map
+    this.map = map;
     // console.log('map', map.width, map.height, map.widthInPixels, map.heightInPixels)
     const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain");
     const propTiles = map.addTilesetImage("Grasslands-Props", "props");
@@ -130,17 +158,30 @@ export default class Game extends Phaser.Scene {
       fenceLayer?.setCollisionByProperty({ collides: true });
       pathLayer?.setCollisionByProperty({ colldes: false });
       houseLayer?.setCollisionByProperty({ collides: true });
-      const spawnPosition = this.sceneFrom === 'forest'? { x: 2080, y: 59 }: { x: 2000, y: 1100 }
+      const spawnPosition =
+        this.sceneFrom === "forest" ? { x: 2080, y: 59 } : { x: 2000, y: 1100 };
 
       // Create the player character and define spawn position
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(spawnPosition.x, spawnPosition.y, "barb");
+        this.barb = this.add.barb(
+          spawnPosition.x,
+          spawnPosition.y + 40,
+          "barb"
+        );
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(spawnPosition.x, spawnPosition.y, "archer");
+        this.archer = this.add.archer(
+          spawnPosition.x,
+          spawnPosition.y + 80,
+          "archer"
+        );
         this.cameras.main.startFollow(this.archer);
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(spawnPosition.x, spawnPosition.y, "wizard");
+        this.wizard = this.add.wizard(
+          spawnPosition.x,
+          spawnPosition.y + 120,
+          "wizard"
+        );
         this.cameras.main.startFollow(this.wizard);
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(spawnPosition.x, spawnPosition.y, "man");
@@ -149,7 +190,7 @@ export default class Game extends Phaser.Scene {
 
       // Create an array of that holds all characters to be targeted if needed
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
-      
+
       // Create a group for skeletons and set their properties
       this.skeletons = this.physics.add.group({
         classType: Skeleton,
@@ -192,7 +233,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           groundLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -204,7 +245,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           houseLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -215,7 +256,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           fenceLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -226,7 +267,7 @@ export default class Game extends Phaser.Scene {
         this.physics.add.collider(
           this.projectiles,
           treesLayer,
-          collisionHandler.handleProjectileWallCollision,
+          this.collisionHandler.handleProjectileWallCollision,
           undefined,
           this
         );
@@ -272,6 +313,53 @@ export default class Game extends Phaser.Scene {
         if (fenceLayer) this.physics.add.collider(this.slimes, fenceLayer);
         if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
       }
+      this.dog = this.physics.add.group({
+        classType: Dog,
+        createCallback: (go) => {
+          const DogGo = go as Dog;
+          if (DogGo.body) {
+            DogGo.body.onCollide = true;
+          }
+        },
+      });
+      const dog = this.dog.get(2050, 1110, "Dog");
+      dog.text = "Bark!" || "Woof!" || "BARK!";
+      if (playerCharacters && this.dog) {
+        // Handle collisions between dogs and layers
+        if (waterLayer) this.physics.add.collider(this.dog, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.dog, groundLayer);
+        if (houseLayer) this.physics.add.collider(this.dog, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.dog, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.dog, treesLayer);
+      }
+      this.goblin = this.physics.add.group({
+        classType: Goblin,
+        createCallback: (go) => {
+          const GoblinGo = go as Goblin;
+          if (GoblinGo.body) {
+            GoblinGo.body.onCollide = true;
+
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; // Set the desired hitbox width
+            const hitboxHeight = 20; // Set the desired hitbox height
+            GoblinGo.body.setSize(hitboxWidth, hitboxHeight);
+
+            // Set the hitbox offset here
+            const offsetX = 6; // Set the desired X offset
+            const offsetY = 14; // Set the desired Y offset
+            GoblinGo.body.setOffset(offsetX, offsetY);
+          }
+        },
+      });
+      this.goblin.get(2080, 1110, "Goblin")
+      if (playerCharacters && this.goblin) {
+        // Handle collisions between goblins and layers
+        if (waterLayer) this.physics.add.collider(this.goblin, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.goblin, groundLayer);
+        if (houseLayer) this.physics.add.collider(this.goblin, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.goblin, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.goblin, treesLayer);
+      }
       if (playerCharacters && this.skeletons) {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
@@ -284,9 +372,9 @@ export default class Game extends Phaser.Scene {
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
         this.playerEnemiesCollider = this.physics.add.collider(
-          this.skeletons,
+          this.skeletons || this.goblin,
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.collisionHandler.handlePlayerEnemyCollision as any,
+          this.collisionHandler as any,
           undefined,
           this
         );
@@ -298,6 +386,16 @@ export default class Game extends Phaser.Scene {
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerSlimeCollision,
+          undefined,
+          this
+        );
+      }
+
+      if (playerCharacters && this.goblin) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblin,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
         );
@@ -344,14 +442,15 @@ export default class Game extends Phaser.Scene {
 
         // Add text for player level
         this.playerLevel = this.add
-        .text(0, 0, "Level: 1", {
-          fontSize: "12px",
-          color: "#FFD700",
-          stroke: "#000000",
-          strokeThickness: 1,
-        })
-        .setOrigin(0.5, 1)
+          .text(0, 0, "Level: 1", {
+            fontSize: "12px",
+            color: "#FFD700",
+            stroke: "#000000",
+            strokeThickness: 1,
+          })
+          .setOrigin(0.5, 1);
       }
+
       this.Npc_wizard = this.physics.add.group({
         classType: Npc_wizard,
         createCallback: (go) => {
@@ -371,34 +470,37 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      // Create an instance of Npc_wizard with specific text
-      const npc1 = this.Npc_wizard.get(1876, 1028, "npcWizard");
-      npc1.text =
-        "Greetings, traveler! Welcome to the realm of Shadows of Eternia. Press the 'spacebar' to unleash your attacks.";
+      // #region NPC Text
 
-      const npc2 = this.Npc_wizard.get(1776, 1028, "npcWizard");
+      // Create an instance of Npc_wizard with specific text
+      const npc1 = this.Npc_wizard.get(1880, 1142, "npcWizard");
+      npc1.text =
+        "Greetings, traveler! Welcome to the realm of Eternia. Seek my bretheren to learn the ways of this world.";
+
+      const npc2 = this.Npc_wizard.get(1526, 1045, "npcWizard");
       npc2.text =
         "A fine day to you! In this world, your strength lies in teamwork. Unite with your friends to face the challenges that lie ahead.";
 
-      const npc3 = this.Npc_wizard.get(1676, 1028, "npcWizard");
+      const npc3 = this.Npc_wizard.get(1075, 916, "npcWizard");
       npc3.text =
-        "Look yonder, adventurer! Potions are a vital aid on your journey. Walk over them to consume and regain your vitality.";
+        "Look yonder, weary adventurer! Potions are a vital aid on your journey. Walk over them to consume and regain your vitality.";
 
-      const npc4 = this.Npc_wizard.get(1576, 1028, "npcWizard");
+      const npc4 = this.Npc_wizard.get(825, 740, "npcWizard");
       npc4.text =
         "The path through the forest is treacherous, full of creatures that would wish you harm. Face them bravely, and remember to strike with 'spacebar'.";
 
-      const npc5 = this.Npc_wizard.get(1476, 1028, "npcWizard");
+      const npc5 = this.Npc_wizard.get(1770, 442, "npcWizard");
       npc5.text =
         "Within the forest's heart lie ancient ruins. Tread cautiously, the forgotten souls there do not take kindly to intrusion.";
 
-      const npc6 = this.Npc_wizard.get(1376, 1028, "npcWizard");
+      const npc6 = this.Npc_wizard.get(1193, 505, "npcWizard");
       npc6.text =
         "Beware the Skeleton King! An ageless tyrant, defeated only by the bravest of warriors. Unite, fight, conquer!";
 
-      const npc7 = this.Npc_wizard.get(1276, 1028, "npcWizard");
+      const npc7 = this.Npc_wizard.get(2080, 146, "npcWizard");
       npc7.text =
-        "Safe travels, warrior! Remember, the strength of Eternia lies within you and your companions. May your journey be filled with courage and camaraderie!";
+        "Greetings, traveler! Be warned, the path ahead weaves through an enchanted forest fraught with peril. Once you venture forth, the veil of return shall close behind you, locking away the safety of the town. Be prepared!";
+      //#endregion
 
       this.interactKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.E
@@ -412,6 +514,7 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
+      this.potion.get(1075, 950, "Potion");
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
         createCallback: (go) => {
@@ -421,8 +524,9 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
+
       this.resurrect.get(2060, 1100, "Resurrect");
-      this.potion.get(2062, 1023, "Potion");
+
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
@@ -430,7 +534,10 @@ export default class Game extends Phaser.Scene {
       this.slimes.get(2000, 1000, "slime");
       this.slimes.get(2000, 1000, "slime");
     }
-
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    this.skeletons.get(2000, 1210, "jacked-skeleton");
     // Add a skeleton to the group
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
@@ -439,6 +546,7 @@ export default class Game extends Phaser.Scene {
       //this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
   }
+
   // Method to update player's experience
   public updatePlayerExp(exp: number) {
     this.exp = exp;
@@ -457,25 +565,27 @@ export default class Game extends Phaser.Scene {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
       player._health = Math.round(player._health); // Round the players health to the nearest whole number
-      player.maxHealth *=1.25; //increase the players max health by 1.25 times
-      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
       player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
       // Update the player's max health in the health bar
-    if (this.scene.isActive("player-ui")) {
-      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
-    }
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
 
-    this.updatePlayerMaxHealth(player.maxHealth)
+      this.updatePlayerMaxHealth(player.maxHealth);
 
-    if (this.playerRef) { 
-      update(this.playerRef, {
-        exp: player.exp,
-        hp: player._health,
-        maxHealth: player.maxHealth,
-        level: player.level
+      if (this.playerRef) {
+        update(this.playerRef, {
+          exp: player.exp,
+          hp: player._health,
+          maxHealth: player.maxHealth,
+          level: player.level,
         });
       }
       if (this.playerLevel) {
@@ -485,31 +595,34 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private levelUpBarb(player: Barb) {
     const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
       player._health = Math.round(player._health); // Round the players health to the nearest whole number
-      player.maxHealth *=1.25; //increase the players max health by 1.25 times
-      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
       player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
       // Update the player's max health in the health bar
-    if (this.scene.isActive("player-ui")) {
-      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
-    }
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
 
-    this.updatePlayerMaxHealth(player.maxHealth)
+      this.updatePlayerMaxHealth(player.maxHealth);
 
-    if (this.playerRef) { 
-      update(this.playerRef, {
-        exp: player.exp,
-        hp: player._health,
-        maxHealth: player.maxHealth,
-        level: player.level
+      if (this.playerRef) {
+        update(this.playerRef, {
+          exp: player.exp,
+          hp: player._health,
+          maxHealth: player.maxHealth,
+          level: player.level,
         });
       }
       if (this.playerLevel) {
@@ -519,31 +632,34 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private levelUpArcher(player: Archer) {
     const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
       player._health = Math.round(player._health); // Round the players health to the nearest whole number
-      player.maxHealth *=1.25; //increase the players max health by 1.25 times
-      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
       player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
       // Update the player's max health in the health bar
-    if (this.scene.isActive("player-ui")) {
-      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
-    }
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
 
-    this.updatePlayerMaxHealth(player.maxHealth)
+      this.updatePlayerMaxHealth(player.maxHealth);
 
-    if (this.playerRef) { 
-      update(this.playerRef, {
-        exp: player.exp,
-        hp: player._health,
-        maxHealth: player.maxHealth,
-        level: player.level
+      if (this.playerRef) {
+        update(this.playerRef, {
+          exp: player.exp,
+          hp: player._health,
+          maxHealth: player.maxHealth,
+          level: player.level,
         });
       }
       if (this.playerLevel) {
@@ -553,31 +669,34 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private levelUpWizard(player: Wizard) {
     const expNeeded = player.level * 5 * Math.pow(1.5, player.level - 1); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
       player._health = Math.round(player._health); // Round the players health to the nearest whole number
-      player.maxHealth *=1.25; //increase the players max health by 1.25 times
-      player.maxHealth = Math.round(player.maxHealth) // Round the players max health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
       player.level++; // level the player up
       console.log("You have leveled up! Level:", player.level);
       console.log("HP:", player._health);
 
       // Update the player's max health in the health bar
-    if (this.scene.isActive("player-ui")) {
-      this.scene.get("player-ui").events.emit("player-max-health-changed", player.maxHealth);
-    }
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
 
-    this.updatePlayerMaxHealth(player.maxHealth)
+      this.updatePlayerMaxHealth(player.maxHealth);
 
-    if (this.playerRef) { 
-      update(this.playerRef, {
-        exp: player.exp,
-        hp: player._health,
-        maxHealth: player.maxHealth,
-        level: player.level
+      if (this.playerRef) {
+        update(this.playerRef, {
+          exp: player.exp,
+          hp: player._health,
+          maxHealth: player.maxHealth,
+          level: player.level,
         });
       }
       if (this.playerLevel) {
@@ -587,6 +706,7 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
+
   private updatePlayerMaxHealth(maxHealth: number) {
     // Update the player's max health value in the database
     if (this.playerRef) {
@@ -594,22 +714,41 @@ export default class Game extends Phaser.Scene {
         maxHealth: maxHealth,
       });
     }
-    this.miniMapBackground = this.add.rectangle(2000, 1100, 72, 72, Phaser.Display.Color.GetColor(12,70,9))
-    this.miniMapLocation = this.add.circle(0, 0, 2, Phaser.Display.Color.GetColor(255,0,0))
-    this.miniMapForest = this.add.circle(0, 0, 2, Phaser.Display.Color.GetColor(0,255,0))
+    this.miniMapBackground = this.add.rectangle(
+      2000,
+      1100,
+      72,
+      72,
+      Phaser.Display.Color.GetColor(12, 70, 9)
+    );
+    this.miniMapLocation = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(255, 0, 0)
+    );
+    this.miniMapForest = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(0, 255, 0)
+    );
     // this.miniMapBorder = this.add.rectangle(2000, 1100, 76, 76, 0xffffff).setStrokeStyle(2, 0x000000);
 
-
-    const q = this.input.keyboard?.addKey('Q')
-    q?.on('down', () => {
-      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
-        this.miniMapBackground.visible = !this.miniMapBackground.visible
-        this.miniMapLocation.visible = !this.miniMapLocation.visible
-        this.miniMapForest.visible = !this.miniMapForest.visible
+    const q = this.input.keyboard?.addKey("Q");
+    q?.on("down", () => {
+      if (
+        this.miniMapBackground &&
+        this.miniMapLocation &&
+        this.miniMapForest
+      ) {
+        this.miniMapBackground.visible = !this.miniMapBackground.visible;
+        this.miniMapLocation.visible = !this.miniMapLocation.visible;
+        this.miniMapForest.visible = !this.miniMapForest.visible;
       }
-    })
+    });
   }
-  
+
   update() {
     this.updateIterations++;
     let character;
@@ -633,28 +772,55 @@ export default class Game extends Phaser.Scene {
     }
     if (!character) return;
 
-    
-    
+    // Handle Collision Between Player and Resurrect
+    if (character && character.isDead) {
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
+      this.resurrect.setVisible(true);
+    } else {
+      this.resurrect.setVisible(false);
+    }
+
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
-    this.scene.start("forest", { characterName: this.characterName, game: this });
-      update(this.playerRef, { scene: "forest" });
+      this.scene.start("forest", {
+        characterName: this.characterName,
+        game: this,
+      });
+      update(this.playerRef, {
+        x: character.x,
+        y: character.y,
+        anim: character.anims.currentAnim
+          ? character.anims.currentAnim.key
+          : null,
+        frame: character.anims.currentFrame
+          ? character.anims.currentFrame.frame.name
+          : null,
+        online: true,
+        projectilesFromDB: character.projectilesToSend,
+        scene: "forest",
+      });
       return;
     }
-
 
     if (this.playerName) {
       // Update the player's name position horizontally
       this.playerName.x = character.x;
+
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
-      this.playerLevel.x = this.playerName.x
-      this.playerLevel.y = character.y - 10
+      this.playerLevel.x = this.playerName.x;
+      this.playerLevel.y = character.y - 10;
 
       //Handle Collision Between Player and Resurrect
-      this.physics.add.collider(
+      this.physics.add.overlap(
         character,
         this.resurrect,
         this.collisionHandler.handlePlayerResurrectCollision as any,
@@ -687,6 +853,14 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
+      // Handle collision between knives and goblins
+      this.physics.overlap(
+        this.projectiles,
+        this.goblin,
+        this.collisionHandler.handleProjectileGoblinCollision as any,
+        undefined,
+        this
+      );
       if (
         Phaser.Input.Keyboard.JustDown(
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
@@ -700,6 +874,13 @@ export default class Game extends Phaser.Scene {
             undefined,
             this
           );
+        this.physics.overlap(
+          character,
+          this.dog,
+          this.collisionHandler.handlePlayerDogCollision as any,
+          undefined,
+          this
+        );
       }
       // Update the player's data in the database
       if (this.playerRef) {
@@ -748,36 +929,53 @@ export default class Game extends Phaser.Scene {
       }
     }
 
-    
-    if (this.miniMapBackground && this.miniMapLocation && this.map && this.miniMapForest){
-      const backgroundLocation = this.getMiniLocation(this.map.widthInPixels/2, this.map.heightInPixels/2, character)
-      this.miniMapBackground.x = backgroundLocation.x 
-      this.miniMapBackground.y = backgroundLocation.y
+    if (
+      this.miniMapBackground &&
+      this.miniMapLocation &&
+      this.map &&
+      this.miniMapForest
+    ) {
+      const backgroundLocation = this.getMiniLocation(
+        this.map.widthInPixels / 2,
+        this.map.heightInPixels / 2,
+        character
+      );
+      this.miniMapBackground.x = backgroundLocation.x;
+      this.miniMapBackground.y = backgroundLocation.y;
       // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
-        
-        const playerLocation = this.getMiniLocation(character.x, character.y, character)
-        this.miniMapLocation.x = playerLocation.x
-        this.miniMapLocation.y = playerLocation.y
-        const forestLocation = this.getMiniLocation(2070, 29, character)
-        this.miniMapForest.x = forestLocation.x
-        this.miniMapForest.y = forestLocation.y
+
+      const playerLocation = this.getMiniLocation(
+        character.x,
+        character.y,
+        character
+      );
+      this.miniMapLocation.x = playerLocation.x;
+      this.miniMapLocation.y = playerLocation.y;
+      const forestLocation = this.getMiniLocation(2070, 29, character);
+      this.miniMapForest.x = forestLocation.x;
+      this.miniMapForest.y = forestLocation.y;
     }
   }
-  getMiniLocation(x: number, y: number, character: Player | Barb | Wizard | Archer) {
+
+  getMiniLocation(
+    x: number,
+    y: number,
+    character: Player | Barb | Wizard | Archer
+  ) {
     if (this.miniMapBackground && this.map) {
+      const centerX = character.x + 120;
+      const centerY = character.y + 90;
 
-      const centerX = character.x + 120
-      const centerY = character.y + 90
-
-      const ratio = this.miniMapBackground.width/this.map.widthInPixels
-      const distanceX = x - this.map.widthInPixels/2
-      const distanceY = y - this.map.heightInPixels/2
-      const ratioX = distanceX * ratio
-      const ratioY = distanceY * ratio
-      return {x: centerX + ratioX, y: centerY + ratioY}
+      const ratio = this.miniMapBackground.width / this.map.widthInPixels;
+      const distanceX = x - this.map.widthInPixels / 2;
+      const distanceY = y - this.map.heightInPixels / 2;
+      const ratioX = distanceX * ratio;
+      const ratioY = distanceY * ratio;
+      return { x: centerX + ratioX, y: centerY + ratioY };
     }
-    return {x: 0, y: 0}
-  
+
+    return { x: 0, y: 0 };
+
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {

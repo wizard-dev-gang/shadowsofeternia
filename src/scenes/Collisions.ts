@@ -15,7 +15,7 @@ import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
 import { update } from "firebase/database";
 import { Dog } from "../characters/Dog";
-import { Goblin } from "../enemies/Goblins"
+import { Goblin } from "../enemies/Goblins";
 
 // import { getDatabase, ref, onValue } from "firebase/database";
 // import { useRef } from "react";
@@ -41,6 +41,9 @@ export class CollisionHandler {
   dog: Phaser.Physics.Arcade.Group;
   goblin: Phaser.Physics.Arcade.Group;
   private dogBark: Phaser.Sound.BaseSound;
+  private npcHm: Phaser.Sound.BaseSound;
+  private slimeDeathSound?: Phaser.Sound.BaseSound;
+  private projectileHit?: Phaser.Sound.BaseSound;
 
   //Firebase
   playerId: string | null;
@@ -63,7 +66,10 @@ export class CollisionHandler {
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
     potionSound: Phaser.Sound.BaseSound,
-    dogBark: Phaser.Sound.BaseSound
+    dogBark: Phaser.Sound.BaseSound,
+    npcHm: Phaser.Sound.BaseSound,
+    slimeDeathSound?: Phaser.Sound.BaseSound,
+    projectileHit?: Phaser.Sound.BaseSound
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
@@ -81,6 +87,9 @@ export class CollisionHandler {
     this.dog = dog;
     this.goblin = goblin;
     this.dogBark = dogBark;
+    this.slimeDeathSound = slimeDeathSound;
+    this.npcHm = npcHm;
+    this.projectileHit = projectileHit;
   }
 
   // Method to handle collision between projectiles and walls
@@ -150,6 +159,8 @@ export class CollisionHandler {
     (skeleton as Skeleton).getHealth();
     (skeleton as Skeleton).handleDamage(dir);
 
+    this.projectileHit?.play();
+
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
@@ -183,14 +194,15 @@ export class CollisionHandler {
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
 
-    
+    this.projectileHit?.play();
+
     (babySkel as BabySkeleton).handleDamage();
     // Kill and hide the baby-skeleton after the animation completes
     if ((babySkel as BabySkeleton).getHealth() <= 0) {
       this.time.delayedCall(1000, () => {
         this.skeletons.killAndHide(babySkel);
         babySkel.destroy();
-      })
+      });
     }
     // Log players' x
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
@@ -225,6 +237,9 @@ export class CollisionHandler {
       this.goblin.killAndHide(goblin);
       (goblin.isAlive = false), goblin.destroy();
     }
+
+    this.projectileHit?.play();
+
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
       if (character) {
@@ -253,8 +268,11 @@ export class CollisionHandler {
       slime.anims.play("slime-death");
     }
 
+    this.projectileHit?.play();
+
     // Kill and hide the slime after the animation completes
     this.time.delayedCall(1000, () => {
+      this.slimeDeathSound?.play();
       this.slimes.killAndHide(slime);
       slime.destroy();
       // Generate a random number between 0 and 1
@@ -359,6 +377,7 @@ export class CollisionHandler {
       man.handleDamage(dir);
       // console.log(man._health);
       sceneEvents.emit("player-health-changed", man.getHealth());
+      this.collideSound.play();
     }
   }
   handlePlayerNpcCollision(
@@ -375,6 +394,7 @@ export class CollisionHandler {
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
+      this.npcHm.play();
 
       const npcX = npc.x;
       const npcY = npc.y + 55;

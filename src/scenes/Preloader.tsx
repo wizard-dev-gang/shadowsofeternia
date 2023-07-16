@@ -48,12 +48,8 @@ export default class Preloader extends Phaser.Scene {
       "enemies/jacked-skeleton.png",
       "enemies/jacked-skeleton.json"
     );
-    this.load.atlas(
-      "boss",
-      "enemies/boss.png",
-      "enemies/boss.json"
-    );
-    this.load.atlas("goblin", "enemies/goblin.png", "enemies/goblin.json")
+    this.load.atlas("boss", "enemies/boss.png", "enemies/boss.json");
+    this.load.atlas("goblin", "enemies/goblin.png", "enemies/goblin.json");
     this.load.atlas(
       "baby-skeleton",
       "enemies/baby-skeleton.png",
@@ -64,7 +60,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("fireball", "weapons/weapon-fireball.png");
     this.load.image("slash", "weapons/slash.png");
     // this.load.image("rogue", "")
-    this.load.atlas("Dog", "character/Dog.png", "character/Dog.json")
+    this.load.atlas("Dog", "character/Dog.png", "character/Dog.json");
     this.load.atlas("barb", "character/barb.png", "character/barb.json");
     this.load.atlas("archer", "character/archer.png", "character/archer.json");
     this.load.atlas("wizard", "character/wizard.png", "character/wizard.json");
@@ -79,6 +75,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio("lobbyMusic", "music/loopMusic.mp3");
     this.load.audio("resurrect", "music/resurrectSound.mp3");
     this.load.audio("potion", "music/potion.mp3");
+    this.load.audio("goblinDeath", "/music/goblinDeathSound.mp3");
+    this.load.audio("skeleDeath", "/music/skeleDeath.mp3");
   }
 
   create() {

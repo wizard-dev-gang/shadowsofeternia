@@ -29,7 +29,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE
   private _health: number
   private damageTime = 0;
-  private currentTarget:any = {x: 0, y:0,distance:Number(500)}
+  private currentTarget:any = {x: 0, y:0,distance:Number(1000)}
   public isAlive:boolean = true
 
   constructor(
@@ -54,14 +54,14 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
       delay: 1000,
       callback: () => {
         let newNum = Math.random()
-        if (newNum >= .7 && this.isAlive) {
-            this.direction = randomDirection(this.direction);
-            
-        } else if (newNum >= .1 && newNum < .7 ) {
-            this.seekAndDestroy()
+        if (newNum >= .3 && this.isAlive) {
+          this.seekAndDestroy()
+          
+        } else if (newNum >= .1 && newNum < .3 ) {
+          this.direction = randomDirection(this.direction);
           
         } else {
-          this.currentTarget = {x: 0, y:0,distance:Number(500)}
+          this.currentTarget = {x: 0, y:0,distance:Number(1000)}
           
         }
       },
@@ -75,7 +75,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
 
   findTarget(playerData:Map<any,any>, host:any) {
     let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y)
-    if(this.currentTarget.id === "host" || (distance < 500 && distance< this.currentTarget.distance)) {
+    if(this.currentTarget.id === "host" || (distance < 1000 && distance< this.currentTarget.distance)) {
       this.currentTarget = {
         id:'host',
         x:host.x,
@@ -94,7 +94,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
           distance:distance
         }
       }
-      if  (distance < 500 && distance< this.currentTarget.distance) {
+      if  (distance < 1000 && distance< this.currentTarget.distance) {
         this.currentTarget = {
           id:entry[0],
           x:entry[1].x,
@@ -106,6 +106,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
   }
 
   seekAndDestroy() {
+    console.log(this.currentTarget)
     if(Math.abs(this.x - this.currentTarget.x) > Math.abs(this.y - this.currentTarget.y)){
       this.x > this.currentTarget.x ? this.direction = 2 : this.direction = 3 
     }
@@ -169,7 +170,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    const speed = 150;
+    const speed = 100;
     switch (this.direction) {
       case Direction.UP:
         this.anims.play("baby-skeleton-walk-up", true);

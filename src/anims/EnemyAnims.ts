@@ -142,7 +142,7 @@ export const createEnemyAnims = (anims: Phaser.Animations.AnimationManager) => {
       suffix: ".png",
     }),
     repeat: -1,
-    frameRate: 7,
+    frameRate: 10,
   });
 
   anims.create({

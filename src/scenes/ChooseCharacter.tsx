@@ -2,10 +2,7 @@ import Phaser from "phaser";
 // import Game from "../scenes/Game";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { getAuth } from "firebase/auth";
-import {
-  removeEnemyFromDatabase,
-  removeAllEnemiesFromDatabase,
-} from "../../functions/lib/enemySupport";
+import { removeAllEnemiesFromDatabase } from "../../functions/lib/enemySupport";
 import {
   getDatabase,
   ref,
@@ -134,6 +131,8 @@ export default class ChooseCharacterScene extends Phaser.Scene {
     super("chooseCharacter");
   }
 
+  private backgroundMusic?: Phaser.Sound.BaseSound;
+
   preload() {
     this.load.image("pansbg", "/assets/pansbg.png");
 
@@ -159,9 +158,19 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       "/assets/fonts/Joystix.png",
       "/assets/fonts/Joystix.fnt"
     );
+
+    this.load.audio("lobbyMusic", "/music/loopMusic.mp3");
   }
 
   create() {
+    const backgroundMusic = this.sound.add("lobbyMusic");
+
+    // Configure the audio to loop
+    backgroundMusic.setLoop(true);
+
+    // Play the audio
+    backgroundMusic.play();
+
     // this.textures.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     let hasChosenCharacter = false; // This is okay to be unassigned for now. It will be assigned when the user chooses a character.
@@ -333,38 +342,39 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       // }
     });
     character2.on("pointerdown", async () => {
-      this.startGame("barb");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("barb", this);
-      //   if (isCharacterAvailable) {
-      //     char2Text.setText("Barbarian (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
-    });
-    character3.on("pointerdown", async () => {
-      this.startGame("archer");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("archer", this);
-      //   if (isCharacterAvailable) {
-      //     char3Text.setText("Archer (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
-    });
-    character4.on("pointerdown", async () => {
-      this.startGame("wizard");
+      // this.startGame("barb");
       if (!hasChosenCharacter) {
-        const isCharacterAvailable = await writeUserData("wizard", this);
+        const isCharacterAvailable = await writeUserData("barb", this);
         if (isCharacterAvailable) {
-          char4Text.setText("Wizard (Selected)");
+          char2Text.setText("Barbarian (Selected)");
           hasChosenCharacter = true;
         }
       }
     });
+    character3.on("pointerdown", async () => {
+      // this.startGame("archer");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("archer", this);
+        if (isCharacterAvailable) {
+          char3Text.setText("Archer (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
+    });
+    character4.on("pointerdown", async () => {
+      this.startGame("wizard");
+      // if (!hasChosenCharacter) {
+      //   const isCharacterAvailable = await writeUserData("wizard", this);
+      //   if (isCharacterAvailable) {
+      //     char4Text.setText("Wizard (Selected)");
+      //     hasChosenCharacter = true;
+      //   }
+      // }
+    });
   }
 
   startGame(name?: string) {
+    this.sound.stopAll();
     removeAllEnemiesFromDatabase();
     this.scene.start("game", {
       name,

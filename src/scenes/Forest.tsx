@@ -11,10 +11,12 @@ import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
+import { Resurrect } from "../characters/Resurrect";
 import { createPotionAnims } from "../anims/PotionAnims";
-import Game from './Game'
+import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
+
 
 export default class Forest extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -30,9 +32,10 @@ export default class Forest extends Phaser.Scene {
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
+  public resurrect!: Resurrect;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
-  private game?: Game
+  private game?: Game;
 
   // Firebase variables
   public characterName?: string;
@@ -60,7 +63,7 @@ export default class Forest extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
-    this.game = data.game
+    this.game = data.game;
   }
   create() {
     const collisionHandler = new CollisionHandler(
@@ -119,12 +122,13 @@ export default class Forest extends Phaser.Scene {
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
         this.cameras.main.startFollow(this.man);
+        this.cameras.main.startFollow(this.man);
       }
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
-      this.forestEntranceX = 2070; 
-      this.forestEntranceY = 29; 
+      this.forestEntranceX = 2070;
+      this.forestEntranceY = 29;
 
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
@@ -286,6 +290,12 @@ export default class Forest extends Phaser.Scene {
       npc1.text =
         "Traveler, beware! The forest ahead is infested with a multitude of acid slimes, their acidic touch capable of melting through armor and flesh alike. Tread with caution, for their numbers are great, and their hunger insatiable.";
 
+      const npc2 = this.Npc_wizard.get(1455, 1466, "npcWizard");
+      npc2.text = "The path ahead splits in two, adventurer. Choose wisely!";
+
+      const npc3 = this.Npc_wizard.get(840, 178, "npcWizard");
+      npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
+
       // this.potion.get(800, 2900, "Potion");
     }
   }
@@ -312,7 +322,7 @@ export default class Forest extends Phaser.Scene {
     const forestX = character.x >= 709 && character.x <= 825;
     const forestY = character.y <= 3152 && character.y >= 3140;
     if (forestX && forestY) {
-      if (this.game) this.game.sceneFrom = 'forest'
+      if (this.game) this.game.sceneFrom = "forest";
       this.scene.switch("game");
       // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
       return;
@@ -331,6 +341,15 @@ export default class Forest extends Phaser.Scene {
       this.playerName.x = character.x;
       // Position of the name above the player
       this.playerName.y = character.y - 10;
+
+      //Handle Collision Between Player and Resurrect
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
 
       //Handle Collision Between Player and Potions
       this.physics.overlap(

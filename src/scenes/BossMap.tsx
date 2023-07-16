@@ -1,9 +1,8 @@
 import Phaser from "phaser";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
-import { Skeleton } from "../enemies/Skeleton";
+import { Boss } from "../enemies/Boss";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";
@@ -17,18 +16,18 @@ import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
+import BabySkeleton from "../enemies/BabySkeleton";
 
-export default class Boss extends Phaser.Scene{
+export default class BossMap extends Phaser.Scene{
     private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     private man?: Player;
     private barb?: Barb; //Barbarian Character
     private archer?: Archer; //Archer Character
     private wizard?: Wizard; //Wizard Character
     public projectiles!: Phaser.Physics.Arcade.Group;
+    public boss!: Phaser.Physics.Arcade.Group; // Group to manage Boss enemies
     public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
-    private slimes!: Phaser.Physics.Arcade.Group; //  Group to manage slime enemies
     private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
-    private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
     public collisionHandler: CollisionHandler;
     private Npc_wizard!: Phaser.Physics.Arcade.Group;
     public potion!: Potion;
@@ -44,10 +43,11 @@ export default class Boss extends Phaser.Scene{
     public enemyDB!: any;
     public dataToSend: any = {};
     public updateIterations = 0;
+    private enemyCount: number = 0;
 
     constructor()
     {
-        super("boss");
+        super("bossMap");
         this.otherPlayers = new Map();
         this.playerNames = new Map();
         this.enemies = new Map();
@@ -126,6 +126,198 @@ export default class Boss extends Phaser.Scene{
               character.setProjectiles(this.projectiles);
             }
           });
+
+          this.boss = this.physics.add.group({
+            classType: Boss,
+            createCallback: (go) => {
+              const skeleGo = go as Boss;
+              this.enemyCount++;
+              if (skeleGo.body) {
+                skeleGo.body.onCollide = true;
+    
+                // Adjust the hitbox size here
+                const hitboxWidth = 40; // Set the desired hitbox width
+                const hitboxHeight = 55; // Set the desired hitbox height
+                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
+    
+                // Set the hitbox offset here
+                const offsetX = 12; // Set the desired X offset
+                const offsetY = 8; // Set the desired Y offset
+                skeleGo.body.setOffset(offsetX, offsetY);
+              }
+              this.enemies.set(this.enemyCount, skeleGo);
+            },
+          });
+          if (this.characterName === "rogue") {
+            this.boss.get(626, 390, "boss");
+
+          }
+          console.log(this.enemies)
+          sceneEvents.on(
+            "boss-stomp",
+            () => {
+    
+              const boss = this.enemies.get(1)
+              boss.body.setSize(80, 110);
+              this.time.addEvent({
+                delay: 1000,
+                callback: () => {
+                  if (boss.isAlive) boss.body.setSize(40, 55);
+                },
+                loop: false
+              });
+            }
+          );
+
+          sceneEvents.on(
+            "boss-spin",
+            () => {
+    
+              const boss = this.enemies.get(1)
+              
+              for (let i = 0; i < 3; i++) {
+                if (this.enemies.size < 10) {
+                  this.skeletons.get(boss.x+100, boss.y, "baby-skeleton");
+                  this.skeletons.get(boss.x-100, boss.y, "baby-skeleton");
+                }
+              }
+            }
+          );
+
+          // Handle collisions between boss and house layers
+          if (this.boss && groundLayer) {
+            this.physics.add.collider(this.boss, groundLayer);
+            this.physics.add.collider(
+              this.projectiles,
+              groundLayer,
+              collisionHandler.handleProjectileWallCollision,
+              undefined,
+              this
+            );
+          }
+          // Handle collisions between boss and fences
+          if (this.boss && platformLayer) {
+            this.physics.add.collider(this.boss, platformLayer);
+            this.physics.add.collider(
+              this.projectiles,
+              platformLayer,
+              collisionHandler.handleProjectileWallCollision,
+              undefined,
+              this
+            );
+          }
+          // Handle collisions between boss and trees
+          if (this.boss && wallsLayer) {
+            this.physics.add.collider(this.boss, wallsLayer);
+            this.physics.add.collider(
+              this.projectiles,
+              wallsLayer,
+              collisionHandler.handleProjectileWallCollision,
+              undefined,
+              this
+            );
+          }
+
+          if (playerCharacters && this.boss) {
+            this.physics.add.collider(
+              playerCharacters as Phaser.GameObjects.GameObject[],
+              this.boss,
+              this.collisionHandler.handlePlayerEnemyCollision as any,
+              undefined,
+              this
+            );
+          }
+          console.log("creating enemy colliders...");
+          // Handle collisions between player and enemy characters
+          if (playerCharacters && this.playerEnemiesCollider) {
+            console.log("create playerenemiescollider");
+            this.playerEnemiesCollider = this.physics.add.collider(
+              this.boss,
+              playerCharacters as Phaser.GameObjects.GameObject[],
+              this.collisionHandler.handlePlayerEnemyCollision as any,
+              undefined,
+              this
+            );
+          }
+
+          this.skeletons = this.physics.add.group({
+            classType: BabySkeleton,
+            createCallback: (go) => {
+              const skeleGo = go as BabySkeleton;
+              this.enemyCount++;
+              if (skeleGo.body) {
+                skeleGo.body.onCollide = true;
+    
+                // Adjust the hitbox size here
+                const hitboxWidth = 20; // Set the desired hitbox width
+                const hitboxHeight = 25; // Set the desired hitbox height
+                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
+
+                // Set the hitbox offset here
+                const offsetX = 6; // Set the desired X offset
+                const offsetY = 7; // Set the desired Y offset
+                skeleGo.body.setOffset(offsetX, offsetY);
+              }
+              this.enemies.set(this.enemyCount, skeleGo);
+            },
+          });
+
+          // Handle collisions between skeletons and house layers
+          if (this.skeletons && groundLayer) {
+            this.physics.add.collider(this.skeletons, groundLayer);
+            this.physics.add.collider(
+              this.projectiles,
+              groundLayer,
+              collisionHandler.handleProjectileWallCollision,
+              undefined,
+              this
+            );
+          }
+          // Handle collisions between skeletons and fences
+          if (this.skeletons && platformLayer) {
+            this.physics.add.collider(this.skeletons, platformLayer);
+            this.physics.add.collider(
+              this.projectiles,
+              platformLayer,
+              collisionHandler.handleProjectileWallCollision,
+              undefined,
+              this
+            );
+          }
+          // Handle collisions between skeletons and trees
+          if (this.skeletons && wallsLayer) {
+            this.physics.add.collider(this.skeletons, wallsLayer);
+            this.physics.add.collider(
+              this.projectiles,
+              wallsLayer,
+              collisionHandler.handleProjectileWallCollision,
+              undefined,
+              this
+            );
+          }
+
+          if (playerCharacters && this.skeletons) {
+            this.physics.add.collider(
+              playerCharacters as Phaser.GameObjects.GameObject[],
+              this.skeletons,
+              this.collisionHandler.handlePlayerEnemyCollision as any,
+              undefined,
+              this
+            );
+          }
+          console.log("creating enemy colliders...");
+          // Handle collisions between player and enemy characters
+          if (playerCharacters && this.playerEnemiesCollider) {
+            console.log("create playerenemiescollider");
+            this.playerEnemiesCollider = this.physics.add.collider(
+              this.skeletons,
+              playerCharacters as Phaser.GameObjects.GameObject[],
+              this.collisionHandler.handlePlayerEnemyCollision as any,
+              undefined,
+              this
+            );
+          }
+
           if (playerCharacters) {
             //if statements are to satisfy TypeScipt compiler
             if (groundLayer)
@@ -180,6 +372,14 @@ export default class Boss extends Phaser.Scene{
     this.updateIterations++;
     let character;
 
+    if (this.characterName === "rogue" && !this.enemies.get(1).isAlive) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive){
+          entry[1].handleDamage()
+        }
+      }
+    }
+
     if (this.man) {
       this.man.update();
       character = this.man;
@@ -201,7 +401,25 @@ export default class Boss extends Phaser.Scene{
         this.playerName.x = character.x;
         // Position of the name above the player
         this.playerName.y = character.y - 10;
-  
+      
+        // Handle collision between knives and skeletons
+        this.physics.overlap(
+          this.projectiles,
+          this.skeletons,
+          this.collisionHandler.handleProjectileBSCollision as any,
+          undefined,
+          this
+        );
+
+        // Handle collision between knives and skeletons
+        this.physics.overlap(
+          this.projectiles,
+          this.boss,
+          this.collisionHandler.handleProjectileBossCollision as any,
+          undefined,
+          this
+        );
+
         //Handle Collision Between Player and Potions
         this.physics.overlap(
           character,
@@ -255,6 +473,7 @@ export default class Boss extends Phaser.Scene{
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+              scene: this.scene.key,
             };
           } else {
             this.dataToSend[entry[0]] = {
@@ -266,5 +485,16 @@ export default class Boss extends Phaser.Scene{
         update(this.enemyDB, this.dataToSend);
       }
     }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers, {
+            x: character.x,
+            y: character.y,
+          });
+        }
+      }
     }
+  }
 }

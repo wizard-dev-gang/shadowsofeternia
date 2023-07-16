@@ -1,5 +1,6 @@
 import Phaser, { GameObjects } from "phaser";
 import { Slime } from "../enemies/Slime";
+import { BabySkeleton } from "../enemies/BabySkeleton";
 import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
 import { Boss } from "../enemies/Boss";
@@ -23,8 +24,9 @@ import { Goblin } from "../enemies/Goblins"
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
   skeletons: Phaser.Physics.Arcade.Group;
-  bosses: Phaser.Physics.Arcade.Group;
+  boss: Phaser.Physics.Arcade.Group;
   slimes: Phaser.Physics.Arcade.Group;
+  babySkeletons: Phaser.Physics.Arcade.Group;
   time: Phaser.Time.Clock;
   Npc_wizard!: Phaser.Physics.Arcade.Group;
   add: GameObjects.GameObjectFactory;
@@ -33,8 +35,12 @@ export class CollisionHandler {
   private barb?: Barb; //Barbarian Character
   private archer?: Archer; //Archer Character
   private wizard?: Wizard; //Wizard Character
+  private collideSound: Phaser.Sound.BaseSound;
+  private resurrectSound: Phaser.Sound.BaseSound;
+  private potionSound: Phaser.Sound.BaseSound;
   dog: Phaser.Physics.Arcade.Group;
   goblin: Phaser.Physics.Arcade.Group;
+  private dogBark: Phaser.Sound.BaseSound;
 
   //Firebase
   playerId: string | null;
@@ -43,8 +49,9 @@ export class CollisionHandler {
   constructor(
     projectiles: Phaser.Physics.Arcade.Group,
     skeletons: Phaser.Physics.Arcade.Group,
-    bosses: Phaser.Physics.Arcade.Group,
+    boss: Phaser.Physics.Arcade.Group,
     slimes: Phaser.Physics.Arcade.Group,
+    babySkeletons: Phaser.Physics.Arcade.Group,
     time: Phaser.Time.Clock,
     Npc_wizard: Phaser.Physics.Arcade.Group,
     add: GameObjects.GameObjectFactory,
@@ -52,20 +59,30 @@ export class CollisionHandler {
     playerId: string | null,
     dog: Phaser.Physics.Arcade.Group,
     goblin: Phaser.Physics.Arcade.Group,
+    resurrect: Resurrect,
+    collideSound: Phaser.Sound.BaseSound,
+    resurrectSound: Phaser.Sound.BaseSound,
+    potionSound: Phaser.Sound.BaseSound,
+    dogBark: Phaser.Sound.BaseSound
   ) {
     this.projectiles = projectiles;
     this.skeletons = skeletons;
-    this.bosses = bosses;
+    this.boss = boss;
     this.slimes = slimes;
+    this.babySkeletons = babySkeletons;
     this.time = time;
     this.Npc_wizard = Npc_wizard;
     this.add = add;
     this.potion = potion;
     this.playerId = playerId;
+    this.collideSound = collideSound;
+    this.resurrectSound = resurrectSound;
+    this.potionSound = potionSound;
     this.dog = dog;
     this.goblin = goblin;
+    this.dogBark = dogBark;
   }
-  
+
   // Method to handle collision between projectiles and walls
   handleProjectileWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -99,7 +116,7 @@ export class CollisionHandler {
     (boss as Boss).getHealth();
     (boss as Boss).handleDamage(dir);
     if ((boss as Boss).getHealth() <= 0) {
-      this.bosses.killAndHide(boss);
+      this.boss.killAndHide(boss);
       (boss.isAlive = false), boss.destroy();
     }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
@@ -117,7 +134,7 @@ export class CollisionHandler {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const skeleton = obj2;
+    const skeleton = obj2 as Phaser.GameObjects.Image;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
@@ -132,10 +149,50 @@ export class CollisionHandler {
     (skeleton as Skeleton).setVelocity(dir.x, dir.y);
     (skeleton as Skeleton).getHealth();
     (skeleton as Skeleton).handleDamage(dir);
+
     if ((skeleton as Skeleton).getHealth() <= 0) {
       this.skeletons.killAndHide(skeleton);
       (skeleton.isAlive = false), skeleton.destroy();
+
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log("THIS IS THE DROP CHANCE VALUE", dropChance);
+      // Check if the drop chance is less than or equal to 0.2 (20%)
+      if (dropChance <= 0.2) {
+        // Drop a potion at the skeleton's position
+        this.potion.get(skeleton.x, skeleton.y, "potion");
+      }
     }
+    const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
+    playerCharacters.forEach((character) => {
+      if (character) {
+        character.exp++;
+        console.log(`${character.constructor.name}'s exp: ${character.exp}`);
+      }
+    });
+  }
+
+  handleProjectileBSCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
+  ) {
+    const projectile = obj1 as Phaser.Physics.Arcade.Image;
+    const babySkel = obj2 as BabySkeleton;
+
+    // Kill and hide the projectile
+    this.projectiles.killAndHide(projectile);
+    projectile.destroy();
+
+    
+    (babySkel as BabySkeleton).handleDamage();
+    // Kill and hide the baby-skeleton after the animation completes
+    if ((babySkel as BabySkeleton).getHealth() <= 0) {
+      this.time.delayedCall(1000, () => {
+        this.skeletons.killAndHide(babySkel);
+        babySkel.destroy();
+      })
+    }
+    // Log players' x
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {
       if (character) {
@@ -200,6 +257,14 @@ export class CollisionHandler {
     this.time.delayedCall(1000, () => {
       this.slimes.killAndHide(slime);
       slime.destroy();
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log(dropChance);
+      // Check if the drop chance is less than or equal to 0.1 (10%)
+      if (dropChance <= 0.1) {
+        // Drop a potion at the slime's position
+        this.potion.get(slime.x, slime.y, "potion");
+      }
     });
     // Log players' x
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
@@ -209,34 +274,6 @@ export class CollisionHandler {
         console.log(`${character.constructor.name}'s exp: ${character.exp}`);
       }
     });
-}
-
-  // Method to handle collision between player and boss characters
-  handlePlayerBossCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
-  ) {
-    console.log("handleplayerEnemyCollision");
-    if (
-      (obj1 instanceof Player || Barb || Wizard || Archer) &&
-      obj2 instanceof Boss
-    ) {
-      const man = (obj1 as Player) || Barb || Wizard || Archer;
-      const boss = obj2 as Boss;
-
-      const dx =
-        (man as Phaser.GameObjects.Image).x -
-        (boss as Phaser.GameObjects.Image).x;
-      const dy =
-        (man as Phaser.GameObjects.Image).y -
-        (boss as Phaser.GameObjects.Image).y;
-
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
-    }
   }
 
   // Method to handle collision between player and enemy characters
@@ -247,10 +284,10 @@ export class CollisionHandler {
     console.log("handleplayerEnemyCollision");
     if (
       (obj1 instanceof Player || Barb || Wizard || Archer) &&
-      obj2 instanceof Skeleton
+      (obj2 instanceof Skeleton || BabySkeleton || Boss)
     ) {
       const man = (obj1 as Player) || Barb || Wizard || Archer;
-      const skeleton = obj2 as Skeleton;
+      const skeleton = (obj2 as Skeleton) || BabySkeleton || Boss;
 
       const dx =
         (man as Phaser.GameObjects.Image).x -
@@ -264,6 +301,7 @@ export class CollisionHandler {
       man.handleDamage(dir);
       // console.log(man._health);
       sceneEvents.emit("player-health-changed", man.getHealth());
+      this.collideSound.play();
     }
   }
 
@@ -293,6 +331,7 @@ export class CollisionHandler {
         man.setVelocity(dir.x, dir.y);
         man.handleDamage(dir);
         sceneEvents.emit("player-health-changed", man.getHealth());
+        this.collideSound.play();
       }
     }
   }
@@ -338,7 +377,7 @@ export class CollisionHandler {
       console.log("Interacting with the NPC Wizard");
 
       const npcX = npc.x;
-      const npcY = npc.y + 50;
+      const npcY = npc.y + 55;
 
       const textX = npcX;
       const textY = npcY;
@@ -387,10 +426,11 @@ export class CollisionHandler {
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the Dog");
+      this.dogBark.play();
 
       // Stop the dog from moving
       if (dog instanceof Dog) {
-      dog.isMoving = false;
+        dog.isMoving = false;
       }
 
       const dogX = dog.x;
@@ -427,7 +467,7 @@ export class CollisionHandler {
         background.destroy();
         // allow the dog to move
         if (dog instanceof Dog) {
-        dog.isMoving = true;
+          dog.isMoving = true;
         }
       });
     }
@@ -465,6 +505,7 @@ export class CollisionHandler {
       }
 
       // Remove the potion only if the player is alive
+      this.potionSound.play();
       potion.destroy();
     }
   }
@@ -479,7 +520,7 @@ export class CollisionHandler {
         player instanceof Barb ||
         player instanceof Wizard ||
         player instanceof Archer) &&
-      resurrect instanceof Phaser.GameObjects.GameObject &&
+      resurrect instanceof Resurrect &&
       player.isDead
     ) {
       // Perform actions for interacting with the resurrect
@@ -488,7 +529,7 @@ export class CollisionHandler {
       console.log("Resurrect Picked Up, New HP:", player.getHealth());
       player.isDead = false;
 
-      // Remove the resurrect from the scene
+      this.resurrectSound.play();
       resurrect.destroy();
     }
   }

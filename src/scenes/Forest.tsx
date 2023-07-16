@@ -33,6 +33,7 @@ export default class Forest extends Phaser.Scene {
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
   public resurrect!: Resurrect;
+  private enemyCount: number = 0;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
 
@@ -169,6 +170,7 @@ export default class Forest extends Phaser.Scene {
         classType: Slime,
         createCallback: (go) => {
           const slimeGo = go as Slime;
+          this.enemyCount++;
           if (slimeGo.body) {
             slimeGo.body.onCollide = true;
 
@@ -182,6 +184,7 @@ export default class Forest extends Phaser.Scene {
             const offsetY = hitboxHeight / 2; // Set the desired Y offset
             slimeGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount, slimeGo);
         },
       });
 
@@ -391,7 +394,19 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.scene.start("ruins", { characterName: this.characterName });
-      update(this.playerRef, { scene: "ruins" });
+      update(this.playerRef, {
+        x: character.x,
+        y: character.y,
+        anim: character.anims.currentAnim
+          ? character.anims.currentAnim.key
+          : null,
+        frame: character.anims.currentFrame
+          ? character.anims.currentFrame.frame.name
+          : null,
+        online: true,
+        projectilesFromDB: character.projectilesToSend,
+        scene: "ruins",
+      });
       return;
     }
 
@@ -482,6 +497,17 @@ export default class Forest extends Phaser.Scene {
           }
         }
         update(this.enemyDB, this.dataToSend);
+      }
+    }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers, {
+            x: character.x,
+            y: character.y,
+          });
+        }
       }
     }
   }

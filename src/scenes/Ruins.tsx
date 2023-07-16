@@ -397,6 +397,19 @@ export default class Ruins extends Phaser.Scene {
     const bossY = character.y <= 440 && character.y >= 412;
     if (bossX && bossY) {
       this.scene.start("bossMap", { characterName: this.characterName });
+      update(this.playerRef, {
+        x: character.x,
+        y: character.y,
+        anim: character.anims.currentAnim
+          ? character.anims.currentAnim.key
+          : null,
+        frame: character.anims.currentFrame
+          ? character.anims.currentFrame.frame.name
+          : null,
+        online: true,
+        projectilesFromDB: character.projectilesToSend,
+        scene: "bossMap",
+      });
       return;
     }
 

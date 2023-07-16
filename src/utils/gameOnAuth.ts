@@ -121,7 +121,8 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
               projectileData.direction,
               projectileData.x,
               projectileData.y,
-              projectileData.attackObj
+              projectileData.attackObj,
+              gameInstance
             );
           }
           

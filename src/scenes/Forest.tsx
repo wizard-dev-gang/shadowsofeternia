@@ -110,6 +110,7 @@ export default class Forest extends Phaser.Scene {
       trees2Layer?.setCollisionByProperty({ collides: true });
       trees3Layer?.setCollisionByProperty({ collides: true });
 
+     
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
         this.cameras.main.startFollow(this.barb);
@@ -165,7 +166,7 @@ export default class Forest extends Phaser.Scene {
       });
 
       // Add a slime to the group
-      this.slimes.get(800, 3150, "slime");
+      // this.slimes.get(800, 3150, "slime");
       if (playerCharacters && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
@@ -297,7 +298,17 @@ export default class Forest extends Phaser.Scene {
       npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
 
       // this.potion.get(800, 2900, "Potion");
+
+      this.slimes.get(1320, 2650, "slime");
+      this.slimes.get(1200, 2800, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1800, 2000, "slime");
+      this.slimes.get(1303, 1373, "slime");
+      this.slimes.get(1305, 1300, "slime");
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
     }
+
   }
 
   update() {

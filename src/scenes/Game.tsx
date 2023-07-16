@@ -922,6 +922,7 @@ export default class Game extends Phaser.Scene {
       const ratioY = distanceY * ratio;
       return { x: centerX + ratioX, y: centerY + ratioY };
     }
+
     return { x: 0, y: 0 };
 
     if (this.updateIterations % 3 === 0) {
@@ -934,5 +935,6 @@ export default class Game extends Phaser.Scene {
         }
       }
     }
+    
   }
 }

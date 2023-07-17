@@ -4,6 +4,7 @@ import Archer from "../characters/Archer";
 import Wizard from "../characters/Wizard";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
+import { Goblin } from "../enemies/Goblins";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import { update } from "firebase/database";
@@ -28,6 +29,7 @@ export default class Forest extends Phaser.Scene {
   public projectiles!: Phaser.Physics.Arcade.Group;
   public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; //  Group to manage slime enemies
+  private goblins!: Phaser.Physics.Arcade.Group; //  Group to manage goblin enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
@@ -204,6 +206,7 @@ export default class Forest extends Phaser.Scene {
         },
       });
 
+      
       // Add a slime to the group
       // this.slimes.get(800, 3150, "slime");
       if (playerCharacters && this.slimes) {
@@ -214,22 +217,54 @@ export default class Forest extends Phaser.Scene {
           this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
-        );
-
-        // Handle collisions between slimes and layers
-        if (grassLayer) this.physics.add.collider(this.slimes, grassLayer);
-        if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
-        if (pathsLayer) this.physics.add.collider(this.slimes, pathsLayer);
-        if (borderLayer) this.physics.add.collider(this.slimes, borderLayer);
-        if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
-        if (trees2Layer) this.physics.add.collider(this.slimes, trees2Layer);
-        if (trees3Layer) this.physics.add.collider(this.slimes, trees3Layer);
+          );
+          // Handle collisions between slimes and layers
+          if (grassLayer) this.physics.add.collider(this.slimes, grassLayer);
+          if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
+          if (pathsLayer) this.physics.add.collider(this.slimes, pathsLayer);
+          if (borderLayer) this.physics.add.collider(this.slimes, borderLayer);
+          if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
+          if (trees2Layer) this.physics.add.collider(this.slimes, trees2Layer);
+          if (trees3Layer) this.physics.add.collider(this.slimes, trees3Layer);
+        }
+          
+        // Set up goblins and handle collisions
+          this.goblins = this.physics.add.group({
+            classType: Goblin,
+            createCallback: (go) => {
+              const goblinGo = go as Goblin;
+              if (goblinGo.body) {
+                goblinGo.body.onCollide = true;
+    
+                // Adjust the hitbox size here
+                const hitboxWidth = 20; 
+                const hitboxHeight = 20; 
+                goblinGo.body.setSize(hitboxWidth, hitboxHeight);
+    
+                // Set the hitbox offset here
+                const offsetX = 6;
+                const offsetY = 14; 
+                goblinGo.body.setOffset(offsetX, offsetY);
+              }
+            },
+          });
+          
+          if (playerCharacters && this.goblins) {
+        // Handle collisions between goblins and layers
+        if (grassLayer) this.physics.add.collider(this.goblins, grassLayer);
+        if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);
+        if (pathsLayer) this.physics.add.collider(this.goblins, pathsLayer);
+        if (borderLayer) this.physics.add.collider(this.goblins, borderLayer);
+        if (treesLayer) this.physics.add.collider(this.goblins, treesLayer);
+        if (trees2Layer) this.physics.add.collider(this.goblins, trees2Layer);
+        if (trees3Layer) this.physics.add.collider(this.goblins, trees3Layer);
       }
+
 
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
         this.playerEnemiesCollider = this.physics.add.collider(
-          this.skeletons,
+          this.skeletons || this.goblins,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerEnemyCollision as any,
           undefined,
@@ -241,6 +276,15 @@ export default class Forest extends Phaser.Scene {
           this.slimes,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerSlimeCollision as any,
+          undefined,
+          this
+        );
+      }
+      if (playerCharacters && this.goblins) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblins,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
         );
@@ -374,42 +418,54 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
+    console.log("x", character.x)
+    console.log("y", character.y)
+
+
     if (
-      character.y >= 2690 &&
-      character.y <= 2700 &&
-      this.slimes.countActive() === 0
+      character.y >= 2940 && character.y <= 3000 &&
+      this.slimes.countActive() === 0 &&
+      this.goblins.countActive() === 0
     ) {
       this.slimes.get(1180, 2605, "slime");
       this.slimes.get(1180, 2605, "slime");
       this.slimes.get(1180, 2605, "slime");
       this.slimes.get(1180, 2605, "slime");
+      this.goblins.get(1270, 2700, "goblin")
+      this.goblins.get(1300, 2700, "goblin")
+
     } else if (
-      character.y >= 2455 &&
-      character.y <= 2470 &&
-      this.slimes.countActive() <= 4
+      character.y >= 2455 && character.y <= 2470 &&
+      this.slimes.countActive() <= 4 &&
+      this.goblins.countActive() <= 2
     ) {
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
     } else if (
-      character.y >= 1660 &&
-      character.y <= 1680 &&
-      this.slimes.countActive() <= 8
+      character.y >= 1660 && character.y <= 1680 &&
+      this.slimes.countActive() <= 8 &&
+      this.goblins.countActive() <= 4
     ) {
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
+      this.goblins.get(1500, 1505, "goblin")
+      this.goblins.get(1500, 1505, "goblin")
     } else if (
-      character.y >= 710 &&
-      character.y <= 730 &&
-      this.slimes.countActive() <= 12
+      character.y >= 710 && character.y <= 730 &&
+      this.slimes.countActive() <= 12 &&
+      this.goblins.countActive() <= 6
     ) {
       this.slimes.get(847, 276, "slime");
       this.slimes.get(857, 267, "slime");
       this.slimes.get(847, 276, "slime");
       this.slimes.get(857, 267, "slime");
+      this.goblins.get(857, 267, "goblin")
+      this.goblins.get(857, 267, "goblin")
+      this.goblins.get(857, 267, "goblin")
     }
 
     this.enemiesSpawned = true;
@@ -490,6 +546,15 @@ export default class Forest extends Phaser.Scene {
         undefined,
         this
       );
+      // Handle collision between knives and goblins
+      this.physics.overlap(
+        this.projectiles,
+        this.goblins,
+        this.collisionHandler.handleProjectileGoblinCollision as any,
+        undefined,
+        this
+      );
+
       if (
         Phaser.Input.Keyboard.JustDown(
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)

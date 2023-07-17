@@ -46,7 +46,6 @@ export default class Game extends Phaser.Scene {
   public exp: number = 0;
   public map?: Phaser.Tilemaps.Tilemap;
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
-  // public miniMapBorder?: Phaser.GameObjects.Rectangle;
   public miniMapForest?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
   public potion!: Potion;
@@ -54,7 +53,7 @@ export default class Game extends Phaser.Scene {
   public resurrect!: Resurrect;
   public sceneFrom?: string;
   private dog!: Phaser.Physics.Arcade.Group;
-  private goblin!: Phaser.Physics.Arcade.Group;
+  private goblins!: Phaser.Physics.Arcade.Group;
   private playerGoblinCollider?: Phaser.Physics.Arcade.Collider;
   private dogBark: Phaser.Sound.BaseSound;
   private slimeDeathSound: Phaser.Sound.BaseSound;
@@ -351,7 +350,7 @@ export default class Game extends Phaser.Scene {
         if (fenceLayer) this.physics.add.collider(this.dog, fenceLayer);
         if (treesLayer) this.physics.add.collider(this.dog, treesLayer);
       }
-      this.goblin = this.physics.add.group({
+      this.goblins = this.physics.add.group({
         classType: Goblin,
         createCallback: (go) => {
           const GoblinGo = go as Goblin;
@@ -370,14 +369,15 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-      this.goblin.get(2080, 1110, "Goblin");
-      if (playerCharacters && this.goblin) {
+
+      this.goblins.get(2080, 1110, "Goblin")
+      if (playerCharacters && this.goblins) {
         // Handle collisions between goblins and layers
-        if (waterLayer) this.physics.add.collider(this.goblin, waterLayer);
-        if (groundLayer) this.physics.add.collider(this.goblin, groundLayer);
-        if (houseLayer) this.physics.add.collider(this.goblin, houseLayer);
-        if (fenceLayer) this.physics.add.collider(this.goblin, fenceLayer);
-        if (treesLayer) this.physics.add.collider(this.goblin, treesLayer);
+        if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);
+        if (houseLayer) this.physics.add.collider(this.goblins, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.goblins, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.goblins, treesLayer);
       }
       if (playerCharacters && this.skeletons) {
         this.physics.add.collider(
@@ -410,10 +410,10 @@ export default class Game extends Phaser.Scene {
         );
       }
 
-      if (playerCharacters && this.goblin) {
+      if (playerCharacters && this.goblins) {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.goblin,
+          this.goblins,
           this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
@@ -564,6 +564,52 @@ export default class Game extends Phaser.Scene {
       //this.skeletons.get(2000, 1220, "jacked-skeleton");
       //this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
+
+    this.miniMapBackground = this.add.rectangle(
+      2000,
+      1100,
+      72,
+      72,
+      Phaser.Display.Color.GetColor(12, 70, 9)
+      
+    );
+    this.miniMapBackground.setAlpha(0.6);
+    this.miniMapBackground.setVisible(false);
+
+  
+    this.miniMapLocation = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(255, 0, 0)
+    );
+    this.miniMapLocation.setVisible(false);
+
+    this.miniMapForest = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(0, 255, 0)
+    );
+    this.miniMapForest.setVisible(false);
+
+  
+    const q = this.input.keyboard?.addKey('Q');
+    q?.on('down', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
+        this.miniMapBackground.setVisible(true);
+        this.miniMapLocation.setVisible(true);
+        this.miniMapForest.setVisible(true);
+      }
+    });
+    
+    q?.on('up', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
+        this.miniMapBackground.setVisible(false);
+        this.miniMapLocation.setVisible(false);
+        this.miniMapForest.setVisible(false);
+      }
+    });
   }
 
   // Method to update player's experience
@@ -725,7 +771,6 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
-
   private updatePlayerMaxHealth(maxHealth: number) {
     // Update the player's max health value in the database
     if (this.playerRef) {
@@ -733,39 +778,6 @@ export default class Game extends Phaser.Scene {
         maxHealth: maxHealth,
       });
     }
-    this.miniMapBackground = this.add.rectangle(
-      2000,
-      1100,
-      72,
-      72,
-      Phaser.Display.Color.GetColor(12, 70, 9)
-    );
-    this.miniMapLocation = this.add.circle(
-      0,
-      0,
-      2,
-      Phaser.Display.Color.GetColor(255, 0, 0)
-    );
-    this.miniMapForest = this.add.circle(
-      0,
-      0,
-      2,
-      Phaser.Display.Color.GetColor(0, 255, 0)
-    );
-    // this.miniMapBorder = this.add.rectangle(2000, 1100, 76, 76, 0xffffff).setStrokeStyle(2, 0x000000);
-
-    const q = this.input.keyboard?.addKey("Q");
-    q?.on("down", () => {
-      if (
-        this.miniMapBackground &&
-        this.miniMapLocation &&
-        this.miniMapForest
-      ) {
-        this.miniMapBackground.visible = !this.miniMapBackground.visible;
-        this.miniMapLocation.visible = !this.miniMapLocation.visible;
-        this.miniMapForest.visible = !this.miniMapForest.visible;
-      }
-    });
   }
 
   update() {
@@ -877,7 +889,7 @@ export default class Game extends Phaser.Scene {
       // Handle collision between knives and goblins
       this.physics.overlap(
         this.projectiles,
-        this.goblin,
+        this.goblins,
         this.collisionHandler.handleProjectileGoblinCollision as any,
         undefined,
         this
@@ -950,6 +962,16 @@ export default class Game extends Phaser.Scene {
       }
     }
 
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers, {
+            x: character.x,
+            y: character.y,
+          });
+        }
+      }
+    }
     if (
       this.miniMapBackground &&
       this.miniMapLocation &&
@@ -964,7 +986,7 @@ export default class Game extends Phaser.Scene {
       this.miniMapBackground.x = backgroundLocation.x;
       this.miniMapBackground.y = backgroundLocation.y;
       // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
-
+      
       const playerLocation = this.getMiniLocation(
         character.x,
         character.y,
@@ -982,30 +1004,19 @@ export default class Game extends Phaser.Scene {
     x: number,
     y: number,
     character: Player | Barb | Wizard | Archer
-  ) {
-    if (this.miniMapBackground && this.map) {
-      const centerX = character.x + 120;
-      const centerY = character.y + 90;
-
-      const ratio = this.miniMapBackground.width / this.map.widthInPixels;
-      const distanceX = x - this.map.widthInPixels / 2;
-      const distanceY = y - this.map.heightInPixels / 2;
-      const ratioX = distanceX * ratio;
-      const ratioY = distanceY * ratio;
-      return { x: centerX + ratioX, y: centerY + ratioY };
-    }
-
-    return { x: 0, y: 0 };
-
-    if (this.updateIterations % 3 === 0) {
-      for (const entry of this.enemies.entries()) {
-        if (entry[1].isAlive) {
-          entry[1].findTarget(this.otherPlayers, {
-            x: character.x,
-            y: character.y,
-          });
-        }
+    ) {
+      if (this.miniMapBackground && this.map) {
+        const centerX = character.x + 120;
+        const centerY = character.y + 90;
+        
+        const ratio = this.miniMapBackground.width / this.map.widthInPixels;
+        const distanceX = x - this.map.widthInPixels / 2;
+        const distanceY = y - this.map.heightInPixels / 2;
+        const ratioX = distanceX * ratio;
+        const ratioY = distanceY * ratio;
+        return { x: centerX + ratioX, y: centerY + ratioY };
       }
+      return { x: 0, y: 0 };
+      
     }
-  }
 }

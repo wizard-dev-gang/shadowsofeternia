@@ -4,6 +4,7 @@ import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
+import { Goblin } from "../enemies/Goblins";
 import { Boss } from "../enemies/Boss";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
@@ -31,6 +32,7 @@ export default class Ruins extends Phaser.Scene {
   public projectiles!: Phaser.Physics.Arcade.Group;
   public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; //  Group to manage slime enemies
+  private goblins!: Phaser.Physics.Arcade.Group; //  Group to manage goblin enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
@@ -204,6 +206,27 @@ export default class Ruins extends Phaser.Scene {
         },
       });
 
+      // Set up goblins and handle collisions
+      this.goblins = this.physics.add.group({
+        classType: Goblin,
+        createCallback: (go) => {
+          const goblinGo = go as Goblin;
+          if (goblinGo.body) {
+            goblinGo.body.onCollide = true;
+    
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; 
+            const hitboxHeight = 20; 
+            goblinGo.body.setSize(hitboxWidth, hitboxHeight);
+    
+            // Set the hitbox offset here
+            const offsetX = 6;
+            const offsetY = 14; 
+            goblinGo.body.setOffset(offsetX, offsetY);
+          }
+        },
+      });
+
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
@@ -227,6 +250,18 @@ export default class Ruins extends Phaser.Scene {
         );
       }
       console.log("creating enemy colliders...");
+
+
+      if (playerCharacters && this.goblins) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblins,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
+          undefined,
+          this
+        );
+      }
+
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
         console.log("create playerenemiescollider");
@@ -239,7 +274,28 @@ export default class Ruins extends Phaser.Scene {
         );
       }
 
-      // Handle collisions between skeletons and ground layers
+      // Handle collisions between player and goblin characters
+      if (playerCharacters && this.goblins) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblins,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
+          undefined,
+          this
+        );
+      }
+
+      if (playerCharacters && this.goblins) {
+        // Handle collisions between goblins and layers
+        if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);
+        if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
+        if (pathLayer) this.physics.add.collider(this.goblins, pathLayer);
+        if (platformLayer) this.physics.add.collider(this.goblins, platformLayer);
+        if (templeLayer) this.physics.add.collider(this.goblins, templeLayer);
+        if (borderLayer) this.physics.add.collider(this.goblins, borderLayer);
+      }
+      
+            // Handle collisions between skeletons and ground layers
       if (this.skeletons && groundLayer) {
         this.physics.add.collider(this.skeletons, groundLayer);
         this.physics.add.collider(
@@ -307,6 +363,7 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
+
       if (this.skeletons && propsLayer) {
         this.physics.add.collider(this.skeletons, propsLayer);
         this.physics.add.collider(
@@ -381,8 +438,6 @@ export default class Ruins extends Phaser.Scene {
         },
       });
 
-      //   this.potion.get(800, 2800, "Potion");
-
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
         createCallback: (go) => {
@@ -398,33 +453,6 @@ export default class Ruins extends Phaser.Scene {
       this.resurrect.get(958, 1320, "Resurrect");
       this.resurrect.get(1755, 750, "Resurrect");
 
-      this.skeletons.get(2475, 2583, "skeleton");
-
-      this.skeletons.get(1967, 3000, "skeleton");
-
-      this.skeletons.get(1590, 2430, "skeleton");
-
-      this.skeletons.get(1248, 1750, "skeleton");
-
-      this.skeletons.get(888, 2060, "skeleton");
-
-      this.skeletons.get(1334, 2330, "skeleton");
-
-      this.skeletons.get(1531, 2800, "skeleton");
-
-      this.skeletons.get(144, 2583, "skeleton");
-
-      this.skeletons.get(184, 1133, "skeleton");
-
-      this.skeletons.get(1044, 213, "skeleton");
-
-      this.skeletons.get(1580, 1470, "skeleton");
-
-      this.skeletons.get(2230, 2000, "skeleton");
-
-      this.skeletons.get(3010, 1890, "skeleton");
-
-      this.skeletons.get(1800, 830, "skeleton");
     }
   }
 
@@ -466,6 +494,61 @@ export default class Ruins extends Phaser.Scene {
       this.sound.stopAll();
       return;
     }
+    
+    if (
+      (character.y <= 3150 && character.y >= 3100) &&
+      (character.x <= 2614 && character.x >= 2250) &&
+      this.goblins.countActive() === 0
+      ) {
+        this.goblins.get(2540, 2940, "goblin")
+        this.goblins.get(2440, 2940, "goblin")
+        this.goblins.get(2500, 2940, "goblin")
+        this.goblins.get(2520, 2940, "goblin")
+      } else if (
+      (character.y <= 2870 && character.y >= 2810) &&
+      (character.x <= 2554 && character.x >= 2438) &&
+      this.skeletons.countActive() === 0
+      ) {
+        this.skeletons.get(2000, 2300, "skeleton")
+        this.skeletons.get(2050, 2600, "skeleton")
+        this.skeletons.get(2100, 2500, "skeleton")
+        this.skeletons.get(2200, 2400, "skeleton")
+        this.skeletons.get(2250, 2400, "skeleton")
+        this.skeletons.get(2300, 2450, "skeleton")
+        this.skeletons.get(2350, 2400, "skeleton")
+        this.skeletons.get(2400, 2640, "skeleton")
+      } else if (
+        (character.y <= 2448 && character.y >= 2395) &&
+        (character.x <= 1870 && character.x >= 1720) &&
+        this.skeletons.countActive() <= 8
+      ) {
+        this.skeletons.get(1490, 1900, "skeleton")
+        this.skeletons.get(1500, 2000, "skeleton")
+        this.skeletons.get(1600, 2100, "skeleton")
+        this.skeletons.get(1650, 2220, "skeleton")
+      } else if (
+        (character.y <= 1776 && character.y >= 1660) &&
+        (character.x <= 1450 && character.x >= 1360) &&
+        this.skeletons.countActive() <= 12
+      ) {
+        this.skeletons.get(900, 1665, "skeleton")
+        this.skeletons.get(1000, 1700, "skeleton")
+        this.skeletons.get(950, 1760, "skeleton")
+        this.skeletons.get(1100, 1720, "skeleton")
+      } else if (
+        (character.y <= 1890 && character.y >= 1815) &&
+        (character.x <= 858 && character.x >= 741) &&
+        this.goblins.countActive() <= 4
+      ) {
+        this.goblins.get(700, 1950, "goblin")
+        this.goblins.get(750, 2000, "goblin")
+        this.goblins.get(800, 2020, "goblin")
+        this.goblins.get(900, 2080, "goblin")
+        this.goblins.get(950, 2100, "goblin")
+        this.goblins.get(1000, 2150, "goblin")
+        this.goblins.get(1050, 2200, "goblin")
+        this.goblins.get(1200, 2250, "goblin")
+      }
 
     if (character && character.isDead) {
       this.physics.add.overlap(
@@ -502,6 +585,16 @@ export default class Ruins extends Phaser.Scene {
         undefined,
         this
       );
+
+      // Handle collision between projectiles and goblins
+      this.physics.overlap(
+        this.projectiles,
+        this.goblins,
+        this.collisionHandler.handleProjectileGoblinCollision as any,
+        undefined,
+        this
+      );
+
       if (
         Phaser.Input.Keyboard.JustDown(
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)

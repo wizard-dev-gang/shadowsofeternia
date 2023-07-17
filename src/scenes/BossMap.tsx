@@ -156,10 +156,10 @@ export default class BossMap extends Phaser.Scene{
               this.enemies.set(this.enemyCount, skeleGo);
             },
           });
-          if (this.characterName === "rogue") {
+          //if (this.characterName === "rogue") {
             this.boss.get(626, 390, "boss");
 
-          }
+          //}
           
           sceneEvents.on(
             "boss-stomp",
@@ -186,7 +186,7 @@ export default class BossMap extends Phaser.Scene{
               for (let i = 0; i < 3; i++) {
                 if (this.enemies.size < 12) {
                   this.babySkeletons.get(boss.x+100, boss.y, "baby-skeleton");
-                  this.slimes.get(boss.x-100, boss.y, "slime");
+                  this.babySkeletons.get(boss.x-100, boss.y, "baby-skeleton");
                   this.skeletons.get(boss.x+100, boss.y, "jacked-skeleton");
                   this.goblin.get(boss.x-100, boss.y, "goblin");
                 }
@@ -616,11 +616,13 @@ export default class BossMap extends Phaser.Scene{
     this.updateIterations++;
     let character;
 
-    if (this.characterName === "rogue" && !this.enemies.get(1).isAlive) {
+    if ( !this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive){
-          
           entry[1].handleDamage()
+          this.time.delayedCall(1000, () => {
+            entry[1].destroy(true);
+          })
         }
       }
     }

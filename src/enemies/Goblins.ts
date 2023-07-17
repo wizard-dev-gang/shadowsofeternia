@@ -27,7 +27,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
   private healthState = HealthState.IDLE;
-  private _health: number;
+  public _health: number;
   private damageTime = 0;
   private currentTarget: any = { x: 0, y: 0, distance: Number(1000) };
   public isAlive: boolean = true;
@@ -142,7 +142,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
       this.anims.play("death-ghost");
       this.deathSound.play();
     } else {
-      this.setVelocity(dir.x, dir.y);
+      //this.setVelocity(dir.x, dir.y);
 
       this.setTint(0xff0000);
 

@@ -664,7 +664,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private levelUpBarb(player: Barb) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)) //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -781,7 +781,7 @@ export default class Game extends Phaser.Scene {
         maxHealth: maxHealth,
       });
     }
-
+  }
 
   update() {
     this.updateIterations++;
@@ -974,7 +974,7 @@ export default class Game extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

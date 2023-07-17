@@ -163,64 +163,56 @@ export default class BossMap extends Phaser.Scene {
         this.cameras.main.startFollow(this.man);
       }
 
-          this.boss = this.physics.add.group({
-            classType: Boss,
-            createCallback: (go) => {
-              const skeleGo = go as Boss;
-              this.enemyCount++;
-              if (skeleGo.body) {
-                skeleGo.body.onCollide = true;
-    
-                // Adjust the hitbox size here
-                const hitboxWidth = 40; // Set the desired hitbox width
-                const hitboxHeight = 55; // Set the desired hitbox height
-                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
-    
-                // Set the hitbox offset here
-                const offsetX = 12; // Set the desired X offset
-                const offsetY = 8; // Set the desired Y offset
-                skeleGo.body.setOffset(offsetX, offsetY);
-              }
-              this.enemies.set(this.enemyCount, skeleGo);
-            },
-          });
-          //if (this.characterName === "rogue") {
-            this.boss.get(626, 390, "boss");
+      this.boss = this.physics.add.group({
+        classType: Boss,
+        createCallback: (go) => {
+          const skeleGo = go as Boss;
+          this.enemyCount++;
+          if (skeleGo.body) {
+            skeleGo.body.onCollide = true;
 
-          //}
-          
-          sceneEvents.on(
-            "boss-stomp",
-            () => {
-    
-              const boss = this.enemies.get(1)
-              boss.body.setSize(80, 110);
-              this.time.addEvent({
-                delay: 1000,
-                callback: () => {
-                  if (boss.isAlive) boss.body.setSize(40, 55);
-                },
-                loop: false
-              });
-            }
-          );
+            // Adjust the hitbox size here
+            const hitboxWidth = 40; // Set the desired hitbox width
+            const hitboxHeight = 55; // Set the desired hitbox height
+            skeleGo.body.setSize(hitboxWidth, hitboxHeight);
 
-          sceneEvents.on(
-            "boss-spin",
-            () => {
-    
-              const boss = this.enemies.get(1)
-              
-              for (let i = 0; i < 3; i++) {
-                if (this.enemies.size < 12) {
-                  this.babySkeletons.get(boss.x+100, boss.y, "baby-skeleton");
-                  this.slimes.get(boss.x-100, boss.y, "slime");
-                  this.skeletons.get(boss.x+100, boss.y, "jacked-skeleton");
-                  this.goblin.get(boss.x-100, boss.y, "goblin");
-                }
-              }
-            }
-          );
+            // Set the hitbox offset here
+            const offsetX = 12; // Set the desired X offset
+            const offsetY = 8; // Set the desired Y offset
+            skeleGo.body.setOffset(offsetX, offsetY);
+          }
+          this.enemies.set(this.enemyCount, skeleGo);
+        },
+      });
+      //if (this.characterName === "rogue") {
+      this.boss.get(626, 390, "boss");
+
+      //}
+
+      sceneEvents.on("boss-stomp", () => {
+        const boss = this.enemies.get(1);
+        boss.body.setSize(80, 110);
+        this.time.addEvent({
+          delay: 1000,
+          callback: () => {
+            if (boss.isAlive) boss.body.setSize(40, 55);
+          },
+          loop: false,
+        });
+      });
+
+      sceneEvents.on("boss-spin", () => {
+        const boss = this.enemies.get(1);
+
+        for (let i = 0; i < 3; i++) {
+          if (this.enemies.size < 12) {
+            this.babySkeletons.get(boss.x + 100, boss.y, "baby-skeleton");
+            this.slimes.get(boss.x - 100, boss.y, "slime");
+            this.skeletons.get(boss.x + 100, boss.y, "jacked-skeleton");
+            this.goblin.get(boss.x - 100, boss.y, "goblin");
+          }
+        }
+      });
 
       const playerCharacters = [this.barb, this.wizard, this.archer, this.man];
 
@@ -236,141 +228,139 @@ export default class BossMap extends Phaser.Scene {
         }
       });
 
-          this.babySkeletons = this.physics.add.group({
-            classType: BabySkeleton,
-            createCallback: (go) => {
-              const skeleGo = go as BabySkeleton;
-              this.enemyCount++;
-              if (skeleGo.body) {
-                skeleGo.body.onCollide = true;
-    
-                // Adjust the hitbox size here
-                const hitboxWidth = 20; // Set the desired hitbox width
-                const hitboxHeight = 25; // Set the desired hitbox height
-                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
+      this.babySkeletons = this.physics.add.group({
+        classType: BabySkeleton,
+        createCallback: (go) => {
+          const skeleGo = go as BabySkeleton;
+          this.enemyCount++;
+          if (skeleGo.body) {
+            skeleGo.body.onCollide = true;
 
-                // Set the hitbox offset here
-                const offsetX = 6; // Set the desired X offset
-                const offsetY = 7; // Set the desired Y offset
-                skeleGo.body.setOffset(offsetX, offsetY);
-              }
-              this.enemies.set(this.enemyCount, skeleGo);
-            },
-          });
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; // Set the desired hitbox width
+            const hitboxHeight = 25; // Set the desired hitbox height
+            skeleGo.body.setSize(hitboxWidth, hitboxHeight);
 
-          // Handle collisions between skeletons and house layers
-          if (this.babySkeletons && groundLayer) {
-            this.physics.add.collider(this.babySkeletons, groundLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              groundLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
+            // Set the hitbox offset here
+            const offsetX = 6; // Set the desired X offset
+            const offsetY = 7; // Set the desired Y offset
+            skeleGo.body.setOffset(offsetX, offsetY);
           }
-          // Handle collisions between skeletons and fences
-          if (this.babySkeletons && platformLayer) {
-            this.physics.add.collider(this.babySkeletons, platformLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              platformLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-          // Handle collisions between skeletons and trees
-          if (this.babySkeletons && wallsLayer) {
-            this.physics.add.collider(this.babySkeletons, wallsLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              wallsLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-
-          if (playerCharacters && this.babySkeletons) {
-            this.physics.add.collider(
-              playerCharacters as Phaser.GameObjects.GameObject[],
-              this.babySkeletons,
-              this.collisionHandler.handlePlayerEnemyCollision as any,
-              undefined,
-              this
-            );
-          }
-          console.log("creating enemy colliders...");
-          // Handle collisions between player and enemy characters
-          if (playerCharacters && this.playerEnemiesCollider) {
-            console.log("create playerenemiescollider");
-            this.playerEnemiesCollider = this.physics.add.collider(
-              this.babySkeletons,
-              playerCharacters as Phaser.GameObjects.GameObject[],
-              this.collisionHandler.handlePlayerEnemyCollision as any,
-              undefined,
-              this
-            );
-          }
-
-          this.skeletons = this.physics.add.group({
-            classType: Skeleton,
-            createCallback: (go) => {
-              const skeleGo = go as Skeleton;
-              this.enemyCount++;
-              if (skeleGo.body) {
-                skeleGo.body.onCollide = true;
-    
-                // Adjust the hitbox size here
-                const hitboxWidth = 20; // Set the desired hitbox width
-                const hitboxHeight = 25; // Set the desired hitbox height
-                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
-
-                // Set the hitbox offset here
-                const offsetX = 6; // Set the desired X offset
-                const offsetY = 7; // Set the desired Y offset
-                skeleGo.body.setOffset(offsetX, offsetY);
-              }
-              this.enemies.set(this.enemyCount, skeleGo);
-            },
-          });
-
-          // Handle collisions between skeletons and house layers
-          if (this.skeletons && groundLayer) {
-            this.physics.add.collider(this.skeletons, groundLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              groundLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-          // Handle collisions between skeletons and fences
-          if (this.skeletons && platformLayer) {
-            this.physics.add.collider(this.skeletons, platformLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              platformLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-          // Handle collisions between skeletons and trees
-          if (this.skeletons && wallsLayer) {
-            this.physics.add.collider(this.skeletons, wallsLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              wallsLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-        }
+          this.enemies.set(this.enemyCount, skeleGo);
+        },
       });
+
+      // Handle collisions between skeletons and house layers
+      if (this.babySkeletons && groundLayer) {
+        this.physics.add.collider(this.babySkeletons, groundLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          groundLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and fences
+      if (this.babySkeletons && platformLayer) {
+        this.physics.add.collider(this.babySkeletons, platformLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          platformLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and trees
+      if (this.babySkeletons && wallsLayer) {
+        this.physics.add.collider(this.babySkeletons, wallsLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          wallsLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+
+      if (playerCharacters && this.babySkeletons) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.babySkeletons,
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+      console.log("creating enemy colliders...");
+      // Handle collisions between player and enemy characters
+      if (playerCharacters && this.playerEnemiesCollider) {
+        console.log("create playerenemiescollider");
+        this.playerEnemiesCollider = this.physics.add.collider(
+          this.babySkeletons,
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+
+      this.skeletons = this.physics.add.group({
+        classType: Skeleton,
+        createCallback: (go) => {
+          const skeleGo = go as Skeleton;
+          this.enemyCount++;
+          if (skeleGo.body) {
+            skeleGo.body.onCollide = true;
+
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; // Set the desired hitbox width
+            const hitboxHeight = 25; // Set the desired hitbox height
+            skeleGo.body.setSize(hitboxWidth, hitboxHeight);
+
+            // Set the hitbox offset here
+            const offsetX = 6; // Set the desired X offset
+            const offsetY = 7; // Set the desired Y offset
+            skeleGo.body.setOffset(offsetX, offsetY);
+          }
+          this.enemies.set(this.enemyCount, skeleGo);
+        },
+      });
+
+      // Handle collisions between skeletons and house layers
+      if (this.skeletons && groundLayer) {
+        this.physics.add.collider(this.skeletons, groundLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          groundLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and fences
+      if (this.skeletons && platformLayer) {
+        this.physics.add.collider(this.skeletons, platformLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          platformLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and trees
+      if (this.skeletons && wallsLayer) {
+        this.physics.add.collider(this.skeletons, wallsLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          wallsLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
 
       // Handle collisions between boss and house layers
       if (this.boss && groundLayer) {
@@ -555,162 +545,162 @@ export default class BossMap extends Phaser.Scene {
       });
       this.potion.get(800, 2800, "Potion");
 
-          this.goblin = this.physics.add.group({
-            classType: Goblin,
-            createCallback: (go) => {
-              const skeleGo = go as Goblin;
-              this.enemyCount++;
-              if (skeleGo.body) {
-                skeleGo.body.onCollide = true;
-    
-                // Adjust the hitbox size here
-                const hitboxWidth = 20; // Set the desired hitbox width
-                const hitboxHeight = 25; // Set the desired hitbox height
-                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
+      this.goblin = this.physics.add.group({
+        classType: Goblin,
+        createCallback: (go) => {
+          const skeleGo = go as Goblin;
+          this.enemyCount++;
+          if (skeleGo.body) {
+            skeleGo.body.onCollide = true;
 
-                // Set the hitbox offset here
-                const offsetX = 6; // Set the desired X offset
-                const offsetY = 7; // Set the desired Y offset
-                skeleGo.body.setOffset(offsetX, offsetY);
-              }
-              this.enemies.set(this.enemyCount, skeleGo);
-            },
-          });
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; // Set the desired hitbox width
+            const hitboxHeight = 25; // Set the desired hitbox height
+            skeleGo.body.setSize(hitboxWidth, hitboxHeight);
 
-          // Handle collisions between skeletons and house layers
-          if (this.goblin && groundLayer) {
-            this.physics.add.collider(this.goblin, groundLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              groundLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
+            // Set the hitbox offset here
+            const offsetX = 6; // Set the desired X offset
+            const offsetY = 7; // Set the desired Y offset
+            skeleGo.body.setOffset(offsetX, offsetY);
           }
-          // Handle collisions between skeletons and fences
-          if (this.goblin && platformLayer) {
-            this.physics.add.collider(this.goblin, platformLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              platformLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-          // Handle collisions between skeletons and trees
-          if (this.goblin && wallsLayer) {
-            this.physics.add.collider(this.goblin, wallsLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              wallsLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
+          this.enemies.set(this.enemyCount, skeleGo);
+        },
+      });
 
-          if (playerCharacters && this.goblin) {
-            this.physics.add.collider(
-              playerCharacters as Phaser.GameObjects.GameObject[],
-              this.goblin,
-              this.collisionHandler.handlePlayerEnemyCollision as any,
-              undefined,
-              this
-            );
-          }
-          console.log("creating enemy colliders...");
-          // Handle collisions between player and enemy characters
-          if (playerCharacters && this.playerEnemiesCollider) {
-            console.log("create playerenemiescollider");
-            this.playerEnemiesCollider = this.physics.add.collider(
-              this.goblin,
-              playerCharacters as Phaser.GameObjects.GameObject[],
-              this.collisionHandler.handlePlayerEnemyCollision as any,
-              undefined,
-              this
-            );
-          }
+      // Handle collisions between skeletons and house layers
+      if (this.goblin && groundLayer) {
+        this.physics.add.collider(this.goblin, groundLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          groundLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and fences
+      if (this.goblin && platformLayer) {
+        this.physics.add.collider(this.goblin, platformLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          platformLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and trees
+      if (this.goblin && wallsLayer) {
+        this.physics.add.collider(this.goblin, wallsLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          wallsLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
 
-          this.slimes = this.physics.add.group({
-            classType: Slime,
-            createCallback: (go) => {
-              const skeleGo = go as Slime;
-              this.enemyCount++;
-              if (skeleGo.body) {
-                skeleGo.body.onCollide = true;
-    
-                // Adjust the hitbox size here
-                const hitboxWidth = 20; // Set the desired hitbox width
-                const hitboxHeight = 25; // Set the desired hitbox height
-                skeleGo.body.setSize(hitboxWidth, hitboxHeight);
+      if (playerCharacters && this.goblin) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblin,
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+      console.log("creating enemy colliders...");
+      // Handle collisions between player and enemy characters
+      if (playerCharacters && this.playerEnemiesCollider) {
+        console.log("create playerenemiescollider");
+        this.playerEnemiesCollider = this.physics.add.collider(
+          this.goblin,
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
 
-                // Set the hitbox offset here
-                const offsetX = 6; // Set the desired X offset
-                const offsetY = 7; // Set the desired Y offset
-                skeleGo.body.setOffset(offsetX, offsetY);
-              }
-              this.enemies.set(this.enemyCount, skeleGo);
-            },
-          });
+      this.slimes = this.physics.add.group({
+        classType: Slime,
+        createCallback: (go) => {
+          const skeleGo = go as Slime;
+          this.enemyCount++;
+          if (skeleGo.body) {
+            skeleGo.body.onCollide = true;
 
-          // Handle collisions between skeletons and house layers
-          if (this.slimes && groundLayer) {
-            this.physics.add.collider(this.slimes, groundLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              groundLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-          // Handle collisions between skeletons and fences
-          if (this.slimes && platformLayer) {
-            this.physics.add.collider(this.slimes, platformLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              platformLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
-          // Handle collisions between skeletons and trees
-          if (this.slimes && wallsLayer) {
-            this.physics.add.collider(this.slimes, wallsLayer);
-            this.physics.add.collider(
-              this.projectiles,
-              wallsLayer,
-              collisionHandler.handleProjectileWallCollision,
-              undefined,
-              this
-            );
-          }
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; // Set the desired hitbox width
+            const hitboxHeight = 25; // Set the desired hitbox height
+            skeleGo.body.setSize(hitboxWidth, hitboxHeight);
 
-          if (playerCharacters && this.slimes) {
-            this.physics.add.collider(
-              playerCharacters as Phaser.GameObjects.GameObject[],
-              this.slimes,
-              this.collisionHandler.handlePlayerEnemyCollision as any,
-              undefined,
-              this
-            );
+            // Set the hitbox offset here
+            const offsetX = 6; // Set the desired X offset
+            const offsetY = 7; // Set the desired Y offset
+            skeleGo.body.setOffset(offsetX, offsetY);
           }
-          console.log("creating enemy colliders...");
-          // Handle collisions between player and enemy characters
-          if (playerCharacters && this.playerEnemiesCollider) {
-            console.log("create playerenemiescollider");
-            this.playerEnemiesCollider = this.physics.add.collider(
-              this.slimes,
-              playerCharacters as Phaser.GameObjects.GameObject[],
-              this.collisionHandler.handlePlayerEnemyCollision as any,
-              undefined,
-              this
-            );
-          }
-    
+          this.enemies.set(this.enemyCount, skeleGo);
+        },
+      });
+
+      // Handle collisions between skeletons and house layers
+      if (this.slimes && groundLayer) {
+        this.physics.add.collider(this.slimes, groundLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          groundLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and fences
+      if (this.slimes && platformLayer) {
+        this.physics.add.collider(this.slimes, platformLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          platformLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+      // Handle collisions between skeletons and trees
+      if (this.slimes && wallsLayer) {
+        this.physics.add.collider(this.slimes, wallsLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          wallsLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
+
+      if (playerCharacters && this.slimes) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.slimes,
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+      console.log("creating enemy colliders...");
+      // Handle collisions between player and enemy characters
+      if (playerCharacters && this.playerEnemiesCollider) {
+        console.log("create playerenemiescollider");
+        this.playerEnemiesCollider = this.physics.add.collider(
+          this.slimes,
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.collisionHandler.handlePlayerEnemyCollision as any,
+          undefined,
+          this
+        );
+      }
+
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
         createCallback: (go) => {
@@ -732,13 +722,13 @@ export default class BossMap extends Phaser.Scene {
 
     if (this.characterName === "Rogue" && !this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
-        if (entry[1].isAlive){
+        if (entry[1].isAlive) {
           // if (entry[1].constructor.name != 'Slime') {
           //   entry[1].handleDamage()
           // }
           this.time.delayedCall(1000, () => {
             entry[1].destroy(true);
-          })
+          });
         }
       }
     }
@@ -772,46 +762,46 @@ export default class BossMap extends Phaser.Scene {
     }
 
     if (this.playerName) {
-        // Update the player's name position horizontally
-        this.playerName.x = character.x;
-        // Position of the name above the player
-        this.playerName.y = character.y - 10;
-      
-        // Handle collision between knives and baby skeletons
-        this.physics.overlap(
-          this.projectiles,
-          this.babySkeletons,
-          this.collisionHandler.handleProjectileBSCollision as any,
-          undefined,
-          this
-        );
+      // Update the player's name position horizontally
+      this.playerName.x = character.x;
+      // Position of the name above the player
+      this.playerName.y = character.y - 10;
 
-        // Handle collision between knives and skeletons
-        this.physics.overlap(
-          this.projectiles,
-          this.skeletons,
-          this.collisionHandler.handleProjectileSkeletonCollision as any,
-          undefined,
-          this
-        );
+      // Handle collision between knives and baby skeletons
+      this.physics.overlap(
+        this.projectiles,
+        this.babySkeletons,
+        this.collisionHandler.handleProjectileBSCollision as any,
+        undefined,
+        this
+      );
 
-        // Handle collision between knives and goblin
-        this.physics.overlap(
-          this.projectiles,
-          this.goblin,
-          this.collisionHandler.handleProjectileGoblinCollision as any,
-          undefined,
-          this
-        );
+      // Handle collision between knives and skeletons
+      this.physics.overlap(
+        this.projectiles,
+        this.skeletons,
+        this.collisionHandler.handleProjectileSkeletonCollision as any,
+        undefined,
+        this
+      );
 
-        // Handle collision between knives and slimes
-        this.physics.overlap(
-          this.projectiles,
-          this.slimes,
-          this.collisionHandler.handleProjectileSlimeCollision as any,
-          undefined,
-          this
-        );
+      // Handle collision between knives and goblin
+      this.physics.overlap(
+        this.projectiles,
+        this.goblin,
+        this.collisionHandler.handleProjectileGoblinCollision as any,
+        undefined,
+        this
+      );
+
+      // Handle collision between knives and slimes
+      this.physics.overlap(
+        this.projectiles,
+        this.slimes,
+        this.collisionHandler.handleProjectileSlimeCollision as any,
+        undefined,
+        this
+      );
 
       // Handle collision between knives and skeletons
       this.physics.overlap(

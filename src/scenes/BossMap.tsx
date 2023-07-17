@@ -184,10 +184,10 @@ export default class BossMap extends Phaser.Scene {
           this.enemies.set(this.enemyCount, skeleGo);
         },
       });
-      //if (this.characterName === "rogue") {
-      this.boss.get(626, 390, "boss");
-
-      //}
+      
+      if (this.characterName === "rogue") {
+        this.boss.get(626, 390, "boss");
+      }
 
       sceneEvents.on("boss-stomp", () => {
         const boss = this.enemies.get(1);
@@ -419,9 +419,9 @@ export default class BossMap extends Phaser.Scene {
       }
 
       this.skeletons = this.physics.add.group({
-        classType: BabySkeleton,
+        classType: Skeleton,
         createCallback: (go) => {
-          const skeleGo = go as BabySkeleton;
+          const skeleGo = go as Skeleton;
           this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
@@ -720,13 +720,14 @@ export default class BossMap extends Phaser.Scene {
     this.updateIterations++;
     let character;
 
-    if (this.characterName === "Rogue" && !this.enemies.get(1).isAlive) {
+    if (this.characterName === "rogue" && !this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
           // if (entry[1].constructor.name != 'Slime') {
           //   entry[1].handleDamage()
           // }
-          this.time.delayedCall(1000, () => {
+          entry[1].isAlive = false
+          this.time.delayedCall(500, () => {
             entry[1].destroy(true);
           });
         }

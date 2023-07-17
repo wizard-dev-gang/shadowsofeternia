@@ -111,7 +111,6 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         };
       }
     }
-    console.log(this.currentTarget.distance, this.currentTarget, avoidTheDead, host.isDead, host)
   }
 
   seekAndDestroy() {

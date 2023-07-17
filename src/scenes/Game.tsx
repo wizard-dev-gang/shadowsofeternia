@@ -773,13 +773,6 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
-  private updatePlayerMaxHealth(maxHealth: number) {
-    if (this.playerRef) {
-      update(this.playerRef, {
-        maxHealth: maxHealth,
-      });
-    }
-  }
 
   update() {
     this.updateIterations++;

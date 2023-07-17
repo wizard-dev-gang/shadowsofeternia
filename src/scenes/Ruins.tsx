@@ -54,6 +54,7 @@ export default class Ruins extends Phaser.Scene {
 
   // Firebase variables
   public characterName?: string;
+  public characterLevel?: number;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -87,6 +88,7 @@ export default class Ruins extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
+    this.characterLevel = data.level;
   }
 
   create() {
@@ -175,16 +177,20 @@ export default class Ruins extends Phaser.Scene {
       borderLayer?.setCollisionByProperty({ collides: true });
 
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(2500, 3100, "barb");
+        this.barb = this.add.barb(800, 3100, "barb");
+        this.barb.level = this.characterLevel
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(2500, 3100, "archer");
+        this.archer = this.add.archer(800, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
+        this.archer.level = this.characterLevel
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(2500, 3100, "wizard");
+        this.wizard = this.add.wizard(800, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
+        this.wizard.level = this.characterLevel
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(2500, 3100, "man");
+        this.man = this.add.player(800, 3100, "man");
+        this.man.level = this.characterLevel
         this.cameras.main.startFollow(this.man);
       }
 
@@ -531,7 +537,10 @@ export default class Ruins extends Phaser.Scene {
     const bossX = character.x >= 1734 && character.x <= 1765;
     const bossY = character.y <= 440 && character.y >= 412;
     if (bossX && bossY) {
-      this.scene.start("bossMap", { characterName: this.characterName });
+      this.scene.start("bossMap", { 
+        characterName: this.characterName ,
+        level:character.level,
+      });
       update(this.playerRef, {
         x: character.x,
         y: character.y,
@@ -544,6 +553,7 @@ export default class Ruins extends Phaser.Scene {
         online: true,
         projectilesFromDB: character.projectilesToSend,
         scene: "bossMap",
+        level: character.level,
       });
       this.sound.stopAll();
       return;
@@ -723,11 +733,12 @@ export default class Ruins extends Phaser.Scene {
           online: true,
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
+          level: character.level,
         });
         character.projectilesToSend = {};
       }
     }
-
+    if (this.updateIterations % 3 === 0) { console.log(character.level)}
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {

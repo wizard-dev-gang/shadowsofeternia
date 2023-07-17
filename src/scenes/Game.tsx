@@ -617,11 +617,11 @@ export default class Game extends Phaser.Scene {
     this.exp = exp;
 
     // Update the player's exp value in the database
-    if (this.playerRef) {
-      update(this.playerRef, {
-        exp: this.exp,
-      });
-    }
+    // if (this.playerRef) {
+    //   update(this.playerRef, {
+    //     exp: this.exp,
+    //   });
+    // }
   }
 
   private levelUpPlayer(player: Player) {
@@ -645,14 +645,14 @@ export default class Game extends Phaser.Scene {
 
       this.updatePlayerMaxHealth(player.maxHealth);
 
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
-          maxHealth: player.maxHealth,
-          level: player.level,
-        });
-      }
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -682,14 +682,14 @@ export default class Game extends Phaser.Scene {
 
       this.updatePlayerMaxHealth(player.maxHealth);
 
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
-          maxHealth: player.maxHealth,
-          level: player.level,
-        });
-      }
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -719,14 +719,14 @@ export default class Game extends Phaser.Scene {
 
       this.updatePlayerMaxHealth(player.maxHealth);
 
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
-          maxHealth: player.maxHealth,
-          level: player.level,
-        });
-      }
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -756,14 +756,14 @@ export default class Game extends Phaser.Scene {
 
       this.updatePlayerMaxHealth(player.maxHealth);
 
-      if (this.playerRef) {
-        update(this.playerRef, {
-          exp: player.exp,
-          hp: player._health,
-          maxHealth: player.maxHealth,
-          level: player.level,
-        });
-      }
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -773,11 +773,46 @@ export default class Game extends Phaser.Scene {
   }
   private updatePlayerMaxHealth(maxHealth: number) {
     // Update the player's max health value in the database
-    if (this.playerRef) {
-      update(this.playerRef, {
-        maxHealth: maxHealth,
-      });
-    }
+    this.miniMapBackground = this.add.rectangle(
+      2000,
+      1100,
+      72,
+      72,
+      Phaser.Display.Color.GetColor(12, 70, 9)
+    );
+    this.miniMapLocation = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(255, 0, 0)
+    );
+    this.miniMapForest = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(0, 255, 0)
+    );
+    // this.miniMapBorder = this.add.rectangle(2000, 1100, 76, 76, 0xffffff).setStrokeStyle(2, 0x000000);
+
+    const q = this.input.keyboard?.addKey("Q");
+    q?.on("down", () => {
+      if (
+        this.miniMapBackground &&
+        this.miniMapLocation &&
+        this.miniMapForest
+      ) {
+        this.miniMapBackground.visible = !this.miniMapBackground.visible;
+        this.miniMapLocation.visible = !this.miniMapLocation.visible;
+        this.miniMapForest.visible = !this.miniMapForest.visible;
+      }
+    });
+
+    //if (this.playerRef) {
+    //  update(this.playerRef, {
+    //    maxHealth: maxHealth,
+    //  });
+    //}
+
   }
 
   update() {
@@ -823,6 +858,7 @@ export default class Game extends Phaser.Scene {
       // this.scene.start("endCredits")
       this.scene.start("forest", {
         characterName: this.characterName,
+        level:character.level,
         game: this,
       });
       update(this.playerRef, {
@@ -837,6 +873,7 @@ export default class Game extends Phaser.Scene {
         online: true,
         projectilesFromDB: character.projectilesToSend,
         scene: "forest",
+        level: character.level,
       });
       this.sound.stopAll();
       return;
@@ -929,11 +966,12 @@ export default class Game extends Phaser.Scene {
           online: true,
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
+          level: {level: character.level, exp:character.exp},
         });
         character.projectilesToSend = {};
       }
     }
-
+    if (this.updateIterations % 3 === 0) { console.log(character.level)}
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {

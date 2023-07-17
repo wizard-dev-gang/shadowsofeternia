@@ -154,19 +154,19 @@ export default class BossMap extends Phaser.Scene {
 
       if (this.characterName === "barb") {
         this.barb = this.add.barb(600, 1150, "barb");
-        this.barb.level = this.characterLevel
+        this.barb.level = this.characterLevel;
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(600, 1150, "archer");
         this.cameras.main.startFollow(this.archer);
-        this.archer.level = this.characterLevel
+        this.archer.level = this.characterLevel;
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(600, 1150, "wizard");
         this.cameras.main.startFollow(this.wizard);
-        this.wizard.level = this.characterLevel
+        this.wizard.level = this.characterLevel;
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(600, 1150, "man");
-        this.man.level = this.characterLevel
+        this.man.level = this.characterLevel;
         this.cameras.main.startFollow(this.man);
       }
 
@@ -900,7 +900,7 @@ export default class BossMap extends Phaser.Scene {
           // if (entry[1].constructor.name != 'Slime') {
           //   entry[1].handleDamage()
           // }
-          entry[1].isAlive = false
+          entry[1].isAlive = false;
           this.time.delayedCall(500, () => {
             entry[1].destroy(true);
           });

@@ -135,7 +135,7 @@ export default class Forest extends Phaser.Scene {
 
     // Creating the map and tileset
     const map = this.make.tilemap({ key: "forestMap" });
-    this.map = map
+    this.map = map;
     const ruinsTerrain = map.addTilesetImage("Ruins-Terrain", "ruinsTerrain");
     const ruinsProps = map.addTilesetImage("Ruins-Props", "ruinsProps");
     const grassProps = map.addTilesetImage("Grasslands-Props", "grassProps");
@@ -160,19 +160,19 @@ export default class Forest extends Phaser.Scene {
 
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
-        this.barb.level = this.characterLevel
+        this.barb.level = this.characterLevel;
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(800, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
-        this.archer.level = this.characterLevel
+        this.archer.level = this.characterLevel;
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(800, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
-        this.wizard.level = this.characterLevel
+        this.wizard.level = this.characterLevel;
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
-        this.man.level = this.characterLevel
+        this.man.level = this.characterLevel;
         this.cameras.main.startFollow(this.man);
       }
 
@@ -217,7 +217,6 @@ export default class Forest extends Phaser.Scene {
         },
       });
 
-      
       // Add a slime to the group
       // this.slimes.get(800, 3150, "slime");
       if (playerCharacters && this.slimes) {
@@ -228,39 +227,39 @@ export default class Forest extends Phaser.Scene {
           this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
-          );
-          // Handle collisions between slimes and layers
-          if (grassLayer) this.physics.add.collider(this.slimes, grassLayer);
-          if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
-          if (pathsLayer) this.physics.add.collider(this.slimes, pathsLayer);
-          if (borderLayer) this.physics.add.collider(this.slimes, borderLayer);
-          if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
-          if (trees2Layer) this.physics.add.collider(this.slimes, trees2Layer);
-          if (trees3Layer) this.physics.add.collider(this.slimes, trees3Layer);
-        }
-          
-        // Set up goblins and handle collisions
-          this.goblins = this.physics.add.group({
-            classType: Goblin,
-            createCallback: (go) => {
-              const goblinGo = go as Goblin;
-              if (goblinGo.body) {
-                goblinGo.body.onCollide = true;
-    
-                // Adjust the hitbox size here
-                const hitboxWidth = 20; 
-                const hitboxHeight = 20; 
-                goblinGo.body.setSize(hitboxWidth, hitboxHeight);
-    
-                // Set the hitbox offset here
-                const offsetX = 6;
-                const offsetY = 14; 
-                goblinGo.body.setOffset(offsetX, offsetY);
-              }
-            },
-          });
-          
-          if (playerCharacters && this.goblins) {
+        );
+        // Handle collisions between slimes and layers
+        if (grassLayer) this.physics.add.collider(this.slimes, grassLayer);
+        if (groundLayer) this.physics.add.collider(this.slimes, groundLayer);
+        if (pathsLayer) this.physics.add.collider(this.slimes, pathsLayer);
+        if (borderLayer) this.physics.add.collider(this.slimes, borderLayer);
+        if (treesLayer) this.physics.add.collider(this.slimes, treesLayer);
+        if (trees2Layer) this.physics.add.collider(this.slimes, trees2Layer);
+        if (trees3Layer) this.physics.add.collider(this.slimes, trees3Layer);
+      }
+
+      // Set up goblins and handle collisions
+      this.goblins = this.physics.add.group({
+        classType: Goblin,
+        createCallback: (go) => {
+          const goblinGo = go as Goblin;
+          if (goblinGo.body) {
+            goblinGo.body.onCollide = true;
+
+            // Adjust the hitbox size here
+            const hitboxWidth = 20;
+            const hitboxHeight = 20;
+            goblinGo.body.setSize(hitboxWidth, hitboxHeight);
+
+            // Set the hitbox offset here
+            const offsetX = 6;
+            const offsetY = 14;
+            goblinGo.body.setOffset(offsetX, offsetY);
+          }
+        },
+      });
+
+      if (playerCharacters && this.goblins) {
         // Handle collisions between goblins and layers
         if (grassLayer) this.physics.add.collider(this.goblins, grassLayer);
         if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);
@@ -270,7 +269,6 @@ export default class Forest extends Phaser.Scene {
         if (trees2Layer) this.physics.add.collider(this.goblins, trees2Layer);
         if (trees3Layer) this.physics.add.collider(this.goblins, trees3Layer);
       }
-
 
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
@@ -413,7 +411,8 @@ export default class Forest extends Phaser.Scene {
       npc2.text = "The path ahead splits in two, adventurer. Choose wisely!";
 
       const npc3 = this.Npc_wizard.get(840, 178, "npcWizard");
-      npc3.text = "The path ahead splits in two, adventurer. Choose wisely!";
+      npc3.text =
+        "Beware, brave adventurer, for beyond this treacherous path lie the ancient ruins of a forgotten civilization. Tread lightly, for the spirits of the past still haunt those crumbling halls.";
 
       // this.potion.get(800, 2900, "Potion");
     }
@@ -424,12 +423,10 @@ export default class Forest extends Phaser.Scene {
       72,
       72,
       Phaser.Display.Color.GetColor(12, 70, 9)
-      
     );
     this.miniMapBackground.setAlpha(0.6);
     this.miniMapBackground.setVisible(false);
 
-  
     this.miniMapLocation = this.add.circle(
       0,
       0,
@@ -446,17 +443,16 @@ export default class Forest extends Phaser.Scene {
     );
     this.miniMapRuins.setVisible(false);
 
-  
-    const q = this.input.keyboard?.addKey('Q');
-    q?.on('down', () => {
+    const q = this.input.keyboard?.addKey("Q");
+    q?.on("down", () => {
       if (this.miniMapBackground && this.miniMapLocation && this.miniMapRuins) {
         this.miniMapBackground.setVisible(true);
         this.miniMapLocation.setVisible(true);
         this.miniMapRuins.setVisible(true);
       }
     });
-    
-    q?.on('up', () => {
+
+    q?.on("up", () => {
       if (this.miniMapBackground && this.miniMapLocation && this.miniMapRuins) {
         this.miniMapBackground.setVisible(false);
         this.miniMapLocation.setVisible(false);
@@ -647,7 +643,8 @@ export default class Forest extends Phaser.Scene {
     if (!character) return;
 
     if (
-      character.y >= 2940 && character.y <= 3000 &&
+      character.y >= 2940 &&
+      character.y <= 3000 &&
       this.slimes.countActive() === 0 &&
       this.goblins.countActive() === 0
     ) {
@@ -655,11 +652,11 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(1180, 2605, "slime");
       this.slimes.get(1180, 2605, "slime");
       this.slimes.get(1180, 2605, "slime");
-      this.goblins.get(1270, 2700, "goblin")
-      this.goblins.get(1300, 2700, "goblin")
-
+      this.goblins.get(1270, 2700, "goblin");
+      this.goblins.get(1300, 2700, "goblin");
     } else if (
-      character.y >= 2455 && character.y <= 2470 &&
+      character.y >= 2455 &&
+      character.y <= 2470 &&
       this.slimes.countActive() <= 4 &&
       this.goblins.countActive() <= 2
     ) {
@@ -668,7 +665,8 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
     } else if (
-      character.y >= 1660 && character.y <= 1680 &&
+      character.y >= 1660 &&
+      character.y <= 1680 &&
       this.slimes.countActive() <= 8 &&
       this.goblins.countActive() <= 4
     ) {
@@ -676,10 +674,11 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
-      this.goblins.get(1500, 1505, "goblin")
-      this.goblins.get(1500, 1505, "goblin")
+      this.goblins.get(1500, 1505, "goblin");
+      this.goblins.get(1500, 1505, "goblin");
     } else if (
-      character.y >= 710 && character.y <= 730 &&
+      character.y >= 710 &&
+      character.y <= 730 &&
       this.slimes.countActive() <= 12 &&
       this.goblins.countActive() <= 6
     ) {
@@ -687,9 +686,9 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(857, 267, "slime");
       this.slimes.get(847, 276, "slime");
       this.slimes.get(857, 267, "slime");
-      this.goblins.get(857, 267, "goblin")
-      this.goblins.get(857, 267, "goblin")
-      this.goblins.get(857, 267, "goblin")
+      this.goblins.get(857, 267, "goblin");
+      this.goblins.get(857, 267, "goblin");
+      this.goblins.get(857, 267, "goblin");
     }
 
     this.enemiesSpawned = true;
@@ -698,10 +697,10 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.sound.stopAll();
-      this.scene.start("ruins", { 
+      this.scene.start("ruins", {
         characterName: this.characterName,
-        level:character.level,
-       });
+        level: character.level,
+      });
       update(this.playerRef, {
         x: character.x,
         y: character.y,
@@ -811,7 +810,7 @@ export default class Forest extends Phaser.Scene {
         character.projectilesToSend = {};
       }
     }
-    if (this.updateIterations % 3 === 0)
+
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -839,7 +838,7 @@ export default class Forest extends Phaser.Scene {
         update(this.enemyDB, this.dataToSend);
       }
     }
-    
+
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
@@ -866,7 +865,7 @@ export default class Forest extends Phaser.Scene {
       this.miniMapBackground.x = backgroundLocation.x;
       this.miniMapBackground.y = backgroundLocation.y;
       // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
-      
+
       const playerLocation = this.getMiniLocation(
         character.x,
         character.y,
@@ -883,21 +882,20 @@ export default class Forest extends Phaser.Scene {
     x: number,
     y: number,
     character: Player | Barb | Wizard | Archer
-    ) {
-      if (this.miniMapBackground && this.map) {
-        const centerX = character.x + 120;
-        const centerY = character.y + 90;
-        // console.log(this.map.widthInPixels, this.map.heightInPixels);
-        
-        const ratioX = this.miniMapBackground.width / this.map.widthInPixels;
-        const ratioY = this.miniMapBackground.height / this.map.heightInPixels;
-        const distanceX = x - this.map.widthInPixels / 2;
-        const distanceY = y - this.map.heightInPixels / 2;
-        const scaledX = distanceX * ratioX;
-        const scaledY = distanceY * ratioY;
-        return { x: centerX + scaledX, y: centerY + scaledY };
-      }
-      return { x: 0, y: 0 };
-      
+  ) {
+    if (this.miniMapBackground && this.map) {
+      const centerX = character.x + 120;
+      const centerY = character.y + 90;
+      // console.log(this.map.widthInPixels, this.map.heightInPixels);
+
+      const ratioX = this.miniMapBackground.width / this.map.widthInPixels;
+      const ratioY = this.miniMapBackground.height / this.map.heightInPixels;
+      const distanceX = x - this.map.widthInPixels / 2;
+      const distanceY = y - this.map.heightInPixels / 2;
+      const scaledX = distanceX * ratioX;
+      const scaledY = distanceY * ratioY;
+      return { x: centerX + scaledX, y: centerY + scaledY };
     }
+    return { x: 0, y: 0 };
+  }
 }

@@ -46,6 +46,9 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
                   break
                 case 'baby-skeleton':
                   enemySelector = 'skeletons'
+                  break
+                case 'golbin':
+                  enemySelector = 'goblin'
               }
               enemy = gameInstance[enemySelector].get(
                 enemyData.x,

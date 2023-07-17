@@ -235,9 +235,19 @@ export class CollisionHandler {
     (goblin as Goblin).setVelocity(dir.x, dir.y);
     (goblin as Goblin).getHealth();
     (goblin as Goblin).handleDamage(dir);
+
     if ((goblin as Goblin).getHealth() <= 0) {
       this.goblins.killAndHide(goblin);
       (goblin.isAlive = false), goblin.destroy();
+
+    // Generate a random number between 0 and 1
+    const dropChance = Math.random();
+    console.log("THIS IS THE DROP CHANCE VALUE", dropChance);
+    // Check if the drop chance is less than or equal to 0.2 (20%)
+    if (dropChance <= 0.2) {
+    // Drop a potion at the goblin's position
+    this.potion.get(goblin.x, goblin.y, "potion");
+    }
     }
 
     this.projectileHit?.play();

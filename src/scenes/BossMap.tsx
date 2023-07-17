@@ -61,6 +61,7 @@ export default class BossMap extends Phaser.Scene {
   public dataToSend: any = {};
   public updateIterations = 0;
   private enemyCount: number = 0;
+  public playerLevel?: Phaser.GameObjects.Text
 
   constructor() {
     super("bossMap");
@@ -539,6 +540,15 @@ export default class BossMap extends Phaser.Scene {
             strokeThickness: 2,
           })
           .setOrigin(0.5, 1);
+          // Add text for player level
+          this.playerLevel = this.add
+          .text(0, 0, "Level: " + this.characterLevel, {
+            fontSize: "12px",
+            color: "#FFD700",
+            stroke: "#000000",
+            strokeThickness: 1,
+          })
+          .setOrigin(0.5, 1);
       }
       this.potion = this.physics.add.group({
         classType: Potion,
@@ -722,6 +732,164 @@ export default class BossMap extends Phaser.Scene {
       this.resurrect.get(832, 738, "Resurrect");
     }
   }
+
+  private levelUpPlayer(player: Player) {
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.25 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
+      player.level++; // level the player up
+      console.log("You have leveled up! Level:", player.level);
+      console.log("HP:", player._health);
+
+      // Update the player's max health in the health bar
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
+
+      this.updatePlayerMaxHealth(player.maxHealth);
+
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
+    }
+  }
+
+  private levelUpBarb(player: Barb) {
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)) //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
+      player.level++; // level the player up
+      console.log("You have leveled up! Level:", player.level);
+      console.log("HP:", player._health);
+
+      // Update the player's max health in the health bar
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
+
+      this.updatePlayerMaxHealth(player.maxHealth);
+
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
+    }
+  }
+
+  private levelUpArcher(player: Archer) {
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
+      player.level++; // level the player up
+      console.log("You have leveled up! Level:", player.level);
+      console.log("HP:", player._health);
+
+      // Update the player's max health in the health bar
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
+
+      this.updatePlayerMaxHealth(player.maxHealth);
+
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
+    }
+  }
+
+  private levelUpWizard(player: Wizard) {
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    if (player.exp >= expNeeded) {
+      player.exp -= expNeeded;
+      player._health *= 1.25; //increase the players current health by 1.25 times
+      player._health = Math.round(player._health); // Round the players health to the nearest whole number
+      player.maxHealth *= 1.25; //increase the players max health by 1.25 times
+      player.maxHealth = Math.round(player.maxHealth); // Round the players max health to the nearest whole number
+      player.level++; // level the player up
+      console.log("You have leveled up! Level:", player.level);
+      console.log("HP:", player._health);
+
+      // Update the player's max health in the health bar
+      if (this.scene.isActive("player-ui")) {
+        this.scene
+          .get("player-ui")
+          .events.emit("player-max-health-changed", player.maxHealth);
+      }
+
+      this.updatePlayerMaxHealth(player.maxHealth);
+
+      // if (this.playerRef) {
+      //   update(this.playerRef, {
+      //     exp: player.exp,
+      //     hp: player._health,
+      //     maxHealth: player.maxHealth,
+      //     level: player.level,
+      //   });
+      // }
+      if (this.playerLevel) {
+        this.playerLevel.text = "Level: " + player.level;
+      }
+      // Dispatch the event to update the health bar
+      sceneEvents.emit("player-max-health-changed", player.maxHealth);
+    }
+  }
+
+  private updatePlayerMaxHealth(maxHealth: number) {
+    // Update the player's max health value in the database
+    if (this.playerRef) {
+      update(this.playerRef, {
+        maxHealth: maxHealth,
+      });
+    }
+  }
+
   update() {
     this.updateIterations++;
     let character;
@@ -747,15 +915,19 @@ export default class BossMap extends Phaser.Scene {
     if (this.man) {
       this.man.update();
       character = this.man;
+      this.levelUpPlayer(this.man);
     } else if (this.barb) {
       this.barb.update();
       character = this.barb;
+      this.levelUpBarb(this.barb);
     } else if (this.archer) {
       this.archer.update();
       character = this.archer;
+      this.levelUpArcher(this.archer);
     } else if (this.wizard) {
       this.wizard.update();
       character = this.wizard;
+      this.levelUpWizard(this.wizard);
     }
     if (!character) return;
 
@@ -775,8 +947,14 @@ export default class BossMap extends Phaser.Scene {
     if (this.playerName) {
       // Update the player's name position horizontally
       this.playerName.x = character.x;
+
       // Position of the name above the player
-      this.playerName.y = character.y - 10;
+      this.playerName.y = character.y - 20;
+
+      if(this.playerLevel){
+      this.playerLevel.x = this.playerName.x;
+      this.playerLevel.y = character.y - 10;
+      }
 
       // Handle collision between knives and baby skeletons
       this.physics.overlap(

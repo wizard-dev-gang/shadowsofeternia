@@ -128,13 +128,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     xLoc?: number,
     yLoc?: number,
     attackObj?: string,
-    gameInstance?:Game
+    gameInstance?: Game
   ) {
     if (!this.projectiles) {
       return;
     }
 
-    const currentTime = gameInstance? gameInstance.time.now :this.scene.time.now;
+    const currentTime = gameInstance
+      ? gameInstance.time.now
+      : this.scene.time.now;
 
     if (
       this.lastProjectileTime &&
@@ -256,7 +258,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       // return
     }
 
-    const speed = 200;
+    const speed = 150;
     if (this.keys.A?.isDown) {
       this.anims.play("man-walk-left", true);
       this.setVelocity(-speed, 0);

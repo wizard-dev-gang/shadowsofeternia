@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import Barb from "../characters/Barb";
 import Archer from "../characters/Archer";
@@ -13,6 +12,8 @@ import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
+import "../characters/Resurrect";
+import { createResurrectAnims } from "../anims/ResurrectAnims";
 import { createPotionAnims } from "../anims/PotionAnims";
 import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
@@ -37,14 +38,14 @@ export default class Forest extends Phaser.Scene {
   private forestEntranceX!: number;
   private forestEntranceY!: number;
 
-  private game?: Game
+  private game?: Game;
   private enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   private slimeDeathSound: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
-
+  private resurrectSound: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;
@@ -121,6 +122,7 @@ export default class Forest extends Phaser.Scene {
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
     createPotionAnims(this.anims);
+    createResurrectAnims(this.anims);
 
     // Creating the map and tileset
     const map = this.make.tilemap({ key: "forestMap" });
@@ -304,6 +306,21 @@ export default class Forest extends Phaser.Scene {
       });
       this.potion.get(800, 2800, "Potion");
 
+      this.resurrect = this.physics.add.group({
+        classType: Resurrect,
+        createCallback: (go) => {
+          const ResGo = go as Resurrect;
+          if (ResGo.body) {
+            ResGo.body.onCollide = true;
+          }
+        },
+      });
+
+      this.resurrect.get(820, 2800, "Resurrect");
+      this.resurrect.get(1690, 2640, "Resurrect");
+      this.resurrect.get(1220, 1540, "Resurrect");
+      this.resurrect.get(725, 165, "Resurrect");
+
       this.Npc_wizard = this.physics.add.group({
         classType: Npc_wizard,
         createCallback: (go) => {
@@ -358,7 +375,8 @@ export default class Forest extends Phaser.Scene {
     if (!character) return;
 
     if (
-      character.y >= 2690 && character.y <= 2700 &&
+      character.y >= 2690 &&
+      character.y <= 2700 &&
       this.slimes.countActive() === 0
     ) {
       this.slimes.get(1180, 2605, "slime");
@@ -366,16 +384,17 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(1180, 2605, "slime");
       this.slimes.get(1180, 2605, "slime");
     } else if (
-      character.y >= 2455 && character.y <= 2470 &&
+      character.y >= 2455 &&
+      character.y <= 2470 &&
       this.slimes.countActive() <= 4
     ) {
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
-      
     } else if (
-      character.y >= 1660 && character.y <= 1680 &&
+      character.y >= 1660 &&
+      character.y <= 1680 &&
       this.slimes.countActive() <= 8
     ) {
       this.slimes.get(1500, 1505, "slime");
@@ -383,7 +402,8 @@ export default class Forest extends Phaser.Scene {
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
     } else if (
-      character.y >= 710 && character.y <= 730 &&
+      character.y >= 710 &&
+      character.y <= 730 &&
       this.slimes.countActive() <= 12
     ) {
       this.slimes.get(847, 276, "slime");
@@ -422,6 +442,20 @@ export default class Forest extends Phaser.Scene {
         scene: "ruins",
       });
       return;
+    }
+
+    // Handle Collision Between Player and Resurrect
+    if (character && character.isDead) {
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
+      this.resurrect.setVisible(true);
+    } else {
+      this.resurrect.setVisible(false);
     }
 
     if (this.playerName) {

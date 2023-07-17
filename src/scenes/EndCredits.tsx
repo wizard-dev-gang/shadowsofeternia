@@ -18,12 +18,6 @@ export default class Credits extends Phaser.Scene{
         Justin Sattur`, {
         fontSize: "11px",
         align: "left"
-        // padding: {
-        //     left: 42,
-        //     right: 42,
-        //     top: 42,
-        //     bottom: 42,
-        // },
         })
       }
     update(){

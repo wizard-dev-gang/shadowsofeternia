@@ -170,7 +170,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    const speed = 100;
+    const speed = 120;
     switch (this.direction) {
       case Direction.UP:
         this.anims.play("baby-skeleton-walk-up", true);

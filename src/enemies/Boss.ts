@@ -45,7 +45,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-    this._health = 10;
+    this._health = 3;
     this.anims.play("boss-idle-down");
     this.deathSound = scene.sound.add("bossDeath");
 
@@ -58,6 +58,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.moveEvent = scene.time.addEvent({
       delay: 1000,
       callback: () => {
+
         let newNum = Math.random();
         if (newNum >= 0.4) {
           console.log("calling seek");

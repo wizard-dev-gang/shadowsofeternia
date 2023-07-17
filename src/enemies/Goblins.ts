@@ -27,9 +27,9 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
   private healthState = HealthState.IDLE;
-  private _health: number;
+  public _health: number;
   private damageTime = 0;
-  private currentTarget: any = { x: 0, y: 0, distance: Number(500) };
+  private currentTarget: any = { x: 0, y: 0, distance: Number(1000) };
   public isAlive: boolean = true;
   private deathSound: Phaser.Sound.BaseSound;
 
@@ -60,7 +60,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
         } else if (newNum >= 0.1 && newNum < 0.2) {
           this.direction = randomDirection(this.direction);
         } else {
-          this.currentTarget = { x: 0, y: 0, distance: Number(500) };
+          this.currentTarget = { x: 0, y: 0, distance: Number(1000) };
         }
       },
       loop: true,
@@ -80,7 +80,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
     let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y);
     if (
       this.currentTarget.id === "host" ||
-      (distance < 500 && distance < this.currentTarget.distance)
+      (distance < 1000 && distance < this.currentTarget.distance)
     ) {
       this.currentTarget = {
         id: "host",
@@ -100,7 +100,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
           distance: distance,
         };
       }
-      if (distance < 500 && distance < this.currentTarget.distance) {
+      if (distance < 1000 && distance < this.currentTarget.distance) {
         this.currentTarget = {
           id: entry[0],
           x: entry[1].x,
@@ -142,7 +142,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
       this.anims.play("death-ghost");
       this.deathSound.play();
     } else {
-      this.setVelocity(dir.x, dir.y);
+      //this.setVelocity(dir.x, dir.y);
 
       this.setTint(0xff0000);
 
@@ -179,7 +179,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    const speed = 50;
+    const speed = 110;
 
     switch (this.direction) {
       case Direction.UP:

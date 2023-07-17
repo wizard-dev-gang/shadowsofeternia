@@ -101,6 +101,7 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
       this.y > this.currentTarget.y ? this.direction = 0 : this.direction = 1
     }
   }
+
   destroy(fromScene?: boolean) {
     this.moveEvent.destroy();
     super.destroy(fromScene);

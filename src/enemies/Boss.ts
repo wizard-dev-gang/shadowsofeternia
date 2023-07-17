@@ -7,7 +7,7 @@ enum Direction {
   LEFT,
   RIGHT,
   STOMP,
-  SPIN
+  SPIN,
 }
 
 enum HealthState {
@@ -28,13 +28,14 @@ const randomDirection = (exclude: Direction) => {
 export default class Boss extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private moveEvent: Phaser.Time.TimerEvent;
-  private healthState = HealthState.IDLE
-  private _health: number
+  private healthState = HealthState.IDLE;
+  private _health: number;
   private damageTime = 0;
-  private currentTarget:any = {x: 0, y:0,distance:Number(1000)}
-  public isAlive:boolean = true
-  public isStomp = false
-  public enemyType = 'boss'
+  private currentTarget: any = { x: 0, y: 0, distance: Number(1000) };
+  public isAlive: boolean = true;
+  public isStomp = false;
+  public enemyType = "boss";
+  private deathSound: Phaser.Sound.BaseSound;
 
   constructor(
     scene: Phaser.Scene,
@@ -46,80 +47,92 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame);
     this._health = 10;
     this.anims.play("boss-idle-down");
-    
+    this.deathSound = scene.sound.add("bossDeath");
+
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,
       this.handleTileCollision,
       this
     );
-    
 
     this.moveEvent = scene.time.addEvent({
       delay: 1000,
       callback: () => {
-        let newNum = Math.random()
-        if (newNum >= .4) {
-          console.log("calling seek")
-          this.seekAndDestroy()
-        } else if (newNum >= .3 && newNum < .4 ) {
-          this.direction = 5
-          this.direction = randomDirection(this.direction);  
-          console.log("calling rd")   
-        } else if (newNum >= .1 && newNum < .3 ) {
-          this.currentTarget = {x: 0, y:0,distance:500}
-          this.direction = 4
+        let newNum = Math.random();
+        if (newNum >= 0.4) {
+          console.log("calling seek");
+          this.seekAndDestroy();
+        } else if (newNum >= 0.3 && newNum < 0.4) {
+          this.direction = 5;
+          this.direction = randomDirection(this.direction);
+          console.log("calling rd");
+        } else if (newNum >= 0.1 && newNum < 0.3) {
+          this.currentTarget = { x: 0, y: 0, distance: 500 };
+          this.direction = 4;
         } else {
-          this.direction = 5
+          this.direction = 5;
         }
       },
       loop: true,
     });
+  }
+
+  preload() {
+    this.load.audio("bossDeath", "/music/bossDeathSound2.mp3");
   }
   // Enemies have health, to not die in 1 hit.
   getHealth() {
     return this._health;
   }
 
-  findTarget(playerData:Map<any,any>, host:any) {
-    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y)
-    if(this.currentTarget.id === "host" || (distance < 1000 && distance< this.currentTarget.distance)) {
+  findTarget(playerData: Map<any, any>, host: any) {
+    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y);
+    if (
+      this.currentTarget.id === "host" ||
+      (distance < 1000 && distance < this.currentTarget.distance)
+    ) {
       this.currentTarget = {
-        id:'host',
-        x:host.x,
-        y:host.y,
-        distance:distance
-      }
+        id: "host",
+        x: host.x,
+        y: host.y,
+        distance: distance,
+      };
     }
 
     for (const entry of playerData.entries()) {
-      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)
-      if(this.currentTarget.id === entry[0]) {
+      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y);
+      if (this.currentTarget.id === entry[0]) {
         this.currentTarget = {
-          id:entry[0],
-          x:entry[1].x,
-          y:entry[1].y,
-          distance:distance
-        }
+          id: entry[0],
+          x: entry[1].x,
+          y: entry[1].y,
+          distance: distance,
+        };
       }
-      if  (distance < 1000 && distance< this.currentTarget.distance) {
+      if (distance < 1000 && distance < this.currentTarget.distance) {
         this.currentTarget = {
-          id:entry[0],
-          x:entry[1].x,
-          y:entry[1].y,
-          distance:distance
-        }
+          id: entry[0],
+          x: entry[1].x,
+          y: entry[1].y,
+          distance: distance,
+        };
       }
     }
   }
 
   seekAndDestroy() {
-    console.log('seeking', this.currentTarget)
-    if(Math.abs(this.x - this.currentTarget.x) > Math.abs(this.y - this.currentTarget.y)){
-      this.x > this.currentTarget.x ? this.direction = 2 : this.direction = 3 
-    }
-    else 
-    {
-      this.y > this.currentTarget.y ? this.direction = 0 : this.direction = 1
+    console.log("seeking", this.currentTarget);
+    if (
+      Math.abs(this.x - this.currentTarget.x) >
+      Math.abs(this.y - this.currentTarget.y)
+    ) {
+      this.x > this.currentTarget.x
+        ? (this.direction = 2)
+        : (this.direction = 3);
+    } else {
+      this.y > this.currentTarget.y
+        ? (this.direction = 0)
+        : (this.direction = 1);
     }
   }
 
@@ -137,6 +150,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
       this.setVelocity(0, 0);
       this.healthState = HealthState.DEAD;
       this.anims.play("death-ghost");
+      this.deathSound.play();
     } else {
       this.setVelocity(dir.x, dir.y);
 
@@ -206,7 +220,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  update(){
+  update() {
     if (
       this.healthState === HealthState.DAMAGE ||
       this.healthState === HealthState.DEAD

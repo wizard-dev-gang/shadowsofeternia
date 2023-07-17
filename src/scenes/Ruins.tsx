@@ -594,13 +594,6 @@ export default class Ruins extends Phaser.Scene {
         undefined,
         this
       );
-      this.physics.overlap(
-        this.projectiles,
-        this.boss,
-        this.collisionHandler.handleProjectileSkeletonCollision as any,
-        undefined,
-        this
-      );
 
       if (
         Phaser.Input.Keyboard.JustDown(

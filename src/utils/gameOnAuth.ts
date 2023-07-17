@@ -46,6 +46,9 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
                   break
                 case 'baby-skeleton':
                   enemySelector = 'skeletons'
+                  break
+                case 'goblin':
+                  enemySelector = 'goblin'
               }
               enemy = gameInstance[enemySelector].get(
                 enemyData.x,
@@ -121,7 +124,8 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
               projectileData.direction,
               projectileData.x,
               projectileData.y,
-              projectileData.attackObj
+              projectileData.attackObj,
+              gameInstance
             );
           }
           

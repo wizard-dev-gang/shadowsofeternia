@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import Barb from "../characters/Barb";
 import Archer from "../characters/Archer";
@@ -14,6 +13,8 @@ import { CollisionHandler } from "./Collisions";
 import { sceneEvents } from "../events/EventsCenter";
 import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
+import "../characters/Resurrect";
+import { createResurrectAnims } from "../anims/ResurrectAnims";
 import { createPotionAnims } from "../anims/PotionAnims";
 import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
@@ -35,15 +36,18 @@ export default class Forest extends Phaser.Scene {
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
   public resurrect!: Resurrect;
+  private enemyCount: number = 0;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
 
-  private game?: Game
+  private game?: Game;
   private enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
-
+  private slimeDeathSound: Phaser.Sound.BaseSound;
+  private npcHm: Phaser.Sound.BaseSound;
+  private resurrectSound: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;
@@ -71,7 +75,10 @@ export default class Forest extends Phaser.Scene {
     this.load.audio("resurrect", "music/resurrectSound.mp3");
     this.load.audio("potion", "music/potion.mp3");
     this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
-    this.load.audio("dogBark", "/music/dogBark.mp3");
+    this.load.audio("forestScene", "/music/forestScene.mp3");
+    this.load.audio("slimeDeathSound", "/music/slimeDeathSound.mp3");
+    this.load.audio("npcHm", "/music/npcHm.mp3");
+    this.load.audio("projectileHit", "/music/projectileHit.mp3");
   }
 
   init(data: any) {
@@ -92,13 +99,23 @@ export default class Forest extends Phaser.Scene {
       this.collideSound,
       this.resurrectSound,
       this.potionSound,
-      this.dog,
-      this.dogBark
+      this.slimeDeathSound,
+      this.npcHm,
+      this.projectileHit
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
     this.resurrectSound = this.sound.add("resurrect");
     this.potionSound = this.sound.add("potion");
+    this.slimeDeathSound = this.sound.add("slimeDeathSound");
+    this.npcHm = this.sound.add("npcHm");
+    this.projectileHit = this.sound.add("projectileHit");
+
+    const backgroundMusic = this.sound.add("forestScene", {
+      volume: 0.5,
+      loop: true,
+    });
+    backgroundMusic.play();
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
@@ -107,6 +124,7 @@ export default class Forest extends Phaser.Scene {
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
     createPotionAnims(this.anims);
+    createResurrectAnims(this.anims);
 
     // Creating the map and tileset
     const map = this.make.tilemap({ key: "forestMap" });
@@ -132,7 +150,6 @@ export default class Forest extends Phaser.Scene {
       trees2Layer?.setCollisionByProperty({ collides: true });
       trees3Layer?.setCollisionByProperty({ collides: true });
 
-     
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
         this.cameras.main.startFollow(this.barb);
@@ -171,6 +188,7 @@ export default class Forest extends Phaser.Scene {
         classType: Slime,
         createCallback: (go) => {
           const slimeGo = go as Slime;
+          this.enemyCount++;
           if (slimeGo.body) {
             slimeGo.body.onCollide = true;
 
@@ -184,6 +202,7 @@ export default class Forest extends Phaser.Scene {
             const offsetY = hitboxHeight / 2; // Set the desired Y offset
             slimeGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount, slimeGo);
         },
       });
 
@@ -331,6 +350,21 @@ export default class Forest extends Phaser.Scene {
       });
       this.potion.get(800, 2800, "Potion");
 
+      this.resurrect = this.physics.add.group({
+        classType: Resurrect,
+        createCallback: (go) => {
+          const ResGo = go as Resurrect;
+          if (ResGo.body) {
+            ResGo.body.onCollide = true;
+          }
+        },
+      });
+
+      this.resurrect.get(820, 2800, "Resurrect");
+      this.resurrect.get(1690, 2640, "Resurrect");
+      this.resurrect.get(1220, 1540, "Resurrect");
+      this.resurrect.get(725, 165, "Resurrect");
+
       this.Npc_wizard = this.physics.add.group({
         classType: Npc_wizard,
         createCallback: (go) => {
@@ -363,7 +397,6 @@ export default class Forest extends Phaser.Scene {
 
       // this.potion.get(800, 2900, "Potion");
     }
-
   }
 
   update() {
@@ -405,7 +438,6 @@ export default class Forest extends Phaser.Scene {
       character.y >= 2455 && character.y <= 2470 &&
       this.slimes.countActive() <= 4 &&
       this.goblins.countActive() <= 2
-
     ) {
       this.slimes.get(1805, 2100, "slime");
       this.slimes.get(1805, 2100, "slime");
@@ -415,7 +447,6 @@ export default class Forest extends Phaser.Scene {
       character.y >= 1660 && character.y <= 1680 &&
       this.slimes.countActive() <= 8 &&
       this.goblins.countActive() <= 4
-
     ) {
       this.slimes.get(1500, 1505, "slime");
       this.slimes.get(1500, 1505, "slime");
@@ -427,7 +458,6 @@ export default class Forest extends Phaser.Scene {
       character.y >= 710 && character.y <= 730 &&
       this.slimes.countActive() <= 12 &&
       this.goblins.countActive() <= 6
-
     ) {
       this.slimes.get(847, 276, "slime");
       this.slimes.get(857, 267, "slime");
@@ -452,9 +482,36 @@ export default class Forest extends Phaser.Scene {
     const ruinsX = character.x >= 647 && character.x <= 990;
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
+      this.sound.stopAll();
       this.scene.start("ruins", { characterName: this.characterName });
-      update(this.playerRef, { scene: "ruins" });
+      update(this.playerRef, {
+        x: character.x,
+        y: character.y,
+        anim: character.anims.currentAnim
+          ? character.anims.currentAnim.key
+          : null,
+        frame: character.anims.currentFrame
+          ? character.anims.currentFrame.frame.name
+          : null,
+        online: true,
+        projectilesFromDB: character.projectilesToSend,
+        scene: "ruins",
+      });
       return;
+    }
+
+    // Handle Collision Between Player and Resurrect
+    if (character && character.isDead) {
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
+      this.resurrect.setVisible(true);
+    } else {
+      this.resurrect.setVisible(false);
     }
 
     if (this.playerName) {
@@ -553,6 +610,17 @@ export default class Forest extends Phaser.Scene {
           }
         }
         update(this.enemyDB, this.dataToSend);
+      }
+    }
+
+    if (this.updateIterations % 3 === 0) {
+      for (const entry of this.enemies.entries()) {
+        if (entry[1].isAlive) {
+          entry[1].findTarget(this.otherPlayers, {
+            x: character.x,
+            y: character.y,
+          });
+        }
       }
     }
   }

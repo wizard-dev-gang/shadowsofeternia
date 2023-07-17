@@ -106,7 +106,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
   }
 
   seekAndDestroy() {
-    console.log(this.currentTarget)
+    
     if(Math.abs(this.x - this.currentTarget.x) > Math.abs(this.y - this.currentTarget.y)){
       this.x > this.currentTarget.x ? this.direction = 2 : this.direction = 3 
     }
@@ -170,7 +170,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    const speed = 100;
+    const speed = 120;
     switch (this.direction) {
       case Direction.UP:
         this.anims.play("baby-skeleton-walk-up", true);

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { Game } from "phaser";
 
 export interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
@@ -126,13 +127,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     direction?: string,
     xLoc?: number,
     yLoc?: number,
-    attackObj?: string
+    attackObj?: string,
+    gameInstance?: Game
   ) {
     if (!this.projectiles) {
       return;
     }
 
-    const currentTime = this.scene.time.now;
+    const currentTime = gameInstance
+      ? gameInstance.time.now
+      : this.scene.time.now;
 
     if (
       this.lastProjectileTime &&
@@ -254,7 +258,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       // return
     }
 
-    const speed = 200;
+    const speed = 150;
     if (this.keys.A?.isDown) {
       this.anims.play("man-walk-left", true);
       this.setVelocity(-speed, 0);

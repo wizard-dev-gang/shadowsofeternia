@@ -730,7 +730,7 @@ export default class BossMap extends Phaser.Scene {
     this.updateIterations++;
     let character;
 
-    if ( !this.enemies.get(1).isAlive) {
+    if (this.characterName === "Rogue" && !this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive){
           // if (entry[1].constructor.name != 'Slime') {

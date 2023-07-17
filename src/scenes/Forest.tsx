@@ -49,6 +49,7 @@ export default class Forest extends Phaser.Scene {
 
   // Firebase variables
   public characterName?: string;
+  public characterLevel?: number;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -81,6 +82,7 @@ export default class Forest extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
+    this.characterLevel = data.level;
     this.game = data.game;
   }
   create() {
@@ -150,16 +152,19 @@ export default class Forest extends Phaser.Scene {
 
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
+        this.barb.level = this.characterLevel
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(800, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
+        this.archer.level = this.characterLevel
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(800, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
+        this.wizard.level = this.characterLevel
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
-        this.cameras.main.startFollow(this.man);
+        this.man.level = this.characterLevel
         this.cameras.main.startFollow(this.man);
       }
 
@@ -427,7 +432,10 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.sound.stopAll();
-      this.scene.start("ruins", { characterName: this.characterName });
+      this.scene.start("ruins", { 
+        characterName: this.characterName,
+        level:character.level,
+       });
       update(this.playerRef, {
         x: character.x,
         y: character.y,
@@ -440,6 +448,7 @@ export default class Forest extends Phaser.Scene {
         online: true,
         projectilesFromDB: character.projectilesToSend,
         scene: "ruins",
+        level: character.level,
       });
       return;
     }
@@ -516,11 +525,12 @@ export default class Forest extends Phaser.Scene {
           online: true,
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
+          level: character.level,
         });
         character.projectilesToSend = {};
       }
     }
-
+    if (this.updateIterations % 3 === 0) { console.log(character.level)}
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -536,6 +546,7 @@ export default class Forest extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+              level: character.level,
             };
           } else {
             this.dataToSend[entry[0]] = {
@@ -547,7 +558,7 @@ export default class Forest extends Phaser.Scene {
         update(this.enemyDB, this.dataToSend);
       }
     }
-
+    
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {

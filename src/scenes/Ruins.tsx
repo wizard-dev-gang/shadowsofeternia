@@ -548,9 +548,6 @@ export default class Ruins extends Phaser.Scene {
       this.sound.stopAll();
       return;
     }
-
-    console.log("X", character.x);
-    console.log("Y", character.y);
     
     if (
       (character.y <= 3150 && character.y >= 3100) &&

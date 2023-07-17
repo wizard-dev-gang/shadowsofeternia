@@ -469,11 +469,6 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-console.log("X", character.x);
-console.log("Y", character.y);
-
-
-
     if (
       character.y >= 2940 && character.y <= 3000 &&
       this.slimes.countActive() === 0 &&

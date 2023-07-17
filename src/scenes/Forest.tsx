@@ -642,7 +642,7 @@ export default class Forest extends Phaser.Scene {
         character.projectilesToSend = {};
       }
     }
-    if (this.updateIterations % 3 === 0) { console.log(character.level)}
+    
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -677,6 +677,7 @@ export default class Forest extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
+            isDead: character.isDead
           });
         }
       }

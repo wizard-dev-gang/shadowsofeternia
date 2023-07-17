@@ -29,7 +29,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private _health: number;
   private damageTime = 0;
-  private currentTarget: any = { x: 0, y: 0, distance: Number(500) };
+  private currentTarget: any = { x: 0, y: 0, distance: Number(1000) };
   public isAlive: boolean = true;
   private deathSound: Phaser.Sound.BaseSound;
 
@@ -60,7 +60,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         } else if (newNum >= 0.1 && newNum < 0.2) {
           this.direction = randomDirection(this.direction);
         } else {
-          this.currentTarget = { x: 0, y: 0, distance: Number(500) };
+          this.currentTarget = { x: 0, y: 0, distance: Number(1000) };
         }
       },
       loop: true,
@@ -77,10 +77,11 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
   }
 
   findTarget(playerData: Map<any, any>, host: any) {
-    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y);
+    let avoidTheDead = host.isDead? 2000 : 0
+    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y) + avoidTheDead;
     if (
       this.currentTarget.id === "host" ||
-      (distance < 500 && distance < this.currentTarget.distance)
+      (distance < 1000 && distance < this.currentTarget.distance)
     ) {
       this.currentTarget = {
         id: "host",
@@ -91,7 +92,8 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     }
 
     for (const entry of playerData.entries()) {
-      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y);
+      avoidTheDead = entry[1].isDead? 2000 : 0
+      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)+ avoidTheDead;
       if (this.currentTarget.id === entry[0]) {
         this.currentTarget = {
           id: entry[0],
@@ -100,7 +102,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
           distance: distance,
         };
       }
-      if (distance < 500 && distance < this.currentTarget.distance) {
+      if (distance < 1000 && distance < this.currentTarget.distance) {
         this.currentTarget = {
           id: entry[0],
           x: entry[1].x,
@@ -109,6 +111,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         };
       }
     }
+    console.log(this.currentTarget.distance, this.currentTarget, avoidTheDead, host.isDead, host)
   }
 
   seekAndDestroy() {

@@ -152,19 +152,19 @@ export default class BossMap extends Phaser.Scene {
       borderLayer?.setCollisionByProperty({ collides: true });
 
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(800, 3100, "barb");
+        this.barb = this.add.barb(600, 1150, "barb");
         this.barb.level = this.characterLevel
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(800, 3100, "archer");
+        this.archer = this.add.archer(600, 1150, "archer");
         this.cameras.main.startFollow(this.archer);
         this.archer.level = this.characterLevel
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(800, 3100, "wizard");
+        this.wizard = this.add.wizard(600, 1150, "wizard");
         this.cameras.main.startFollow(this.wizard);
         this.wizard.level = this.characterLevel
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(800, 3100, "man");
+        this.man = this.add.player(600, 1150, "man");
         this.man.level = this.characterLevel
         this.cameras.main.startFollow(this.man);
       }
@@ -901,6 +901,7 @@ export default class BossMap extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
+            isDead: character.isDead
           });
         }
       }

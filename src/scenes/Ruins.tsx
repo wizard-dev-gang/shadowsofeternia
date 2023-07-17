@@ -177,19 +177,19 @@ export default class Ruins extends Phaser.Scene {
       borderLayer?.setCollisionByProperty({ collides: true });
 
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(800, 3100, "barb");
+        this.barb = this.add.barb(2500, 3100, "barb");
         this.barb.level = this.characterLevel
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(800, 3100, "archer");
+        this.archer = this.add.archer(2500, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
         this.archer.level = this.characterLevel
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(800, 3100, "wizard");
+        this.wizard = this.add.wizard(2500, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
         this.wizard.level = this.characterLevel
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(800, 3100, "man");
+        this.man = this.add.player(2500, 3100, "man");
         this.man.level = this.characterLevel
         this.cameras.main.startFollow(this.man);
       }
@@ -738,7 +738,7 @@ export default class Ruins extends Phaser.Scene {
         character.projectilesToSend = {};
       }
     }
-    if (this.updateIterations % 3 === 0) { console.log(character.level)}
+    
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -772,6 +772,7 @@ export default class Ruins extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
+            isDead: character.isDead
           });
         }
       }

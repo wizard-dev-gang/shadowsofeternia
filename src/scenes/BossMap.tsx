@@ -156,10 +156,10 @@ export default class BossMap extends Phaser.Scene{
               this.enemies.set(this.enemyCount, skeleGo);
             },
           });
-          //if (this.characterName === "rogue") {
+          if (this.characterName === "rogue") {
             this.boss.get(626, 390, "boss");
 
-          //}
+          }
           
           sceneEvents.on(
             "boss-stomp",

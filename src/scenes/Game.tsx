@@ -808,6 +808,7 @@ export default class Game extends Phaser.Scene {
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
+      // this.scene.start("endCredits")
       this.scene.start("forest", {
         characterName: this.characterName,
         game: this,

@@ -57,14 +57,14 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.moveEvent = scene.time.addEvent({
       delay: 1000,
       callback: () => {
-        let newNum = Math.random()
+        const newNum = Math.random()
         if (newNum >= .4) {
-          console.log("calling seek")
+          
           this.seekAndDestroy()
         } else if (newNum >= .3 && newNum < .4 ) {
           this.direction = 5
           this.direction = randomDirection(this.direction);  
-          console.log("calling rd")   
+           
         } else if (newNum >= .1 && newNum < .3 ) {
           this.currentTarget = {x: 0, y:0,distance:500}
           this.direction = 4
@@ -113,7 +113,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
   }
 
   seekAndDestroy() {
-    console.log('seeking', this.currentTarget)
+    
     if(Math.abs(this.x - this.currentTarget.x) > Math.abs(this.y - this.currentTarget.y)){
       this.x > this.currentTarget.x ? this.direction = 2 : this.direction = 3 
     }

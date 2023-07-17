@@ -126,7 +126,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  handleDamage(dir: Phaser.Math.Vector2) {
+  handleDamage() {
     if (this._health <= 0) {
       return;
     }
@@ -142,7 +142,6 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
       this.anims.play("death-ghost");
       this.deathSound.play();
     } else {
-      this.setVelocity(dir.x, dir.y);
 
       this.setTint(0xff0000);
 
@@ -179,7 +178,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    const speed = 50;
+    const speed = 75;
 
     switch (this.direction) {
       case Direction.UP:

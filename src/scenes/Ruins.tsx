@@ -180,7 +180,7 @@ export default class Ruins extends Phaser.Scene {
         classType: Skeleton,
         createCallback: (go) => {
           const skeleGo = go as Skeleton;
-          // this.enemyCount++;
+          this.enemyCount++;
           if (skeleGo.body) {
             skeleGo.body.onCollide = true;
 

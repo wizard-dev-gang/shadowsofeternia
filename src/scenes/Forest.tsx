@@ -39,6 +39,10 @@ export default class Forest extends Phaser.Scene {
   private enemyCount: number = 0;
   private forestEntranceX!: number;
   private forestEntranceY!: number;
+  public map?: Phaser.Tilemaps.Tilemap;
+  public miniMapBackground?: Phaser.GameObjects.Rectangle;
+  public miniMapRuins?: Phaser.GameObjects.Arc;
+  public miniMapLocation?: Phaser.GameObjects.Arc;
 
   private game?: Game;
   private enemiesSpawned = false;
@@ -51,6 +55,7 @@ export default class Forest extends Phaser.Scene {
 
   // Firebase variables
   public characterName?: string;
+  public characterLevel?: number;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -83,6 +88,7 @@ export default class Forest extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
+    this.characterLevel = data.level;
     this.game = data.game;
   }
   create() {
@@ -128,6 +134,7 @@ export default class Forest extends Phaser.Scene {
 
     // Creating the map and tileset
     const map = this.make.tilemap({ key: "forestMap" });
+    this.map = map
     const ruinsTerrain = map.addTilesetImage("Ruins-Terrain", "ruinsTerrain");
     const ruinsProps = map.addTilesetImage("Ruins-Props", "ruinsProps");
     const grassProps = map.addTilesetImage("Grasslands-Props", "grassProps");
@@ -152,16 +159,19 @@ export default class Forest extends Phaser.Scene {
 
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
+        this.barb.level = this.characterLevel
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(800, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
+        this.archer.level = this.characterLevel
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(800, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
+        this.wizard.level = this.characterLevel
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
-        this.cameras.main.startFollow(this.man);
+        this.man.level = this.characterLevel
         this.cameras.main.startFollow(this.man);
       }
 
@@ -397,6 +407,52 @@ export default class Forest extends Phaser.Scene {
 
       // this.potion.get(800, 2900, "Potion");
     }
+
+    this.miniMapBackground = this.add.rectangle(
+      2000,
+      1100,
+      72,
+      72,
+      Phaser.Display.Color.GetColor(12, 70, 9)
+      
+    );
+    this.miniMapBackground.setAlpha(0.6);
+    this.miniMapBackground.setVisible(false);
+
+  
+    this.miniMapLocation = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(255, 0, 0)
+    );
+    this.miniMapLocation.setVisible(false);
+
+    this.miniMapRuins = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(0, 255, 0)
+    );
+    this.miniMapRuins.setVisible(false);
+
+  
+    const q = this.input.keyboard?.addKey('Q');
+    q?.on('down', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapRuins) {
+        this.miniMapBackground.setVisible(true);
+        this.miniMapLocation.setVisible(true);
+        this.miniMapRuins.setVisible(true);
+      }
+    });
+    
+    q?.on('up', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapRuins) {
+        this.miniMapBackground.setVisible(false);
+        this.miniMapLocation.setVisible(false);
+        this.miniMapRuins.setVisible(false);
+      }
+    });
   }
 
   update() {
@@ -417,10 +473,6 @@ export default class Forest extends Phaser.Scene {
       character = this.wizard;
     }
     if (!character) return;
-
-    console.log("x", character.x)
-    console.log("y", character.y)
-
 
     if (
       character.y >= 2940 && character.y <= 3000 &&
@@ -483,7 +535,10 @@ export default class Forest extends Phaser.Scene {
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
       this.sound.stopAll();
-      this.scene.start("ruins", { characterName: this.characterName });
+      this.scene.start("ruins", { 
+        characterName: this.characterName,
+        level:character.level,
+       });
       update(this.playerRef, {
         x: character.x,
         y: character.y,
@@ -496,6 +551,7 @@ export default class Forest extends Phaser.Scene {
         online: true,
         projectilesFromDB: character.projectilesToSend,
         scene: "ruins",
+        level: character.level,
       });
       return;
     }
@@ -581,11 +637,12 @@ export default class Forest extends Phaser.Scene {
           online: true,
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
+          level: character.level,
         });
         character.projectilesToSend = {};
       }
     }
-
+    if (this.updateIterations % 3 === 0) { console.log(character.level)}
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -601,6 +658,7 @@ export default class Forest extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+              level: character.level,
             };
           } else {
             this.dataToSend[entry[0]] = {
@@ -612,7 +670,7 @@ export default class Forest extends Phaser.Scene {
         update(this.enemyDB, this.dataToSend);
       }
     }
-
+    
     if (this.updateIterations % 3 === 0) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
@@ -623,5 +681,53 @@ export default class Forest extends Phaser.Scene {
         }
       }
     }
+
+    if (
+      this.miniMapBackground &&
+      this.miniMapLocation &&
+      this.map &&
+      this.miniMapRuins
+    ) {
+      const backgroundLocation = this.getMiniLocation(
+        this.map.widthInPixels / 2,
+        this.map.heightInPixels / 2,
+        character
+      );
+      this.miniMapBackground.x = backgroundLocation.x;
+      this.miniMapBackground.y = backgroundLocation.y;
+      // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
+      
+      const playerLocation = this.getMiniLocation(
+        character.x,
+        character.y,
+        character
+      );
+      this.miniMapLocation.x = playerLocation.x;
+      this.miniMapLocation.y = playerLocation.y;
+      const ruinsLocation = this.getMiniLocation(830, 73, character);
+      this.miniMapRuins.x = ruinsLocation.x;
+      this.miniMapRuins.y = ruinsLocation.y;
+    }
   }
+  getMiniLocation(
+    x: number,
+    y: number,
+    character: Player | Barb | Wizard | Archer
+    ) {
+      if (this.miniMapBackground && this.map) {
+        const centerX = character.x + 120;
+        const centerY = character.y + 90;
+        // console.log(this.map.widthInPixels, this.map.heightInPixels);
+        
+        const ratioX = this.miniMapBackground.width / this.map.widthInPixels;
+        const ratioY = this.miniMapBackground.height / this.map.heightInPixels;
+        const distanceX = x - this.map.widthInPixels / 2;
+        const distanceY = y - this.map.heightInPixels / 2;
+        const scaledX = distanceX * ratioX;
+        const scaledY = distanceY * ratioY;
+        return { x: centerX + scaledX, y: centerY + scaledY };
+      }
+      return { x: 0, y: 0 };
+      
+    }
 }

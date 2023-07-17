@@ -45,7 +45,9 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
+
     this._health = 10;
+
     this.anims.play("boss-idle-down");
     this.deathSound = scene.sound.add("bossDeath");
 
@@ -227,7 +229,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
       this.healthState === HealthState.DEAD
     ) {
       return;
-  }
+    }
   }
 }
 

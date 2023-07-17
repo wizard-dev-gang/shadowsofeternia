@@ -46,9 +46,15 @@ export default class Ruins extends Phaser.Scene {
   private slimeDeathSound: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
   private projectileHit: Phaser.Sound.BaseSound;
+  public map?: Phaser.Tilemaps.Tilemap;
+  public miniMapBackground?: Phaser.GameObjects.Rectangle;
+  public miniMapBoss?: Phaser.GameObjects.Arc;
+  public miniMapLocation?: Phaser.GameObjects.Arc;
+
 
   // Firebase variables
   public characterName?: string;
+  public characterLevel?: number;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -82,6 +88,7 @@ export default class Ruins extends Phaser.Scene {
 
   init(data: any) {
     this.characterName = data.characterName;
+    this.characterLevel = data.level;
   }
 
   create() {
@@ -129,6 +136,7 @@ export default class Ruins extends Phaser.Scene {
     createResurrectAnims(this.anims);
 
     const map = this.make.tilemap({ key: "ruinsMap" });
+    this.map = map
     const structureTiles = map.addTilesetImage(
       "Ruins-Structures",
       "structures"
@@ -169,16 +177,20 @@ export default class Ruins extends Phaser.Scene {
       borderLayer?.setCollisionByProperty({ collides: true });
 
       if (this.characterName === "barb") {
-        this.barb = this.add.barb(2500, 3100, "barb");
+        this.barb = this.add.barb(800, 3100, "barb");
+        this.barb.level = this.characterLevel
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
-        this.archer = this.add.archer(2500, 3100, "archer");
+        this.archer = this.add.archer(800, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
+        this.archer.level = this.characterLevel
       } else if (this.characterName === "wizard") {
-        this.wizard = this.add.wizard(2500, 3100, "wizard");
+        this.wizard = this.add.wizard(800, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
+        this.wizard.level = this.characterLevel
       } else if (this.characterName === "rogue") {
-        this.man = this.add.player(2500, 3100, "man");
+        this.man = this.add.player(800, 3100, "man");
+        this.man.level = this.characterLevel
         this.cameras.main.startFollow(this.man);
       }
 
@@ -293,6 +305,7 @@ export default class Ruins extends Phaser.Scene {
         if (platformLayer) this.physics.add.collider(this.goblins, platformLayer);
         if (templeLayer) this.physics.add.collider(this.goblins, templeLayer);
         if (borderLayer) this.physics.add.collider(this.goblins, borderLayer);
+        if (propsLayer) this.physics.add.collider(this.goblins, propsLayer);
       }
       
             // Handle collisions between skeletons and ground layers
@@ -454,6 +467,52 @@ export default class Ruins extends Phaser.Scene {
       this.resurrect.get(1755, 750, "Resurrect");
 
     }
+
+    this.miniMapBackground = this.add.rectangle(
+      2000,
+      1100,
+      72,
+      72,
+      Phaser.Display.Color.GetColor(12, 70, 9)
+      
+    );
+    this.miniMapBackground.setAlpha(0.6);
+    this.miniMapBackground.setVisible(false);
+
+  
+    this.miniMapLocation = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(255, 0, 0)
+    );
+    this.miniMapLocation.setVisible(false);
+
+    this.miniMapBoss = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(0, 255, 0)
+    );
+    this.miniMapBoss.setVisible(false);
+
+  
+    const q = this.input.keyboard?.addKey('Q');
+    q?.on('down', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapBoss) {
+        this.miniMapBackground.setVisible(true);
+        this.miniMapLocation.setVisible(true);
+        this.miniMapBoss.setVisible(true);
+      }
+    });
+    
+    q?.on('up', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapBoss) {
+        this.miniMapBackground.setVisible(false);
+        this.miniMapLocation.setVisible(false);
+        this.miniMapBoss.setVisible(false);
+      }
+    });
   }
 
   update() {
@@ -473,11 +532,15 @@ export default class Ruins extends Phaser.Scene {
       this.wizard.update();
       character = this.wizard;
     }
+
     if (!character) return;
     const bossX = character.x >= 1734 && character.x <= 1765;
     const bossY = character.y <= 440 && character.y >= 412;
     if (bossX && bossY) {
-      this.scene.start("bossMap", { characterName: this.characterName });
+      this.scene.start("bossMap", { 
+        characterName: this.characterName ,
+        level:character.level,
+      });
       update(this.playerRef, {
         x: character.x,
         y: character.y,
@@ -490,6 +553,7 @@ export default class Ruins extends Phaser.Scene {
         online: true,
         projectilesFromDB: character.projectilesToSend,
         scene: "bossMap",
+        level: character.level,
       });
       this.sound.stopAll();
       return;
@@ -548,6 +612,54 @@ export default class Ruins extends Phaser.Scene {
         this.goblins.get(1000, 2150, "goblin")
         this.goblins.get(1050, 2200, "goblin")
         this.goblins.get(1200, 2250, "goblin")
+      } else if (
+        (character.y <= 2610 && character.y >= 2500) &&
+        (character.x <= 1431 && character.x >= 1354) &&
+        this.skeletons.countActive() <= 16
+      ) {
+        this.skeletons.get(1220, 2720, "skeleton")
+        this.skeletons.get(1250, 2800, "skeleton")
+        this.skeletons.get(1300, 2850, "skeleton")
+        this.skeletons.get(1350, 2880, "skeleton")
+      } else if (
+        (character.y <= 2630 && character.y >= 2550) &&
+        (character.x <= 311 && character.x >= 106) &&
+        this.goblins.countActive() <= 12
+      ) {
+        this.goblins.get(50, 1920, "goblin")
+        this.goblins.get(100, 2000, "goblin")
+        this.goblins.get(150, 2050, "goblin")
+        this.goblins.get(200, 2100, "goblin")
+        this.goblins.get(250, 2200, "goblin")
+      } else if (
+        (character.y <= 1616 && character.y >= 1250) &&
+        (character.x <= 1350 && character.x >= 1250) &&
+        this.skeletons.countActive() <= 20 &&
+        this.goblins.countActive() <= 17
+      ) {
+        this.goblins.get(1500, 1260, "goblin")
+        this.goblins.get(1550, 1300, "goblin")
+        this.goblins.get(1600, 1350, "goblin")
+        this.goblins.get(1650, 1400, "goblin")
+        this.skeletons.get(1700, 1450, "skeleton")
+        this.skeletons.get(1750, 1500, "skeleton")
+        this.skeletons.get(1800, 1530, "skeleton")
+        this.skeletons.get(1900, 1430, "skeleton")
+      } else if (
+        (character.y <= 1250 && character.y >= 1150) &&
+        (character.x <= 2060 && character.x >= 1770) &&
+        this.goblins.countActive() <= 21
+      ) {
+        this.goblins.get(1500, 830, "goblin")
+        this.goblins.get(1550, 870, "goblin")
+        this.goblins.get(1600, 900, "goblin")
+        this.goblins.get(1650, 950, "goblin")
+        this.goblins.get(1700, 1000, "goblin")
+        this.goblins.get(1750, 1050, "goblin")
+        this.goblins.get(1800, 1030, "goblin")
+        this.goblins.get(1850, 910, "goblin")
+        this.goblins.get(1900, 850, "goblin")
+        this.goblins.get(2000, 1090, "goblin")
       }
 
     if (character && character.isDead) {
@@ -621,11 +733,12 @@ export default class Ruins extends Phaser.Scene {
           online: true,
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
+          level: character.level,
         });
         character.projectilesToSend = {};
       }
     }
-
+    if (this.updateIterations % 3 === 0) { console.log(character.level)}
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -663,5 +776,53 @@ export default class Ruins extends Phaser.Scene {
         }
       }
     }
+
+    if (
+      this.miniMapBackground &&
+      this.miniMapLocation &&
+      this.map &&
+      this.miniMapBoss
+    ) {
+      const backgroundLocation = this.getMiniLocation(
+        this.map.widthInPixels / 2,
+        this.map.heightInPixels / 2,
+        character
+      );
+      this.miniMapBackground.x = backgroundLocation.x;
+      this.miniMapBackground.y = backgroundLocation.y;
+      // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
+      
+      const playerLocation = this.getMiniLocation(
+        character.x,
+        character.y,
+        character
+      );
+      this.miniMapLocation.x = playerLocation.x;
+      this.miniMapLocation.y = playerLocation.y;
+      const bossLocation = this.getMiniLocation(1746, 476, character);
+      this.miniMapBoss.x = bossLocation.x;
+      this.miniMapBoss.y = bossLocation.y;
+    }
   }
+  getMiniLocation(
+    x: number,
+    y: number,
+    character: Player | Barb | Wizard | Archer
+    ) {
+      if (this.miniMapBackground && this.map) {
+        const centerX = character.x + 120;
+        const centerY = character.y + 90;
+        // console.log(this.map.widthInPixels, this.map.heightInPixels);
+        
+        const ratioX = this.miniMapBackground.width / this.map.widthInPixels;
+        const ratioY = this.miniMapBackground.height / this.map.heightInPixels;
+        const distanceX = x - this.map.widthInPixels / 2;
+        const distanceY = y - this.map.heightInPixels / 2;
+        const scaledX = distanceX * ratioX;
+        const scaledY = distanceY * ratioY;
+        return { x: centerX + scaledX, y: centerY + scaledY };
+      }
+      return { x: 0, y: 0 };
+      
+    }
 }

@@ -63,7 +63,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
     this.isDead = false;
-    this._health = 5;
+    this._health = 10;
     this.maxHealth = 10;
     this.playerDeadSound = scene.sound.add("playerDeadSound");
     if (this.scene && this.scene.input && this.scene.input.keyboard) {

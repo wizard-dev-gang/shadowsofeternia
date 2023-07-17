@@ -60,33 +60,38 @@ export default class Slime extends Phaser.Physics.Arcade.Sprite {
   }
 
   findTarget(playerData:Map<any,any>, host:any) {
-    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y)
-    if(this.currentTarget.id === "host" || (distance < 1000 && distance< this.currentTarget.distance)) {
+    let avoidTheDead = host.isDead? 2000 : 0
+    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y) + avoidTheDead;
+    if (
+      this.currentTarget.id === "host" ||
+      (distance < 1000 && distance < this.currentTarget.distance)
+    ) {
       this.currentTarget = {
-        id:'host',
-        x:host.x,
-        y:host.y,
-        distance:distance
-      }
+        id: "host",
+        x: host.x,
+        y: host.y,
+        distance: distance,
+      };
     }
 
     for (const entry of playerData.entries()) {
-      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)
-      if(this.currentTarget.id === entry[0]) {
+      avoidTheDead = entry[1].isDead? 2000 : 0
+      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)+ avoidTheDead;
+      if (this.currentTarget.id === entry[0]) {
         this.currentTarget = {
-          id:entry[0],
-          x:entry[1].x,
-          y:entry[1].y,
-          distance:distance
-        }
+          id: entry[0],
+          x: entry[1].x,
+          y: entry[1].y,
+          distance: distance,
+        };
       }
-      if  (distance < 1000 && distance< this.currentTarget.distance) {
+      if (distance < 1000 && distance < this.currentTarget.distance) {
         this.currentTarget = {
-          id:entry[0],
-          x:entry[1].x,
-          y:entry[1].y,
-          distance:distance
-        }
+          id: entry[0],
+          x: entry[1].x,
+          y: entry[1].y,
+          distance: distance,
+        };
       }
     }
   }

@@ -259,6 +259,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     const speed = 175;
+
     if (this.keys.A?.isDown) {
       this.anims.play("man-walk-left", true);
       this.setVelocity(-speed, 0);

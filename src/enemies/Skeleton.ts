@@ -142,7 +142,6 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
       this.anims.play("death-ghost");
       this.deathSound.play();
     } else {
-
       this.setTint(0xff0000);
 
       this.healthState = HealthState.DAMAGE;

@@ -229,7 +229,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
         }
       });
 
-    const speed = 500;
+    const speed = 185;
     let isMoving = false;
 
     if (this.keys.A?.isDown) {
@@ -276,7 +276,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   }
 
   moveAsGhost() {
-    const speed = 200;
+    const speed = 150;
     if (this.keys.A?.isDown) {
       this.anims.play(this.anims.currentAnim, true);
       this.setVelocity(-speed, 0);

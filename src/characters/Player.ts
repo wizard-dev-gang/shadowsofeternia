@@ -258,7 +258,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       // return
     }
 
-    const speed = 150;
+    const speed = 175;
     if (this.keys.A?.isDown) {
       this.anims.play("man-walk-left", true);
       this.setVelocity(-speed, 0);
@@ -283,7 +283,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   moveAsGhost() {
-    const speed = 200;
+    const speed = 150;
     if (this.keys.A?.isDown) {
       this.anims.play(this.anims.currentAnim, true);
       this.setVelocity(-speed, 0);

@@ -720,7 +720,7 @@ export default class BossMap extends Phaser.Scene {
     this.updateIterations++;
     let character;
 
-    if (this.characterName === "Rogue" && !this.enemies.get(1).isAlive) {
+    if (this.characterName === "rogue" && !this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
           // if (entry[1].constructor.name != 'Slime') {
@@ -731,6 +731,10 @@ export default class BossMap extends Phaser.Scene {
           });
         }
       }
+      this.time.delayedCall(6500, () => {
+        console.log("enemy died")
+        this.scene.start("endCredits")
+      });
     }
 
     if (this.man) {

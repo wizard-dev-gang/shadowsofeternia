@@ -208,7 +208,7 @@ export class CollisionHandler {
     const projectile = obj1;
     const goblin = obj2;
     // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile as GameObjects.Image);
+    this.projectiles.killAndHide(projectile);
     projectile.destroy();
     const dx =
       (goblin as Phaser.GameObjects.Image).x -
@@ -222,7 +222,7 @@ export class CollisionHandler {
     (goblin as Goblin).getHealth();
     (goblin as Goblin).handleDamage(dir);
     if ((goblin as Goblin).getHealth() <= 0) {
-      this.goblin.killAndHide(goblin);
+      this.goblins.killAndHide(goblin);
       (goblin.isAlive = false), goblin.destroy();
     }
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];

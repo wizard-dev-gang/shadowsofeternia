@@ -257,7 +257,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    const speed = 200;
+    const speed = 400;
 
     if (
       this.keys.Space?.isDown &&

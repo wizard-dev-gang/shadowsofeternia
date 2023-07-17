@@ -231,15 +231,6 @@ export default class Forest extends Phaser.Scene {
           });
           
           if (playerCharacters && this.goblins) {
-        // Add colliders between character and goblins
-        this.physics.add.collider(
-          playerCharacters as Phaser.GameObjects.GameObject[],
-          this.goblins,
-          this.collisionHandler.handlePlayerGoblinCollision as any,
-          undefined,
-          this
-        );
-
         // Handle collisions between goblins and layers
         if (grassLayer) this.physics.add.collider(this.goblins, grassLayer);
         if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);

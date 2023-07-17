@@ -54,7 +54,7 @@ export default class Game extends Phaser.Scene {
   public resurrect!: Resurrect;
   public sceneFrom?: string;
   private dog!: Phaser.Physics.Arcade.Group;
-  private goblin!: Phaser.Physics.Arcade.Group;
+  private goblins!: Phaser.Physics.Arcade.Group;
   private playerGoblinCollider?: Phaser.Physics.Arcade.Collider;
   private dogBark: Phaser.Sound.BaseSound;
 
@@ -332,7 +332,7 @@ export default class Game extends Phaser.Scene {
         if (fenceLayer) this.physics.add.collider(this.dog, fenceLayer);
         if (treesLayer) this.physics.add.collider(this.dog, treesLayer);
       }
-      this.goblin = this.physics.add.group({
+      this.goblins = this.physics.add.group({
         classType: Goblin,
         createCallback: (go) => {
           const GoblinGo = go as Goblin;
@@ -351,14 +351,14 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-      this.goblin.get(2080, 1110, "Goblin")
-      if (playerCharacters && this.goblin) {
+      this.goblins.get(2080, 1110, "Goblin")
+      if (playerCharacters && this.goblins) {
         // Handle collisions between goblins and layers
-        if (waterLayer) this.physics.add.collider(this.goblin, waterLayer);
-        if (groundLayer) this.physics.add.collider(this.goblin, groundLayer);
-        if (houseLayer) this.physics.add.collider(this.goblin, houseLayer);
-        if (fenceLayer) this.physics.add.collider(this.goblin, fenceLayer);
-        if (treesLayer) this.physics.add.collider(this.goblin, treesLayer);
+        if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
+        if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);
+        if (houseLayer) this.physics.add.collider(this.goblins, houseLayer);
+        if (fenceLayer) this.physics.add.collider(this.goblins, fenceLayer);
+        if (treesLayer) this.physics.add.collider(this.goblins, treesLayer);
       }
       if (playerCharacters && this.skeletons) {
         this.physics.add.collider(
@@ -391,10 +391,10 @@ export default class Game extends Phaser.Scene {
         );
       }
 
-      if (playerCharacters && this.goblin) {
+      if (playerCharacters && this.goblins) {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.goblin,
+          this.goblins,
           this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
@@ -856,7 +856,7 @@ export default class Game extends Phaser.Scene {
       // Handle collision between knives and goblins
       this.physics.overlap(
         this.projectiles,
-        this.goblin,
+        this.goblins,
         this.collisionHandler.handleProjectileGoblinCollision as any,
         undefined,
         this

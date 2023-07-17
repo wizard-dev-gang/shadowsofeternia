@@ -44,7 +44,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-    this._health = 10;
+    this._health = 1;
     this.anims.play("boss-idle-down");
     
     scene.physics.world.on(
@@ -212,6 +212,8 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
       this.healthState === HealthState.DEAD
     ) {
       return;
+    } else if(this._health <= 0) {
+      this.scene.start("endCredits")
     }
   }
 }

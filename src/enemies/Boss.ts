@@ -45,7 +45,9 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
-    this._health = 1;
+
+    this._health = 10;
+
     this.anims.play("boss-idle-down");
     this.deathSound = scene.sound.add("bossDeath");
 
@@ -87,7 +89,8 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
   }
 
   findTarget(playerData: Map<any, any>, host: any) {
-    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y);
+    let avoidTheDead = host.isDead? 2000 : 0
+    let distance = Math.abs(this.x - host.x) + Math.abs(this.y - host.y) + avoidTheDead;
     if (
       this.currentTarget.id === "host" ||
       (distance < 1000 && distance < this.currentTarget.distance)
@@ -101,7 +104,8 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     for (const entry of playerData.entries()) {
-      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y);
+      avoidTheDead = entry[1].isDead? 2000 : 0
+      distance = Math.abs(this.x - entry[1].x) + Math.abs(this.y - entry[1].y)+ avoidTheDead;
       if (this.currentTarget.id === entry[0]) {
         this.currentTarget = {
           id: entry[0],
@@ -227,8 +231,6 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
       this.healthState === HealthState.DEAD
     ) {
       return;
-    } else if(this._health <= 0) {
-      this.scene.start("endCredits")
     }
   }
 }

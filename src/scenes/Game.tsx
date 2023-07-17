@@ -554,9 +554,6 @@ export default class Game extends Phaser.Scene {
       this.slimes.get(2000, 1000, "slime");
     }
     this.skeletons.get(2000, 1210, "jacked-skeleton");
-    this.skeletons.get(2000, 1210, "jacked-skeleton");
-    this.skeletons.get(2000, 1210, "jacked-skeleton");
-    this.skeletons.get(2000, 1210, "jacked-skeleton");
     // Add a skeleton to the group
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
@@ -1011,6 +1008,7 @@ export default class Game extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
+            isDead: character.isDead
           });
         }
       }

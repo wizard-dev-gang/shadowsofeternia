@@ -694,15 +694,6 @@ export default class Forest extends Phaser.Scene {
 
     this.enemiesSpawned = true;
 
-    const forestX = character.x >= 709 && character.x <= 825;
-    const forestY = character.y <= 3152 && character.y >= 3140;
-    if (forestX && forestY) {
-      if (this.game) this.game.sceneFrom = "forest";
-      this.scene.switch("game");
-      // this.scene.get("game").events.emit("spawnAtEntrance", 2070, 29);
-      return;
-    }
-
     const ruinsX = character.x >= 647 && character.x <= 990;
     const ruinsY = character.y <= 35 && character.y >= 27;
     if (ruinsX && ruinsY) {
@@ -855,6 +846,7 @@ export default class Forest extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
+            isDead: character.isDead
           });
         }
       }

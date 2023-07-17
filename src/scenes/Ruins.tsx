@@ -4,6 +4,7 @@ import { Slime } from "../enemies/Slime";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
+import { Goblin } from "../enemies/Goblins";
 import { Boss } from "../enemies/Boss";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
@@ -31,6 +32,7 @@ export default class Ruins extends Phaser.Scene {
   public projectiles!: Phaser.Physics.Arcade.Group;
   public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private slimes!: Phaser.Physics.Arcade.Group; //  Group to manage slime enemies
+  private goblins!: Phaser.Physics.Arcade.Group; //  Group to manage goblin enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
@@ -44,6 +46,11 @@ export default class Ruins extends Phaser.Scene {
   private slimeDeathSound: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
   private projectileHit: Phaser.Sound.BaseSound;
+  public map?: Phaser.Tilemaps.Tilemap;
+  public miniMapBackground?: Phaser.GameObjects.Rectangle;
+  public miniMapBoss?: Phaser.GameObjects.Arc;
+  public miniMapLocation?: Phaser.GameObjects.Arc;
+
 
   // Firebase variables
   public characterName?: string;
@@ -129,6 +136,7 @@ export default class Ruins extends Phaser.Scene {
     createResurrectAnims(this.anims);
 
     const map = this.make.tilemap({ key: "ruinsMap" });
+    this.map = map
     const structureTiles = map.addTilesetImage(
       "Ruins-Structures",
       "structures"
@@ -210,6 +218,27 @@ export default class Ruins extends Phaser.Scene {
         },
       });
 
+      // Set up goblins and handle collisions
+      this.goblins = this.physics.add.group({
+        classType: Goblin,
+        createCallback: (go) => {
+          const goblinGo = go as Goblin;
+          if (goblinGo.body) {
+            goblinGo.body.onCollide = true;
+    
+            // Adjust the hitbox size here
+            const hitboxWidth = 20; 
+            const hitboxHeight = 20; 
+            goblinGo.body.setSize(hitboxWidth, hitboxHeight);
+    
+            // Set the hitbox offset here
+            const offsetX = 6;
+            const offsetY = 14; 
+            goblinGo.body.setOffset(offsetX, offsetY);
+          }
+        },
+      });
+
       // Create a group for knives with a maximum size of 3
       this.projectiles = this.physics.add.group({
         classType: Phaser.Physics.Arcade.Image,
@@ -233,6 +262,18 @@ export default class Ruins extends Phaser.Scene {
         );
       }
       console.log("creating enemy colliders...");
+
+
+      if (playerCharacters && this.goblins) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblins,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
+          undefined,
+          this
+        );
+      }
+
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
         console.log("create playerenemiescollider");
@@ -245,7 +286,29 @@ export default class Ruins extends Phaser.Scene {
         );
       }
 
-      // Handle collisions between skeletons and ground layers
+      // Handle collisions between player and goblin characters
+      if (playerCharacters && this.goblins) {
+        this.physics.add.collider(
+          playerCharacters as Phaser.GameObjects.GameObject[],
+          this.goblins,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
+          undefined,
+          this
+        );
+      }
+
+      if (playerCharacters && this.goblins) {
+        // Handle collisions between goblins and layers
+        if (groundLayer) this.physics.add.collider(this.goblins, groundLayer);
+        if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
+        if (pathLayer) this.physics.add.collider(this.goblins, pathLayer);
+        if (platformLayer) this.physics.add.collider(this.goblins, platformLayer);
+        if (templeLayer) this.physics.add.collider(this.goblins, templeLayer);
+        if (borderLayer) this.physics.add.collider(this.goblins, borderLayer);
+        if (propsLayer) this.physics.add.collider(this.goblins, propsLayer);
+      }
+      
+            // Handle collisions between skeletons and ground layers
       if (this.skeletons && groundLayer) {
         this.physics.add.collider(this.skeletons, groundLayer);
         this.physics.add.collider(
@@ -313,6 +376,7 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
+
       if (this.skeletons && propsLayer) {
         this.physics.add.collider(this.skeletons, propsLayer);
         this.physics.add.collider(
@@ -387,8 +451,6 @@ export default class Ruins extends Phaser.Scene {
         },
       });
 
-      //   this.potion.get(800, 2800, "Potion");
-
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
         createCallback: (go) => {
@@ -404,34 +466,53 @@ export default class Ruins extends Phaser.Scene {
       this.resurrect.get(958, 1320, "Resurrect");
       this.resurrect.get(1755, 750, "Resurrect");
 
-      this.skeletons.get(2475, 2583, "skeleton");
-
-      this.skeletons.get(1967, 3000, "skeleton");
-
-      this.skeletons.get(1590, 2430, "skeleton");
-
-      this.skeletons.get(1248, 1750, "skeleton");
-
-      this.skeletons.get(888, 2060, "skeleton");
-
-      this.skeletons.get(1334, 2330, "skeleton");
-
-      this.skeletons.get(1531, 2800, "skeleton");
-
-      this.skeletons.get(144, 2583, "skeleton");
-
-      this.skeletons.get(184, 1133, "skeleton");
-
-      this.skeletons.get(1044, 213, "skeleton");
-
-      this.skeletons.get(1580, 1470, "skeleton");
-
-      this.skeletons.get(2230, 2000, "skeleton");
-
-      this.skeletons.get(3010, 1890, "skeleton");
-
-      this.skeletons.get(1800, 830, "skeleton");
     }
+
+    this.miniMapBackground = this.add.rectangle(
+      2000,
+      1100,
+      72,
+      72,
+      Phaser.Display.Color.GetColor(12, 70, 9)
+      
+    );
+    this.miniMapBackground.setAlpha(0.6);
+    this.miniMapBackground.setVisible(false);
+
+  
+    this.miniMapLocation = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(255, 0, 0)
+    );
+    this.miniMapLocation.setVisible(false);
+
+    this.miniMapBoss = this.add.circle(
+      0,
+      0,
+      2,
+      Phaser.Display.Color.GetColor(0, 255, 0)
+    );
+    this.miniMapBoss.setVisible(false);
+
+  
+    const q = this.input.keyboard?.addKey('Q');
+    q?.on('down', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapBoss) {
+        this.miniMapBackground.setVisible(true);
+        this.miniMapLocation.setVisible(true);
+        this.miniMapBoss.setVisible(true);
+      }
+    });
+    
+    q?.on('up', () => {
+      if (this.miniMapBackground && this.miniMapLocation && this.miniMapBoss) {
+        this.miniMapBackground.setVisible(false);
+        this.miniMapLocation.setVisible(false);
+        this.miniMapBoss.setVisible(false);
+      }
+    });
   }
 
   update() {
@@ -451,6 +532,7 @@ export default class Ruins extends Phaser.Scene {
       this.wizard.update();
       character = this.wizard;
     }
+
     if (!character) return;
     const bossX = character.x >= 1734 && character.x <= 1765;
     const bossY = character.y <= 440 && character.y >= 412;
@@ -476,6 +558,109 @@ export default class Ruins extends Phaser.Scene {
       this.sound.stopAll();
       return;
     }
+    
+    if (
+      (character.y <= 3150 && character.y >= 3100) &&
+      (character.x <= 2614 && character.x >= 2250) &&
+      this.goblins.countActive() === 0
+      ) {
+        this.goblins.get(2540, 2940, "goblin")
+        this.goblins.get(2440, 2940, "goblin")
+        this.goblins.get(2500, 2940, "goblin")
+        this.goblins.get(2520, 2940, "goblin")
+      } else if (
+      (character.y <= 2870 && character.y >= 2810) &&
+      (character.x <= 2554 && character.x >= 2438) &&
+      this.skeletons.countActive() === 0
+      ) {
+        this.skeletons.get(2000, 2300, "skeleton")
+        this.skeletons.get(2050, 2600, "skeleton")
+        this.skeletons.get(2100, 2500, "skeleton")
+        this.skeletons.get(2200, 2400, "skeleton")
+        this.skeletons.get(2250, 2400, "skeleton")
+        this.skeletons.get(2300, 2450, "skeleton")
+        this.skeletons.get(2350, 2400, "skeleton")
+        this.skeletons.get(2400, 2640, "skeleton")
+      } else if (
+        (character.y <= 2448 && character.y >= 2395) &&
+        (character.x <= 1870 && character.x >= 1720) &&
+        this.skeletons.countActive() <= 8
+      ) {
+        this.skeletons.get(1490, 1900, "skeleton")
+        this.skeletons.get(1500, 2000, "skeleton")
+        this.skeletons.get(1600, 2100, "skeleton")
+        this.skeletons.get(1650, 2220, "skeleton")
+      } else if (
+        (character.y <= 1776 && character.y >= 1660) &&
+        (character.x <= 1450 && character.x >= 1360) &&
+        this.skeletons.countActive() <= 12
+      ) {
+        this.skeletons.get(900, 1665, "skeleton")
+        this.skeletons.get(1000, 1700, "skeleton")
+        this.skeletons.get(950, 1760, "skeleton")
+        this.skeletons.get(1100, 1720, "skeleton")
+      } else if (
+        (character.y <= 1890 && character.y >= 1815) &&
+        (character.x <= 858 && character.x >= 741) &&
+        this.goblins.countActive() <= 4
+      ) {
+        this.goblins.get(700, 1950, "goblin")
+        this.goblins.get(750, 2000, "goblin")
+        this.goblins.get(800, 2020, "goblin")
+        this.goblins.get(900, 2080, "goblin")
+        this.goblins.get(950, 2100, "goblin")
+        this.goblins.get(1000, 2150, "goblin")
+        this.goblins.get(1050, 2200, "goblin")
+        this.goblins.get(1200, 2250, "goblin")
+      } else if (
+        (character.y <= 2610 && character.y >= 2500) &&
+        (character.x <= 1431 && character.x >= 1354) &&
+        this.skeletons.countActive() <= 16
+      ) {
+        this.skeletons.get(1220, 2720, "skeleton")
+        this.skeletons.get(1250, 2800, "skeleton")
+        this.skeletons.get(1300, 2850, "skeleton")
+        this.skeletons.get(1350, 2880, "skeleton")
+      } else if (
+        (character.y <= 2630 && character.y >= 2550) &&
+        (character.x <= 311 && character.x >= 106) &&
+        this.goblins.countActive() <= 12
+      ) {
+        this.goblins.get(50, 1920, "goblin")
+        this.goblins.get(100, 2000, "goblin")
+        this.goblins.get(150, 2050, "goblin")
+        this.goblins.get(200, 2100, "goblin")
+        this.goblins.get(250, 2200, "goblin")
+      } else if (
+        (character.y <= 1616 && character.y >= 1250) &&
+        (character.x <= 1350 && character.x >= 1250) &&
+        this.skeletons.countActive() <= 20 &&
+        this.goblins.countActive() <= 17
+      ) {
+        this.goblins.get(1500, 1260, "goblin")
+        this.goblins.get(1550, 1300, "goblin")
+        this.goblins.get(1600, 1350, "goblin")
+        this.goblins.get(1650, 1400, "goblin")
+        this.skeletons.get(1700, 1450, "skeleton")
+        this.skeletons.get(1750, 1500, "skeleton")
+        this.skeletons.get(1800, 1530, "skeleton")
+        this.skeletons.get(1900, 1430, "skeleton")
+      } else if (
+        (character.y <= 1250 && character.y >= 1150) &&
+        (character.x <= 2060 && character.x >= 1770) &&
+        this.goblins.countActive() <= 21
+      ) {
+        this.goblins.get(1500, 830, "goblin")
+        this.goblins.get(1550, 870, "goblin")
+        this.goblins.get(1600, 900, "goblin")
+        this.goblins.get(1650, 950, "goblin")
+        this.goblins.get(1700, 1000, "goblin")
+        this.goblins.get(1750, 1050, "goblin")
+        this.goblins.get(1800, 1030, "goblin")
+        this.goblins.get(1850, 910, "goblin")
+        this.goblins.get(1900, 850, "goblin")
+        this.goblins.get(2000, 1090, "goblin")
+      }
 
     if (character && character.isDead) {
       this.physics.add.overlap(
@@ -512,6 +697,16 @@ export default class Ruins extends Phaser.Scene {
         undefined,
         this
       );
+
+      // Handle collision between projectiles and goblins
+      this.physics.overlap(
+        this.projectiles,
+        this.goblins,
+        this.collisionHandler.handleProjectileGoblinCollision as any,
+        undefined,
+        this
+      );
+
       if (
         Phaser.Input.Keyboard.JustDown(
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
@@ -581,5 +776,53 @@ export default class Ruins extends Phaser.Scene {
         }
       }
     }
+
+    if (
+      this.miniMapBackground &&
+      this.miniMapLocation &&
+      this.map &&
+      this.miniMapBoss
+    ) {
+      const backgroundLocation = this.getMiniLocation(
+        this.map.widthInPixels / 2,
+        this.map.heightInPixels / 2,
+        character
+      );
+      this.miniMapBackground.x = backgroundLocation.x;
+      this.miniMapBackground.y = backgroundLocation.y;
+      // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
+      
+      const playerLocation = this.getMiniLocation(
+        character.x,
+        character.y,
+        character
+      );
+      this.miniMapLocation.x = playerLocation.x;
+      this.miniMapLocation.y = playerLocation.y;
+      const bossLocation = this.getMiniLocation(1746, 476, character);
+      this.miniMapBoss.x = bossLocation.x;
+      this.miniMapBoss.y = bossLocation.y;
+    }
   }
+  getMiniLocation(
+    x: number,
+    y: number,
+    character: Player | Barb | Wizard | Archer
+    ) {
+      if (this.miniMapBackground && this.map) {
+        const centerX = character.x + 120;
+        const centerY = character.y + 90;
+        // console.log(this.map.widthInPixels, this.map.heightInPixels);
+        
+        const ratioX = this.miniMapBackground.width / this.map.widthInPixels;
+        const ratioY = this.miniMapBackground.height / this.map.heightInPixels;
+        const distanceX = x - this.map.widthInPixels / 2;
+        const distanceY = y - this.map.heightInPixels / 2;
+        const scaledX = distanceX * ratioX;
+        const scaledY = distanceY * ratioY;
+        return { x: centerX + scaledX, y: centerY + scaledY };
+      }
+      return { x: 0, y: 0 };
+      
+    }
 }

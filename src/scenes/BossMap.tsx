@@ -186,7 +186,7 @@ export default class BossMap extends Phaser.Scene{
               for (let i = 0; i < 3; i++) {
                 if (this.enemies.size < 12) {
                   this.babySkeletons.get(boss.x+100, boss.y, "baby-skeleton");
-                  this.babySkeletons.get(boss.x-100, boss.y, "baby-skeleton");
+                  this.slimes.get(boss.x-100, boss.y, "slime");
                   this.skeletons.get(boss.x+100, boss.y, "jacked-skeleton");
                   this.goblin.get(boss.x-100, boss.y, "goblin");
                 }
@@ -619,7 +619,9 @@ export default class BossMap extends Phaser.Scene{
     if ( !this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive){
-          entry[1].handleDamage()
+          // if (entry[1].constructor.name != 'Slime') {
+          //   entry[1].handleDamage()
+          // }
           this.time.delayedCall(1000, () => {
             entry[1].destroy(true);
           })

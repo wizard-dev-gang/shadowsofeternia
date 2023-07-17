@@ -771,7 +771,7 @@ export default class Game extends Phaser.Scene {
   update() {
     this.updateIterations++;
     let character;
-
+    
     if (this.man) {
       this.man.update();
       character = this.man;

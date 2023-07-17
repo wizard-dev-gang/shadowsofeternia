@@ -18,6 +18,9 @@ import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
+import { Resurrect } from "../characters/Resurrect";
+import "../characters/Resurrect";
+import { createResurrectAnims } from "../anims/ResurrectAnims";
 
 export default class Ruins extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -31,6 +34,7 @@ export default class Ruins extends Phaser.Scene {
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
+  private resurrect!: Resurrect;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Potion;
   private collideSound: Phaser.Sound.BaseSound;
@@ -71,6 +75,7 @@ export default class Ruins extends Phaser.Scene {
     this.load.audio("slimeDeath", "/music/slimeDeathSound.mp3");
     this.load.audio("npcHm", "/music/npcHm.mp3");
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
+    this.load.audio("bossMusic", "/music/bossScene.mp3");
   }
 
   init(data: any) {
@@ -119,6 +124,7 @@ export default class Ruins extends Phaser.Scene {
     createCharacterAnims(this.anims);
     createEnemyAnims(this.anims);
     createPotionAnims(this.anims);
+    createResurrectAnims(this.anims);
 
     const map = this.make.tilemap({ key: "ruinsMap" });
     const structureTiles = map.addTilesetImage(
@@ -140,7 +146,7 @@ export default class Ruins extends Phaser.Scene {
       const groundLayer = map.createLayer("Ground", terrainTiles, 0, 0);
       const waterLayer = map.createLayer("Water", waterTiles, 0, 0);
       const pathLayer = map.createLayer("Paths", structureTiles, 0, 0);
-      const grassLayer = map.createLayer("Grass", terrainTiles, 0, 0);
+      const grassLayer = map.createLayer("Grass", propTiles, 0, 0);
       const platformLayer = map.createLayer(
         "Platform-Ground",
         terrainTiles,
@@ -301,6 +307,16 @@ export default class Ruins extends Phaser.Scene {
           this
         );
       }
+      if (this.skeletons && propsLayer) {
+        this.physics.add.collider(this.skeletons, propsLayer);
+        this.physics.add.collider(
+          this.projectiles,
+          propsLayer,
+          collisionHandler.handleProjectileWallCollision,
+          undefined,
+          this
+        );
+      }
 
       if (playerCharacters) {
         //if statements are to satisfy TypeScipt compiler
@@ -364,7 +380,24 @@ export default class Ruins extends Phaser.Scene {
           }
         },
       });
+
       //   this.potion.get(800, 2800, "Potion");
+
+      this.resurrect = this.physics.add.group({
+        classType: Resurrect,
+        createCallback: (go) => {
+          const ResGo = go as Resurrect;
+          if (ResGo.body) {
+            ResGo.body.onCollide = true;
+          }
+        },
+      });
+
+      this.resurrect.get(1580, 2450, "Resurrect");
+      this.resurrect.get(1390, 2310, "Resurrect");
+      this.resurrect.get(958, 1320, "Resurrect");
+      this.resurrect.get(1755, 750, "Resurrect");
+
       this.skeletons.get(2475, 2583, "skeleton");
 
       this.skeletons.get(1967, 3000, "skeleton");
@@ -430,7 +463,21 @@ export default class Ruins extends Phaser.Scene {
         projectilesFromDB: character.projectilesToSend,
         scene: "bossMap",
       });
+      this.sound.stopAll();
       return;
+    }
+
+    if (character && character.isDead) {
+      this.physics.add.overlap(
+        character,
+        this.resurrect,
+        this.collisionHandler.handlePlayerResurrectCollision as any,
+        undefined,
+        this
+      );
+      this.resurrect.setVisible(true);
+    } else {
+      this.resurrect.setVisible(false);
     }
 
     if (this.playerName) {
@@ -455,13 +502,6 @@ export default class Ruins extends Phaser.Scene {
         undefined,
         this
       );
-      this.physics.overlap(
-        this.projectiles,
-        this.boss,
-        this.collisionHandler.handleProjectileSkeletonCollision as any,
-        undefined,
-        this
-      );
       if (
         Phaser.Input.Keyboard.JustDown(
           this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
@@ -470,7 +510,7 @@ export default class Ruins extends Phaser.Scene {
         this.physics.overlap(
           character,
           this.Npc_wizard,
-          this.collisionHandler.handlePlayerNpcCollision,
+          this.collisionHandler.handlePlayerNpcCollision as any,
           undefined,
           this
         );

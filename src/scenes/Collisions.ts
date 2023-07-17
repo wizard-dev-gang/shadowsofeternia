@@ -120,6 +120,8 @@ export class CollisionHandler {
       (boss as Phaser.GameObjects.Image).y -
       (projectile as Phaser.GameObjects.Image).y;
 
+    this.projectileHit?.play();
+
     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
     (boss as Boss).setVelocity(dir.x, dir.y);
     (boss as Boss).getHealth();
@@ -259,7 +261,7 @@ export class CollisionHandler {
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
-    slime.isAlive = false
+    slime.isAlive = false;
     // Stop the slime from moving
     slime.isMoving = false;
 

@@ -77,6 +77,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio("potion", "music/potion.mp3");
     this.load.audio("goblinDeath", "/music/goblinDeathSound.mp3");
     this.load.audio("skeleDeath", "/music/skeleDeath.mp3");
+    this.load.audio("bossDeath", "/music/bossDeathSound2.mp3");
   }
 
   create() {

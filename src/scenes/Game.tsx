@@ -1008,6 +1008,7 @@ export default class Game extends Phaser.Scene {
       if (this.miniMapBackground && this.map) {
         const centerX = character.x + 120;
         const centerY = character.y + 90;
+        console.log(this.map.widthInPixels, this.map.heightInPixels);
         
         const ratio = this.miniMapBackground.width / this.map.widthInPixels;
         const distanceX = x - this.map.widthInPixels / 2;

@@ -370,7 +370,7 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      this.goblins.get(2080, 1110, "Goblin")
+      this.goblins.get(2080, 1110, "Goblin");
       if (playerCharacters && this.goblins) {
         // Handle collisions between goblins and layers
         if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
@@ -568,12 +568,10 @@ export default class Game extends Phaser.Scene {
       72,
       72,
       Phaser.Display.Color.GetColor(12, 70, 9)
-      
     );
     this.miniMapBackground.setAlpha(0.6);
     this.miniMapBackground.setVisible(false);
 
-  
     this.miniMapLocation = this.add.circle(
       0,
       0,
@@ -590,18 +588,25 @@ export default class Game extends Phaser.Scene {
     );
     this.miniMapForest.setVisible(false);
 
-  
-    const q = this.input.keyboard?.addKey('Q');
-    q?.on('down', () => {
-      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
+    const q = this.input.keyboard?.addKey("Q");
+    q?.on("down", () => {
+      if (
+        this.miniMapBackground &&
+        this.miniMapLocation &&
+        this.miniMapForest
+      ) {
         this.miniMapBackground.setVisible(true);
         this.miniMapLocation.setVisible(true);
         this.miniMapForest.setVisible(true);
       }
     });
-    
-    q?.on('up', () => {
-      if (this.miniMapBackground && this.miniMapLocation && this.miniMapForest) {
+
+    q?.on("up", () => {
+      if (
+        this.miniMapBackground &&
+        this.miniMapLocation &&
+        this.miniMapForest
+      ) {
         this.miniMapBackground.setVisible(false);
         this.miniMapLocation.setVisible(false);
         this.miniMapForest.setVisible(false);
@@ -768,54 +773,11 @@ export default class Game extends Phaser.Scene {
       sceneEvents.emit("player-max-health-changed", player.maxHealth);
     }
   }
-  private updatePlayerMaxHealth(maxHealth: number) {
-    // Update the player's max health value in the database
-    this.miniMapBackground = this.add.rectangle(
-      2000,
-      1100,
-      72,
-      72,
-      Phaser.Display.Color.GetColor(12, 70, 9)
-    );
-    this.miniMapLocation = this.add.circle(
-      0,
-      0,
-      2,
-      Phaser.Display.Color.GetColor(255, 0, 0)
-    );
-    this.miniMapForest = this.add.circle(
-      0,
-      0,
-      2,
-      Phaser.Display.Color.GetColor(0, 255, 0)
-    );
-    // this.miniMapBorder = this.add.rectangle(2000, 1100, 76, 76, 0xffffff).setStrokeStyle(2, 0x000000);
-
-    const q = this.input.keyboard?.addKey("Q");
-    q?.on("down", () => {
-      if (
-        this.miniMapBackground &&
-        this.miniMapLocation &&
-        this.miniMapForest
-      ) {
-        this.miniMapBackground.visible = !this.miniMapBackground.visible;
-        this.miniMapLocation.visible = !this.miniMapLocation.visible;
-        this.miniMapForest.visible = !this.miniMapForest.visible;
-      }
-    });
-
-    //if (this.playerRef) {
-    //  update(this.playerRef, {
-    //    maxHealth: maxHealth,
-    //  });
-    //}
-
-  }
 
   update() {
     this.updateIterations++;
     let character;
-    
+
     if (this.man) {
       this.man.update();
       character = this.man;
@@ -855,7 +817,7 @@ export default class Game extends Phaser.Scene {
       // this.scene.start("endCredits")
       this.scene.start("forest", {
         characterName: this.characterName,
-        level:character.level,
+        level: character.level,
         game: this,
       });
       update(this.playerRef, {
@@ -963,12 +925,12 @@ export default class Game extends Phaser.Scene {
           online: true,
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
-          level: {level: character.level, exp:character.exp},
+          level: { level: character.level, exp: character.exp },
         });
         character.projectilesToSend = {};
       }
     }
-    
+
     if (this.characterName === "rogue") {
       if (this.updateIterations % 3 === 0) {
         for (const entry of this.enemies.entries()) {
@@ -1022,7 +984,7 @@ export default class Game extends Phaser.Scene {
       this.miniMapBackground.x = backgroundLocation.x;
       this.miniMapBackground.y = backgroundLocation.y;
       // this.miniMapBorder.setPosition(this.miniMapBackground.x, this.miniMapBackground.y);
-      
+
       const playerLocation = this.getMiniLocation(
         character.x,
         character.y,
@@ -1040,19 +1002,18 @@ export default class Game extends Phaser.Scene {
     x: number,
     y: number,
     character: Player | Barb | Wizard | Archer
-    ) {
-      if (this.miniMapBackground && this.map) {
-        const centerX = character.x + 120;
-        const centerY = character.y + 90;
-        
-        const ratio = this.miniMapBackground.width / this.map.widthInPixels;
-        const distanceX = x - this.map.widthInPixels / 2;
-        const distanceY = y - this.map.heightInPixels / 2;
-        const ratioX = distanceX * ratio;
-        const ratioY = distanceY * ratio;
-        return { x: centerX + ratioX, y: centerY + ratioY };
-      }
-      return { x: 0, y: 0 };
-      
+  ) {
+    if (this.miniMapBackground && this.map) {
+      const centerX = character.x + 120;
+      const centerY = character.y + 90;
+
+      const ratio = this.miniMapBackground.width / this.map.widthInPixels;
+      const distanceX = x - this.map.widthInPixels / 2;
+      const distanceY = y - this.map.heightInPixels / 2;
+      const ratioX = distanceX * ratio;
+      const ratioY = distanceY * ratio;
+      return { x: centerX + ratioX, y: centerY + ratioY };
     }
+    return { x: 0, y: 0 };
+  }
 }

@@ -313,7 +313,7 @@ export default class Game extends Phaser.Scene {
       });
 
       // Add a slime to the group
-      this.slimes.get(414, 90, "slime");
+      // this.slimes.get(414, 90, "slime");
       if (playerCharacters && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
@@ -370,7 +370,7 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      this.goblins.get(2080, 1110, "Goblin");
+      // this.goblins.get(2080, 1110, "Goblin");
       if (playerCharacters && this.goblins) {
         // Handle collisions between goblins and layers
         if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
@@ -546,20 +546,20 @@ export default class Game extends Phaser.Scene {
 
       this.resurrect.get(2060, 1100, "Resurrect");
 
-      this.slimes.get(2000, 1000, "slime");
-      this.slimes.get(2000, 1000, "slime");
-      this.slimes.get(2000, 1000, "slime");
-      this.slimes.get(2000, 1000, "slime");
-      this.slimes.get(2000, 1000, "slime");
-      this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
+      // this.slimes.get(2000, 1000, "slime");
     }
-    this.skeletons.get(2000, 1210, "jacked-skeleton");
+    // this.skeletons.get(2000, 1210, "jacked-skeleton");
     // Add a skeleton to the group
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
       this.skeletons.get(2000, 1210, "jacked-skeleton");
-      //this.skeletons.get(2000, 1220, "jacked-skeleton");
-      //this.skeletons.get(2000, 1230, "jacked-skeleton");
+      this.skeletons.get(2000, 1220, "jacked-skeleton");
+      this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
 
     this.miniMapBackground = this.add.rectangle(
@@ -664,7 +664,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private levelUpBarb(player: Barb) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)) //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -781,7 +781,7 @@ export default class Game extends Phaser.Scene {
         maxHealth: maxHealth,
       });
     }
-
+  }
 
   update() {
     this.updateIterations++;
@@ -974,7 +974,7 @@ export default class Game extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

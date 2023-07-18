@@ -77,6 +77,14 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     return this._health;
   }
 
+  setHealth(health: number) {
+    this._health = health;
+  }
+
+  setMaxHealth(maxHealth: number) {
+    this.maxHealth = maxHealth;
+  }
+
   setProjectiles(projectiles: Phaser.Physics.Arcade.Group) {
     this.projectiles = projectiles;
   }

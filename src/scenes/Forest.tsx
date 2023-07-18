@@ -65,7 +65,7 @@ export default class Forest extends Phaser.Scene {
   public enemyDB!: any;
   public dataToSend: any = {};
   public updateIterations = 0;
-  public playerLevel?: Phaser.GameObjects.Text
+  public playerLevel?: Phaser.GameObjects.Text;
 
   constructor() {
     super("forest");
@@ -347,8 +347,8 @@ export default class Forest extends Phaser.Scene {
             strokeThickness: 2,
           })
           .setOrigin(0.5, 1);
-          // Add text for player level
-          this.playerLevel = this.add
+        // Add text for player level
+        this.playerLevel = this.add
           .text(0, 0, "Level: " + this.characterLevel, {
             fontSize: "12px",
             color: "#FFD700",
@@ -499,7 +499,7 @@ export default class Forest extends Phaser.Scene {
   }
 
   private levelUpBarb(player: Barb) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)) //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -617,7 +617,6 @@ export default class Forest extends Phaser.Scene {
       });
     }
   }
-  
 
   update() {
     this.updateIterations++;
@@ -700,7 +699,10 @@ export default class Forest extends Phaser.Scene {
       this.scene.start("ruins", {
         characterName: this.characterName,
         level: character.level,
+        health: character._health,
+        maxHealth: character.maxHealth,
       });
+      console.log("Characters max health: ", character.maxHealth);
       update(this.playerRef, {
         x: character.x,
         y: character.y,
@@ -714,6 +716,8 @@ export default class Forest extends Phaser.Scene {
         projectilesFromDB: character.projectilesToSend,
         scene: "ruins",
         level: character.level,
+        hp: character._health,
+        maxHealth: character.maxHealth,
       });
       return;
     }
@@ -739,9 +743,9 @@ export default class Forest extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
-      if(this.playerLevel){
-      this.playerLevel.x = this.playerName.x;
-      this.playerLevel.y = character.y - 10;
+      if (this.playerLevel) {
+        this.playerLevel.x = this.playerName.x;
+        this.playerLevel.y = character.y - 10;
       }
 
       //Handle Collision Between Player and Resurrect
@@ -845,7 +849,7 @@ export default class Forest extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

@@ -50,6 +50,8 @@ export default class Ruins extends Phaser.Scene {
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
   public miniMapBoss?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
+  private health: number = 0;
+  private maxHealth: number = 0;
 
   // Firebase variables
   public characterName?: string;
@@ -90,6 +92,8 @@ export default class Ruins extends Phaser.Scene {
   init(data: any) {
     this.characterName = data.characterName;
     this.characterLevel = data.level;
+    this.health = data.health;
+    this.maxHealth = data.maxHealth;
   }
 
   create() {
@@ -180,18 +184,26 @@ export default class Ruins extends Phaser.Scene {
       if (this.characterName === "barb") {
         this.barb = this.add.barb(2500, 3100, "barb");
         this.barb.level = this.characterLevel;
+        this.barb.setHealth(this.health);
+        this.barb.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(2500, 3100, "archer");
-        this.cameras.main.startFollow(this.archer);
         this.archer.level = this.characterLevel;
+        this.archer.setHealth(this.health);
+        this.archer.setMaxHealth(this.maxHealth);
+        this.cameras.main.startFollow(this.archer);
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(2500, 3100, "wizard");
-        this.cameras.main.startFollow(this.wizard);
         this.wizard.level = this.characterLevel;
+        this.wizard.setHealth(this.health);
+        this.wizard.setMaxHealth(this.maxHealth);
+        this.cameras.main.startFollow(this.wizard);
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(2500, 3100, "man");
         this.man.level = this.characterLevel;
+        this.man.setHealth(this.health);
+        this.man.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.man);
       }
 
@@ -441,8 +453,8 @@ export default class Ruins extends Phaser.Scene {
             strokeThickness: 2,
           })
           .setOrigin(0.5, 1);
-          // Add text for player level
-          this.playerLevel = this.add
+        // Add text for player level
+        this.playerLevel = this.add
           .text(0, 0, "Level: " + this.characterLevel, {
             fontSize: "12px",
             color: "#FFD700",
@@ -559,7 +571,7 @@ export default class Ruins extends Phaser.Scene {
   }
 
   private levelUpBarb(player: Barb) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)) //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -677,7 +689,7 @@ export default class Ruins extends Phaser.Scene {
       });
     }
   }
-  
+
   update() {
     this.updateIterations++;
     let character;
@@ -699,6 +711,9 @@ export default class Ruins extends Phaser.Scene {
       character = this.wizard;
       this.levelUpWizard(this.wizard);
     }
+
+    console.log(this.barb.maxHealth);
+
     if (!character) return;
     const bossX = character.x >= 1734 && character.x <= 1765;
     const bossY = character.y <= 440 && character.y >= 412;
@@ -866,9 +881,9 @@ export default class Ruins extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
-      if(this.playerLevel){
-      this.playerLevel.x = this.playerName.x;
-      this.playerLevel.y = character.y - 10;
+      if (this.playerLevel) {
+        this.playerLevel.x = this.playerName.x;
+        this.playerLevel.y = character.y - 10;
       }
 
       //Handle Collision Between Player and Potions
@@ -962,7 +977,7 @@ export default class Ruins extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

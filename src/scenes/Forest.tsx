@@ -644,7 +644,7 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-    if (this.characterName === "rogue") {
+    // if (this.characterName === "rogue") {
       if (
         character.y >= 2940 &&
         character.y <= 3000 &&
@@ -693,7 +693,7 @@ export default class Forest extends Phaser.Scene {
         this.goblins.get(857, 267, "goblin");
         this.goblins.get(857, 267, "goblin");
       }
-    }
+    //}
     this.enemiesSpawned = true;
 
     const ruinsX = character.x >= 647 && character.x <= 990;

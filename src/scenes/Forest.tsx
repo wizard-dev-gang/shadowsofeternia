@@ -243,6 +243,7 @@ export default class Forest extends Phaser.Scene {
         classType: Goblin,
         createCallback: (go) => {
           const goblinGo = go as Goblin;
+          this.enemyCount++;
           if (goblinGo.body) {
             goblinGo.body.onCollide = true;
 
@@ -256,6 +257,7 @@ export default class Forest extends Phaser.Scene {
             const offsetY = 14;
             goblinGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount, goblinGo);
         },
       });
 
@@ -642,55 +644,56 @@ export default class Forest extends Phaser.Scene {
     }
     if (!character) return;
 
-    if (
-      character.y >= 2940 &&
-      character.y <= 3000 &&
-      this.slimes.countActive() === 0 &&
-      this.goblins.countActive() === 0
-    ) {
-      this.slimes.get(1180, 2605, "slime");
-      this.slimes.get(1180, 2605, "slime");
-      this.slimes.get(1180, 2605, "slime");
-      this.slimes.get(1180, 2605, "slime");
-      this.goblins.get(1270, 2700, "goblin");
-      this.goblins.get(1300, 2700, "goblin");
-    } else if (
-      character.y >= 2455 &&
-      character.y <= 2470 &&
-      this.slimes.countActive() <= 4 &&
-      this.goblins.countActive() <= 2
-    ) {
-      this.slimes.get(1805, 2100, "slime");
-      this.slimes.get(1805, 2100, "slime");
-      this.slimes.get(1805, 2100, "slime");
-      this.slimes.get(1805, 2100, "slime");
-    } else if (
-      character.y >= 1660 &&
-      character.y <= 1680 &&
-      this.slimes.countActive() <= 8 &&
-      this.goblins.countActive() <= 4
-    ) {
-      this.slimes.get(1500, 1505, "slime");
-      this.slimes.get(1500, 1505, "slime");
-      this.slimes.get(1500, 1505, "slime");
-      this.slimes.get(1500, 1505, "slime");
-      this.goblins.get(1500, 1505, "goblin");
-      this.goblins.get(1500, 1505, "goblin");
-    } else if (
-      character.y >= 710 &&
-      character.y <= 730 &&
-      this.slimes.countActive() <= 12 &&
-      this.goblins.countActive() <= 6
-    ) {
-      this.slimes.get(847, 276, "slime");
-      this.slimes.get(857, 267, "slime");
-      this.slimes.get(847, 276, "slime");
-      this.slimes.get(857, 267, "slime");
-      this.goblins.get(857, 267, "goblin");
-      this.goblins.get(857, 267, "goblin");
-      this.goblins.get(857, 267, "goblin");
+    if (this.characterName === "rogue") {
+      if (
+        character.y >= 2940 &&
+        character.y <= 3000 &&
+        this.slimes.countActive() === 0 &&
+        this.goblins.countActive() === 0
+      ) {
+        this.slimes.get(1180, 2605, "slime");
+        this.slimes.get(1180, 2605, "slime");
+        this.slimes.get(1180, 2605, "slime");
+        this.slimes.get(1180, 2605, "slime");
+        this.goblins.get(1270, 2700, "goblin");
+        this.goblins.get(1300, 2700, "goblin");
+      } else if (
+        character.y >= 2455 &&
+        character.y <= 2470 &&
+        this.slimes.countActive() <= 4 &&
+        this.goblins.countActive() <= 2
+      ) {
+        this.slimes.get(1805, 2100, "slime");
+        this.slimes.get(1805, 2100, "slime");
+        this.slimes.get(1805, 2100, "slime");
+        this.slimes.get(1805, 2100, "slime");
+      } else if (
+        character.y >= 1660 &&
+        character.y <= 1680 &&
+        this.slimes.countActive() <= 8 &&
+        this.goblins.countActive() <= 4
+      ) {
+        this.slimes.get(1500, 1505, "slime");
+        this.slimes.get(1500, 1505, "slime");
+        this.slimes.get(1500, 1505, "slime");
+        this.slimes.get(1500, 1505, "slime");
+        this.goblins.get(1500, 1505, "goblin");
+        this.goblins.get(1500, 1505, "goblin");
+      } else if (
+        character.y >= 710 &&
+        character.y <= 730 &&
+        this.slimes.countActive() <= 12 &&
+        this.goblins.countActive() <= 6
+      ) {
+        this.slimes.get(847, 276, "slime");
+        this.slimes.get(857, 267, "slime");
+        this.slimes.get(847, 276, "slime");
+        this.slimes.get(857, 267, "slime");
+        this.goblins.get(857, 267, "goblin");
+        this.goblins.get(857, 267, "goblin");
+        this.goblins.get(857, 267, "goblin");
+      }
     }
-
     this.enemiesSpawned = true;
 
     const ruinsX = character.x >= 647 && character.x <= 990;

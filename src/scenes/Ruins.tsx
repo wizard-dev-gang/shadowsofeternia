@@ -224,6 +224,7 @@ export default class Ruins extends Phaser.Scene {
         classType: Goblin,
         createCallback: (go) => {
           const goblinGo = go as Goblin;
+          this.enemyCount++;
           if (goblinGo.body) {
             goblinGo.body.onCollide = true;
 
@@ -237,6 +238,7 @@ export default class Ruins extends Phaser.Scene {
             const offsetY = 14;
             goblinGo.body.setOffset(offsetX, offsetY);
           }
+          this.enemies.set(this.enemyCount, goblinGo);
         },
       });
 
@@ -725,125 +727,127 @@ export default class Ruins extends Phaser.Scene {
       return;
     }
 
-    if (
-      character.y <= 3150 &&
-      character.y >= 3100 &&
-      character.x <= 2614 &&
-      character.x >= 2250 &&
-      this.goblins.countActive() === 0
-    ) {
-      this.goblins.get(2540, 2940, "goblin");
-      this.goblins.get(2440, 2940, "goblin");
-      this.goblins.get(2500, 2940, "goblin");
-      this.goblins.get(2520, 2940, "goblin");
-    } else if (
-      character.y <= 2870 &&
-      character.y >= 2810 &&
-      character.x <= 2554 &&
-      character.x >= 2438 &&
-      this.skeletons.countActive() === 0
-    ) {
-      this.skeletons.get(2000, 2300, "skeleton");
-      this.skeletons.get(2050, 2600, "skeleton");
-      this.skeletons.get(2100, 2500, "skeleton");
-      this.skeletons.get(2200, 2400, "skeleton");
-      this.skeletons.get(2250, 2400, "skeleton");
-      this.skeletons.get(2300, 2450, "skeleton");
-      this.skeletons.get(2350, 2400, "skeleton");
-      this.skeletons.get(2400, 2640, "skeleton");
-    } else if (
-      character.y <= 2448 &&
-      character.y >= 2395 &&
-      character.x <= 1870 &&
-      character.x >= 1720 &&
-      this.skeletons.countActive() <= 8
-    ) {
-      this.skeletons.get(1490, 1900, "skeleton");
-      this.skeletons.get(1500, 2000, "skeleton");
-      this.skeletons.get(1600, 2100, "skeleton");
-      this.skeletons.get(1650, 2220, "skeleton");
-    } else if (
-      character.y <= 1776 &&
-      character.y >= 1660 &&
-      character.x <= 1450 &&
-      character.x >= 1360 &&
-      this.skeletons.countActive() <= 12
-    ) {
-      this.skeletons.get(900, 1665, "skeleton");
-      this.skeletons.get(1000, 1700, "skeleton");
-      this.skeletons.get(950, 1760, "skeleton");
-      this.skeletons.get(1100, 1720, "skeleton");
-    } else if (
-      character.y <= 1890 &&
-      character.y >= 1815 &&
-      character.x <= 858 &&
-      character.x >= 741 &&
-      this.goblins.countActive() <= 4
-    ) {
-      this.goblins.get(700, 1950, "goblin");
-      this.goblins.get(750, 2000, "goblin");
-      this.goblins.get(800, 2020, "goblin");
-      this.goblins.get(900, 2080, "goblin");
-      this.goblins.get(950, 2100, "goblin");
-      this.goblins.get(1000, 2150, "goblin");
-      this.goblins.get(1050, 2200, "goblin");
-      this.goblins.get(1200, 2250, "goblin");
-    } else if (
-      character.y <= 2610 &&
-      character.y >= 2500 &&
-      character.x <= 1431 &&
-      character.x >= 1354 &&
-      this.skeletons.countActive() <= 16
-    ) {
-      this.skeletons.get(1220, 2720, "skeleton");
-      this.skeletons.get(1250, 2800, "skeleton");
-      this.skeletons.get(1300, 2850, "skeleton");
-      this.skeletons.get(1350, 2880, "skeleton");
-    } else if (
-      character.y <= 2630 &&
-      character.y >= 2550 &&
-      character.x <= 311 &&
-      character.x >= 106 &&
-      this.goblins.countActive() <= 12
-    ) {
-      this.goblins.get(50, 1920, "goblin");
-      this.goblins.get(100, 2000, "goblin");
-      this.goblins.get(150, 2050, "goblin");
-      this.goblins.get(200, 2100, "goblin");
-      this.goblins.get(250, 2200, "goblin");
-    } else if (
-      character.y <= 1616 &&
-      character.y >= 1250 &&
-      character.x <= 1350 &&
-      character.x >= 1250 &&
-      this.skeletons.countActive() <= 20 &&
-      this.goblins.countActive() <= 17
-    ) {
-      this.goblins.get(1500, 1260, "goblin");
-      this.goblins.get(1550, 1300, "goblin");
-      this.goblins.get(1600, 1350, "goblin");
-      this.goblins.get(1650, 1400, "goblin");
-      this.skeletons.get(1700, 1450, "skeleton");
-      this.skeletons.get(1750, 1500, "skeleton");
-      this.skeletons.get(1800, 1530, "skeleton");
-      this.skeletons.get(1900, 1430, "skeleton");
-    } else if (
-      character.y <= 1250 &&
-      character.y >= 1150 &&
-      character.x <= 2060 &&
-      character.x >= 1770 &&
-      this.goblins.countActive() <= 21
-    ) {
-      this.goblins.get(1500, 830, "goblin");
-      this.goblins.get(1550, 870, "goblin");
-      this.goblins.get(1600, 900, "goblin");
-      this.goblins.get(1650, 950, "goblin");
-      this.goblins.get(1700, 1000, "goblin");
-      this.goblins.get(1750, 1050, "goblin");
-      this.goblins.get(1800, 1030, "goblin");
-      this.goblins.get(1850, 910, "goblin");
-      this.goblins.get(1900, 850, "goblin");
-      this.goblins.get(2000, 1090, "goblin");
+    if (this.characterName === "rogue") {
+      if (
+        character.y <= 3150 &&
+        character.y >= 3100 &&
+        character.x <= 2614 &&
+        character.x >= 2250 &&
+        this.goblins.countActive() === 0
+      ) {
+        this.goblins.get(2540, 2940, "goblin");
+        this.goblins.get(2440, 2940, "goblin");
+        this.goblins.get(2500, 2940, "goblin");
+        this.goblins.get(2520, 2940, "goblin");
+      } else if (
+        character.y <= 2870 &&
+        character.y >= 2810 &&
+        character.x <= 2554 &&
+        character.x >= 2438 &&
+        this.skeletons.countActive() === 0
+      ) {
+        this.skeletons.get(2000, 2300, "skeleton");
+        this.skeletons.get(2050, 2600, "skeleton");
+        this.skeletons.get(2100, 2500, "skeleton");
+        this.skeletons.get(2200, 2400, "skeleton");
+        this.skeletons.get(2250, 2400, "skeleton");
+        this.skeletons.get(2300, 2450, "skeleton");
+        this.skeletons.get(2350, 2400, "skeleton");
+        this.skeletons.get(2400, 2640, "skeleton");
+      } else if (
+        character.y <= 2448 &&
+        character.y >= 2395 &&
+        character.x <= 1870 &&
+        character.x >= 1720 &&
+        this.skeletons.countActive() <= 8
+      ) {
+        this.skeletons.get(1490, 1900, "skeleton");
+        this.skeletons.get(1500, 2000, "skeleton");
+        this.skeletons.get(1600, 2100, "skeleton");
+        this.skeletons.get(1650, 2220, "skeleton");
+      } else if (
+        character.y <= 1776 &&
+        character.y >= 1660 &&
+        character.x <= 1450 &&
+        character.x >= 1360 &&
+        this.skeletons.countActive() <= 12
+      ) {
+        this.skeletons.get(900, 1665, "skeleton");
+        this.skeletons.get(1000, 1700, "skeleton");
+        this.skeletons.get(950, 1760, "skeleton");
+        this.skeletons.get(1100, 1720, "skeleton");
+      } else if (
+        character.y <= 1890 &&
+        character.y >= 1815 &&
+        character.x <= 858 &&
+        character.x >= 741 &&
+        this.goblins.countActive() <= 4
+      ) {
+        this.goblins.get(700, 1950, "goblin");
+        this.goblins.get(750, 2000, "goblin");
+        this.goblins.get(800, 2020, "goblin");
+        this.goblins.get(900, 2080, "goblin");
+        this.goblins.get(950, 2100, "goblin");
+        this.goblins.get(1000, 2150, "goblin");
+        this.goblins.get(1050, 2200, "goblin");
+        this.goblins.get(1200, 2250, "goblin");
+      } else if (
+        character.y <= 2610 &&
+        character.y >= 2500 &&
+        character.x <= 1431 &&
+        character.x >= 1354 &&
+        this.skeletons.countActive() <= 16
+      ) {
+        this.skeletons.get(1220, 2720, "skeleton");
+        this.skeletons.get(1250, 2800, "skeleton");
+        this.skeletons.get(1300, 2850, "skeleton");
+        this.skeletons.get(1350, 2880, "skeleton");
+      } else if (
+        character.y <= 2630 &&
+        character.y >= 2550 &&
+        character.x <= 311 &&
+        character.x >= 106 &&
+        this.goblins.countActive() <= 12
+      ) {
+        this.goblins.get(50, 1920, "goblin");
+        this.goblins.get(100, 2000, "goblin");
+        this.goblins.get(150, 2050, "goblin");
+        this.goblins.get(200, 2100, "goblin");
+        this.goblins.get(250, 2200, "goblin");
+      } else if (
+        character.y <= 1616 &&
+        character.y >= 1250 &&
+        character.x <= 1350 &&
+        character.x >= 1250 &&
+        this.skeletons.countActive() <= 20 &&
+        this.goblins.countActive() <= 17
+      ) {
+        this.goblins.get(1500, 1260, "goblin");
+        this.goblins.get(1550, 1300, "goblin");
+        this.goblins.get(1600, 1350, "goblin");
+        this.goblins.get(1650, 1400, "goblin");
+        this.skeletons.get(1700, 1450, "skeleton");
+        this.skeletons.get(1750, 1500, "skeleton");
+        this.skeletons.get(1800, 1530, "skeleton");
+        this.skeletons.get(1900, 1430, "skeleton");
+      } else if (
+        character.y <= 1250 &&
+        character.y >= 1150 &&
+        character.x <= 2060 &&
+        character.x >= 1770 &&
+        this.goblins.countActive() <= 21
+      ) {
+        this.goblins.get(1500, 830, "goblin");
+        this.goblins.get(1550, 870, "goblin");
+        this.goblins.get(1600, 900, "goblin");
+        this.goblins.get(1650, 950, "goblin");
+        this.goblins.get(1700, 1000, "goblin");
+        this.goblins.get(1750, 1050, "goblin");
+        this.goblins.get(1800, 1030, "goblin");
+        this.goblins.get(1850, 910, "goblin");
+        this.goblins.get(1900, 850, "goblin");
+        this.goblins.get(2000, 1090, "goblin");
+      }
     }
 
     if (character && character.isDead) {

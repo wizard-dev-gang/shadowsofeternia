@@ -727,7 +727,7 @@ export default class Ruins extends Phaser.Scene {
       return;
     }
 
-    if (this.characterName === "rogue") {
+    // if (this.characterName === "rogue") {
       if (
         character.y <= 3150 &&
         character.y >= 3100 &&
@@ -847,7 +847,7 @@ export default class Ruins extends Phaser.Scene {
         this.goblins.get(1850, 910, "goblin");
         this.goblins.get(1900, 850, "goblin");
         this.goblins.get(2000, 1090, "goblin");
-      }
+      //}
     }
 
     if (character && character.isDead) {

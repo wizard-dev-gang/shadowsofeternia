@@ -1,13 +1,23 @@
 import Phaser from "phaser";
 import HealthBar from "./HealthBar";
 import { sceneEvents } from "../events/EventsCenter";
+import { Player } from "../characters/Player";
+import { Archer } from "../characters/Archer";
+import { Wizard } from "../characters/Wizard";
+import { Barb } from "../characters/Barb";
 
 export default class PlayerUI extends Phaser.Scene {
   private bar!: HealthBar;
+  private player?: Player;
+  private archer?: Archer;
+  private wizard?: Wizard;
+  private barb?: Barb;
+  private fillRatio: number = 1;
 
   constructor() {
     super({ key: "player-ui" });
   }
+
   create() {
     const y = 290;
     const x = 10;
@@ -35,23 +45,29 @@ export default class PlayerUI extends Phaser.Scene {
       .withLeftCap(this.add.image(0, 0, "healthBar-left-cap"))
       .withMiddle(this.add.image(0, 0, "healthBar-middle"))
       .withRightCap(this.add.image(0, 0, "healthBar-right-cap"))
-
       .layout();
-    // is used to animate the bar going to 50%
-    // .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {*insert bar.animateToFill})
-    //this.bar.animateToFill(0.5)
 
-    // private handlePlayerHealthChanged(health: number)
+    // Instantiate the players
+    this.player = new Player(this, 0, 0, "player", 0);
+    this.archer = new Archer(this, 0, 0, "archer", 0);
+    this.wizard = new Wizard(this, 0, 0, "wizard", 0);
+    this.barb = new Barb(this, 0, 0, "barb", 0);
   }
 
   private handlePlayerHealthChanged(health: number) {
-    console.log("in player health changed", health);
-    //Requires two arguments, health and duration(ms)
-    this.bar.animateToFill(health / 10, 1000);
+    console.log("Player health changed", health);
+    const maxHealth = this.player?.maxHealth;
+    const fillRatio = health / maxHealth!;
+    this.bar.animateToFill(fillRatio, 1000);
+    this.fillRatio = fillRatio; // Store the fill ratio
   }
+
   private handlePlayerMaxHealthChanged(maxHealth: number) {
     console.log("Player's max health changed:", maxHealth);
-    // Update the width of the health bar to match the new max health value
-    this.bar.layout();
-  }  
+    if (this.player) {
+      const newFillRatio = this.fillRatio * (this.player.maxHealth / maxHealth); // Calculate the new fill ratio based on the stored fill ratio and the updated max health
+      this.bar.animateToFill(newFillRatio, 1000);
+      this.player.maxHealth = maxHealth;
+    }
+  }
 }

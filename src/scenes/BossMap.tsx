@@ -908,7 +908,9 @@ export default class BossMap extends Phaser.Scene {
       }
       this.time.delayedCall(6500, () => {
         console.log("enemy died")
+        if(this.man || this.barb || this.archer || this.wizard){
         this.scene.start("endCredits")
+        }
       });
     }
 

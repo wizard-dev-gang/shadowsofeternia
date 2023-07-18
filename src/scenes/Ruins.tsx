@@ -524,7 +524,7 @@ export default class Ruins extends Phaser.Scene {
   }
 
   private levelUpPlayer(player: Player) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.25 times everytime the player levels up
+    const expNeeded = Math.round(10 * Math.pow(1.5, player.level - 1)); //Set the amout of exp need to level up to increase 1.25 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -561,7 +561,7 @@ export default class Ruins extends Phaser.Scene {
   }
 
   private levelUpBarb(player: Barb) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)) //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(10 * Math.pow(1.5, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -598,7 +598,7 @@ export default class Ruins extends Phaser.Scene {
   }
 
   private levelUpArcher(player: Archer) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(10 * Math.pow(1.5, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times
@@ -635,7 +635,7 @@ export default class Ruins extends Phaser.Scene {
   }
 
   private levelUpWizard(player: Wizard) {
-    const expNeeded = Math.round(3 * Math.pow(1.25, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
+    const expNeeded = Math.round(10 * Math.pow(1.5, player.level - 1)); //Set the amout of exp need to level up to increase 1.5 times everytime the player levels up
     if (player.exp >= expNeeded) {
       player.exp -= expNeeded;
       player._health *= 1.25; //increase the players current health by 1.25 times

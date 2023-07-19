@@ -10,13 +10,11 @@ import { Barb } from "../characters/Barb";
 import { Archer } from "../characters/Archer";
 import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
-import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
 import BabySkeleton from "../enemies/BabySkeleton";
 import { Resurrect } from "../characters/Resurrect";
-import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Skeleton from "../enemies/Skeleton";
 import Goblin from "../enemies/Goblins";
@@ -32,7 +30,6 @@ export default class BossMap extends Phaser.Scene {
   public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   public collisionHandler: CollisionHandler;
-  private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private resurrect!: Phaser.Physics.Arcade.Group;
   public potion!: Phaser.Physics.Arcade.Group;
   private collideSound!: Phaser.Sound.BaseSound;
@@ -43,6 +40,7 @@ export default class BossMap extends Phaser.Scene {
   public babySkeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public goblin!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public slimes!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
+  public exp: number;
 
   // Firebase variables
   public characterName?: string;
@@ -57,7 +55,7 @@ export default class BossMap extends Phaser.Scene {
   public dataToSend: any = {};
   public updateIterations = 0;
   private enemyCount: number = 0;
-  public playerLevel?: Phaser.GameObjects.Text
+  public playerLevel?: Phaser.GameObjects.Text;
 
   constructor() {
     super("bossMap");
@@ -73,7 +71,6 @@ export default class BossMap extends Phaser.Scene {
     this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
     this.load.audio("bossFight", "/music/bossFight.mp3");
     this.load.audio("slimeDeathSound", "/music/slimeDeathSound.mp3");
-    this.load.audio("npcHm", "/music/npcHm.mp3");
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
     this.load.audio("bossDeath", "/music/bossDeathSound2.mp3");
   }
@@ -91,8 +88,6 @@ export default class BossMap extends Phaser.Scene {
       this.goblin,
       this.slimes,
       this.time,
-      this.Npc_wizard,
-      this.add,
       this.potion,
       this.playerId,
       this.resurrect,
@@ -188,9 +183,9 @@ export default class BossMap extends Phaser.Scene {
         },
       });
 
-      if (this.characterName === "rogue") {
+      
         this.boss.get(626, 390, "boss");
-      }
+      
 
       sceneEvents.on("boss-stomp", () => {
         const boss = this.enemies.get(1);
@@ -536,8 +531,8 @@ export default class BossMap extends Phaser.Scene {
             strokeThickness: 2,
           })
           .setOrigin(0.5, 1);
-          // Add text for player level
-          this.playerLevel = this.add
+        // Add text for player level
+        this.playerLevel = this.add
           .text(0, 0, "Level: " + this.characterLevel, {
             fontSize: "12px",
             color: "#FFD700",
@@ -890,7 +885,7 @@ export default class BossMap extends Phaser.Scene {
     this.updateIterations++;
     let character;
 
-    if (this.characterName === "rogue" && !this.enemies.get(1).isAlive) {
+    if (!this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
           // if (entry[1].constructor.name != 'Slime') {
@@ -903,9 +898,9 @@ export default class BossMap extends Phaser.Scene {
         }
       }
       this.time.delayedCall(6500, () => {
-        console.log("enemy died")
-        if(this.man || this.barb || this.archer || this.wizard){
-        this.scene.start("endCredits")
+        console.log("enemy died");
+        if (this.man || this.barb || this.archer || this.wizard) {
+          this.scene.start("endCredits");
         }
       });
     }
@@ -949,9 +944,9 @@ export default class BossMap extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
-      if(this.playerLevel){
-      this.playerLevel.x = this.playerName.x;
-      this.playerLevel.y = character.y - 10;
+      if (this.playerLevel) {
+        this.playerLevel.x = this.playerName.x;
+        this.playerLevel.y = character.y - 10;
       }
 
       // Handle collision between knives and baby skeletons
@@ -1016,19 +1011,7 @@ export default class BossMap extends Phaser.Scene {
         undefined,
         this
       );
-      if (
-        Phaser.Input.Keyboard.JustDown(
-          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-        )
-      ) {
-        this.physics.overlap(
-          character,
-          this.Npc_wizard,
-          this.collisionHandler.handlePlayerNpcCollision,
-          undefined,
-          this
-        );
-      }
+      
       if (this.playerRef) {
         update(this.playerRef, {
           x: character.x,
@@ -1081,7 +1064,7 @@ export default class BossMap extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

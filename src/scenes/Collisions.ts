@@ -16,7 +16,6 @@ import { Resurrect } from "../characters/Resurrect";
 import { Dog } from "../characters/Dog";
 import { Goblin } from "../enemies/Goblins";
 
-
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
   skeletons: Phaser.Physics.Arcade.Group;

@@ -1,8 +1,14 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
+import Phaser from "phaser";
 import Game from "../scenes/Game";
+import Ruins from "../scenes/Ruins";
+import Forest from "../scenes/Forest";
+import BossMap from "../scenes/BossMap";
 
-export const setupFirebaseAuth = (gameInstance: Game) => {
+type SceneType = Game | Ruins | Forest | BossMap;
+
+export const setupFirebaseAuth = (gameInstance: SceneType) => {
   const auth = getAuth();
   gameInstance.enemies = new Map();
   onAuthStateChanged(auth, (user) => {
@@ -52,9 +58,14 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
                   enemySelector = "goblin";
               }
               const enemyGroup = gameInstance.enemyDB[enemySelector];
-              if (!enemyGroup) throw new Error(`No enemy group named ${enemySelector}`);
-      
-              enemy = enemyGroup.get(enemyData.x, enemyData.y, "jacked-skeleton");
+              if (!enemyGroup)
+                throw new Error(`No enemy group named ${enemySelector}`);
+
+              enemy = enemyGroup.get(
+                enemyData.x,
+                enemyData.y,
+                "jacked-skeleton"
+              );
               gameInstance.enemies.set(enemyId, enemy);
             }
             enemy.x = enemyData.x;

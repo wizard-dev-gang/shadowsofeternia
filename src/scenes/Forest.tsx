@@ -43,6 +43,7 @@ export default class Forest extends Phaser.Scene {
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
   public miniMapRuins?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
+  public exp: number;
 
   // private game?: Game;
   public enemiesSpawned = false;
@@ -65,7 +66,7 @@ export default class Forest extends Phaser.Scene {
   public enemyDB!: any;
   public dataToSend: any = {};
   public updateIterations = 0;
-  public playerLevel?: Phaser.GameObjects.Text
+  public playerLevel?: Phaser.GameObjects.Text;
 
   constructor() {
     super("forest");
@@ -108,7 +109,7 @@ export default class Forest extends Phaser.Scene {
       this.potionSound,
       this.slimeDeathSound,
       this.npcHm,
-      this.projectileHit,
+      this.projectileHit
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
@@ -349,8 +350,8 @@ export default class Forest extends Phaser.Scene {
             strokeThickness: 2,
           })
           .setOrigin(0.5, 1);
-          // Add text for player level
-          this.playerLevel = this.add
+        // Add text for player level
+        this.playerLevel = this.add
           .text(0, 0, "Level: " + this.characterLevel, {
             fontSize: "12px",
             color: "#FFD700",
@@ -368,8 +369,8 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
-      if(this.potion instanceof Phaser.Physics.Arcade.Group)
-      this.potion.get(800, 2800, "Potion");
+      if (this.potion instanceof Phaser.Physics.Arcade.Group)
+        this.potion.get(800, 2800, "Potion");
 
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
@@ -380,12 +381,11 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
-      if(this.resurrect instanceof Phaser.Physics.Arcade.Group)
-      {
-      this.resurrect.get(820, 2800, "Resurrect");
-      this.resurrect.get(1690, 2640, "Resurrect");
-      this.resurrect.get(1220, 1540, "Resurrect");
-      this.resurrect.get(725, 165, "Resurrect");
+      if (this.resurrect instanceof Phaser.Physics.Arcade.Group) {
+        this.resurrect.get(820, 2800, "Resurrect");
+        this.resurrect.get(1690, 2640, "Resurrect");
+        this.resurrect.get(1220, 1540, "Resurrect");
+        this.resurrect.get(725, 165, "Resurrect");
       }
 
       this.Npc_wizard = this.physics.add.group({
@@ -622,7 +622,6 @@ export default class Forest extends Phaser.Scene {
       });
     }
   }
-  
 
   update() {
     this.updateIterations++;
@@ -648,54 +647,54 @@ export default class Forest extends Phaser.Scene {
     if (!character) return;
 
     // if (this.characterName === "rogue") {
-      if (
-        character.y >= 2940 &&
-        character.y <= 3000 &&
-        this.slimes.countActive() === 0 &&
-        this.goblins.countActive() === 0
-      ) {
-        this.slimes.get(1180, 2605, "slime");
-        this.slimes.get(1180, 2605, "slime");
-        this.slimes.get(1180, 2605, "slime");
-        this.slimes.get(1180, 2605, "slime");
-        this.goblins.get(1270, 2700, "goblin");
-        this.goblins.get(1300, 2700, "goblin");
-      } else if (
-        character.y >= 2455 &&
-        character.y <= 2470 &&
-        this.slimes.countActive() <= 4 &&
-        this.goblins.countActive() <= 2
-      ) {
-        this.slimes.get(1805, 2100, "slime");
-        this.slimes.get(1805, 2100, "slime");
-        this.slimes.get(1805, 2100, "slime");
-        this.slimes.get(1805, 2100, "slime");
-      } else if (
-        character.y >= 1660 &&
-        character.y <= 1680 &&
-        this.slimes.countActive() <= 8 &&
-        this.goblins.countActive() <= 4
-      ) {
-        this.slimes.get(1500, 1505, "slime");
-        this.slimes.get(1500, 1505, "slime");
-        this.slimes.get(1500, 1505, "slime");
-        this.slimes.get(1500, 1505, "slime");
-        this.goblins.get(1500, 1505, "goblin");
-        this.goblins.get(1500, 1505, "goblin");
-      } else if (
-        character.y >= 710 &&
-        character.y <= 730 &&
-        this.slimes.countActive() <= 12 &&
-        this.goblins.countActive() <= 6
-      ) {
-        this.slimes.get(847, 276, "slime");
-        this.slimes.get(857, 267, "slime");
-        this.slimes.get(847, 276, "slime");
-        this.slimes.get(857, 267, "slime");
-        this.goblins.get(857, 267, "goblin");
-        this.goblins.get(857, 267, "goblin");
-        this.goblins.get(857, 267, "goblin");
-      }
+    if (
+      character.y >= 2940 &&
+      character.y <= 3000 &&
+      this.slimes.countActive() === 0 &&
+      this.goblins.countActive() === 0
+    ) {
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.slimes.get(1180, 2605, "slime");
+      this.goblins.get(1270, 2700, "goblin");
+      this.goblins.get(1300, 2700, "goblin");
+    } else if (
+      character.y >= 2455 &&
+      character.y <= 2470 &&
+      this.slimes.countActive() <= 4 &&
+      this.goblins.countActive() <= 2
+    ) {
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+      this.slimes.get(1805, 2100, "slime");
+    } else if (
+      character.y >= 1660 &&
+      character.y <= 1680 &&
+      this.slimes.countActive() <= 8 &&
+      this.goblins.countActive() <= 4
+    ) {
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.slimes.get(1500, 1505, "slime");
+      this.goblins.get(1500, 1505, "goblin");
+      this.goblins.get(1500, 1505, "goblin");
+    } else if (
+      character.y >= 710 &&
+      character.y <= 730 &&
+      this.slimes.countActive() <= 12 &&
+      this.goblins.countActive() <= 6
+    ) {
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
+      this.slimes.get(847, 276, "slime");
+      this.slimes.get(857, 267, "slime");
+      this.goblins.get(857, 267, "goblin");
+      this.goblins.get(857, 267, "goblin");
+      this.goblins.get(857, 267, "goblin");
+    }
     //}
     this.enemiesSpawned = true;
 
@@ -745,9 +744,9 @@ export default class Forest extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
-      if(this.playerLevel){
-      this.playerLevel.x = this.playerName.x;
-      this.playerLevel.y = character.y - 10;
+      if (this.playerLevel) {
+        this.playerLevel.x = this.playerName.x;
+        this.playerLevel.y = character.y - 10;
       }
 
       //Handle Collision Between Player and Resurrect
@@ -851,7 +850,7 @@ export default class Forest extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

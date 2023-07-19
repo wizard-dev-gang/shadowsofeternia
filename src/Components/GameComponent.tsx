@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Phaser from "phaser";
 import Game from "../scenes/Game";
-import Forest from '../scenes/Forest';
+import Forest from "../scenes/Forest";
 import Preloader from "../scenes/Preloader";
 import PlayerUI from "../scenes/PlayerUI";
 import ChooseCharacterScene from "../scenes/ChooseCharacter";
@@ -27,11 +27,20 @@ function GameComponent() {
         default: "arcade", // The default physics system
         arcade: {
           gravity: { y: 0 }, // The gravity configuration (no gravity in this case)
-          debug: true, // Enable physics debugging (collider outlines, etc.)
+          debug: false, // Enable physics debugging (collider outlines, etc.)
         },
-      }, 
-      
-      scene: [Preloader, ChooseCharacterScene, Game, Forest, Ruins, BossMap, Credits, PlayerUI],
+      },
+
+      scene: [
+        Preloader,
+        ChooseCharacterScene,
+        Game,
+        Forest,
+        Ruins,
+        BossMap,
+        Credits,
+        PlayerUI,
+      ],
 
       scale: {
         zoom: 2.5,

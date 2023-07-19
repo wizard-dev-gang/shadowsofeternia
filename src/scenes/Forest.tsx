@@ -4,7 +4,7 @@ import Archer from "../characters/Archer";
 import Wizard from "../characters/Wizard";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
-import { Goblin } from "../enemies/Goblins";
+import { Goblin } from "../enemies/Goblin";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import { update } from "firebase/database";
@@ -44,6 +44,9 @@ export default class Forest extends Phaser.Scene {
   public miniMapRuins?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
   public exp: number;
+  private boss?: Phaser.Physics.Arcade.Group;
+  private babySkeletons?: Phaser.Physics.Arcade.Group;
+  private dog?: Phaser.Physics.Arcade.Group;
 
   private game?: Game;
   public enemiesSpawned = false;
@@ -97,18 +100,22 @@ export default class Forest extends Phaser.Scene {
     const collisionHandler = new CollisionHandler(
       this.projectiles,
       this.skeletons,
+      this.boss,
       this.slimes,
+      this.babySkeletons,
       this.time,
       this.Npc_wizard,
       this.add,
       this.potion,
       this.playerId,
+      this.dog,
+      this.goblins,
       this.resurrect,
       this.collideSound,
       this.resurrectSound,
       this.potionSound,
-      this.slimeDeathSound,
       this.npcHm,
+      this.slimeDeathSound,
       this.projectileHit
     );
     this.scene.run("player-ui");

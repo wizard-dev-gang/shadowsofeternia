@@ -22,7 +22,7 @@ import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Dog from "../characters/Dog";
 import { createDogAnims } from "../anims/DogAnims";
-import { Goblin } from "../enemies/Goblins";
+import { Goblin } from "../enemies/Goblin";
 
 export default class Game extends Phaser.Scene {
   // Private variables:

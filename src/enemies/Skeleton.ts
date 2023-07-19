@@ -67,9 +67,6 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  preload() {
-    this.load.audio("skeleDeath", "/music/skeleDeath.mp3");
-  }
 
   // Enemies have health, to not die in 1 hit.
   getHealth() {

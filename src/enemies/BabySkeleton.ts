@@ -134,7 +134,7 @@ export default class BabySkeleton extends Phaser.Physics.Arcade.Sprite {
     if (this._health <= 0) {
       this.setVelocity(0, 0);
       this.isAlive = false
-      this.direction = 5
+      this.direction = 4
       this.setTint(0xffffff);
       this.anims.play("baby-skeleton-death", true);
       this.scene.time.delayedCall(1000, () => {

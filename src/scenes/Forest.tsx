@@ -51,6 +51,7 @@ export default class Forest extends Phaser.Scene {
   private potionSound: Phaser.Sound.BaseSound;
   private slimeDeathSound: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
+  private projectileHit: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;

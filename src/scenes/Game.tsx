@@ -594,6 +594,7 @@ export default class Game extends Phaser.Scene {
         this.miniMapForest.setVisible(false);
       }
     });
+    this.skeletons.get(2060, 1100, "skeleton")
   }
 
   // Method to update player's experience

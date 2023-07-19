@@ -46,7 +46,6 @@ export class CollisionHandler {
   playerRef!: any;
 
   constructor(
-<<<<<<< HEAD
     projectiles: Phaser.Physics.Arcade.Group,
     skeletons: Phaser.Physics.Arcade.Group,
     boss: Phaser.Physics.Arcade.Group,
@@ -64,26 +63,6 @@ export class CollisionHandler {
     potionSound: Phaser.Sound.BaseSound,
     dogBark: Phaser.Sound.BaseSound,
     npcHm: Phaser.Sound.BaseSound,
-=======
-    projectiles?: Phaser.Physics.Arcade.Group,
-    skeletons?: Phaser.Physics.Arcade.Group,
-    boss?: Phaser.Physics.Arcade.Group,
-    slimes?: Phaser.Physics.Arcade.Group,
-    babySkeletons?: Phaser.Physics.Arcade.Group,
-    time?: Phaser.Time.Clock,
-    Npc_wizard?: Phaser.Physics.Arcade.Group,
-    add?: GameObjects.GameObjectFactory,
-    potion?: Potion,
-    playerId?: string | null,
-    dog?: Phaser.Physics.Arcade.Group,
-    goblin?: Phaser.Physics.Arcade.Group,
-    resurrect?: Resurrect,
-    collideSound?: Phaser.Sound.BaseSound,
-    resurrectSound?: Phaser.Sound.BaseSound,
-    potionSound?: Phaser.Sound.BaseSound,
-    dogBark?: Phaser.Sound.BaseSound,
-    npcHm?: Phaser.Sound.BaseSound,
->>>>>>> 74865db96743e0e9b86b2dfb0ead44ab86b2317b
     slimeDeathSound?: Phaser.Sound.BaseSound,
     projectileHit?: Phaser.Sound.BaseSound
   ) {
@@ -412,6 +391,7 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject
   ) {
+    const Npc = npc as Npc_wizard
     // Check if the player is interacting with the wizard character
     if (
       player instanceof Player ||

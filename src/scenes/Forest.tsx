@@ -44,7 +44,7 @@ export default class Forest extends Phaser.Scene {
   public miniMapRuins?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
 
-  private game?: Game;
+  // private game?: Game;
   public enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
@@ -107,7 +107,7 @@ export default class Forest extends Phaser.Scene {
       this.potionSound,
       this.slimeDeathSound,
       this.npcHm,
-      this.projectileHit
+      this.projectileHit,
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
@@ -367,6 +367,7 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
+      if(this.potion instanceof Phaser.Physics.Arcade.Group)
       this.potion.get(800, 2800, "Potion");
 
       this.resurrect = this.physics.add.group({
@@ -378,11 +379,13 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
-
+      if(this.resurrect instanceof Phaser.Physics.Arcade.Group)
+      {
       this.resurrect.get(820, 2800, "Resurrect");
       this.resurrect.get(1690, 2640, "Resurrect");
       this.resurrect.get(1220, 1540, "Resurrect");
       this.resurrect.get(725, 165, "Resurrect");
+      }
 
       this.Npc_wizard = this.physics.add.group({
         classType: Npc_wizard,

@@ -21,7 +21,7 @@ import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 
 export default class Forest extends Phaser.Scene {
-  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  public cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player;
   private barb?: Barb; //Barbarian Character
   private archer?: Archer; //Archer Character
@@ -37,21 +37,20 @@ export default class Forest extends Phaser.Scene {
   public potion!: Potion;
   public resurrect!: Resurrect;
   private enemyCount: number = 0;
-  private forestEntranceX!: number;
-  private forestEntranceY!: number;
+  public forestEntranceX!: number;
+  public forestEntranceY!: number;
   public map?: Phaser.Tilemaps.Tilemap;
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
   public miniMapRuins?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
 
   private game?: Game;
-  private enemiesSpawned = false;
+  public enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   private slimeDeathSound: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
-  private resurrectSound: Phaser.Sound.BaseSound;
 
   // Firebase variables
   public characterName?: string;

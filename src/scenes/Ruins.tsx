@@ -32,9 +32,9 @@ export default class Ruins extends Phaser.Scene {
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   // private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
-  private resurrect!: Resurrect;
+  private resurrect!: Phaser.Physics.Arcade.Group;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  public potion!: Potion;
+  public potion!: Phaser.Physics.Arcade.Group;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;

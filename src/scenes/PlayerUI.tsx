@@ -48,10 +48,21 @@ export default class PlayerUI extends Phaser.Scene {
       .layout();
 
     // Instantiate the players
-    this.player = new Player(this, 0, 0, "player", 0);
-    this.archer = new Archer(this, 0, 0, "archer", 0);
-    this.wizard = new Wizard(this, 0, 0, "wizard", 0);
-    this.barb = new Barb(this, 0, 0, "barb", 0);
+    if (this.player) {
+      this.player = new Player(this, 0, 0, "player", 0);
+    }
+
+    if (this.archer) {
+      this.archer = new Archer(this, 0, 0, "archer", 0);
+    }
+
+    if (this.wizard) {
+      this.wizard = new Wizard(this, 0, 0, "wizard", 0);
+    }
+
+    if (this.barb) {
+      this.barb = new Barb(this, 0, 0, "barb", 0);
+    }
   }
 
   private handlePlayerHealthChanged(health: number) {

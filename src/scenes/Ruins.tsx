@@ -46,6 +46,11 @@ export default class Ruins extends Phaser.Scene {
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
   public miniMapBoss?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
+  private boss?: Phaser.Physics.Arcade.Group;
+  private babySkeletons?: Phaser.Physics.Arcade.Group;
+  private dog?: Phaser.Physics.Arcade.Group;
+  private dogBark: Phaser.Sound.BaseSound;
+  public exp: number;
 
   // Firebase variables
   public characterName?: string;
@@ -120,16 +125,16 @@ export default class Ruins extends Phaser.Scene {
     this.npcHm = this.sound.add("npcHm");
     this.projectileHit = this.sound.add("projectileHit");
 
-    const backgroundMusic = this.sound.add("ruinsScene", {
+    this.backgroundMusic = this.sound.add("ruinsScene", {
       volume: 0.5,
       loop: true,
     });
 
     // Play the audio
-    backgroundMusic.play();
+    this.backgroundMusic.play();
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
-    setupFirebaseAuth(this);
+    setupFirebaseAuth(Ruins);
 
     // Create animations for the characters
     createCharacterAnims(this.anims);

@@ -96,3 +96,4 @@ export default class Npc_wizard extends Phaser.Physics.Arcade.Sprite {
 }
 
 export { Npc_wizard };
+

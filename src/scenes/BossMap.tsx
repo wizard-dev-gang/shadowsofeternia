@@ -40,6 +40,7 @@ export default class BossMap extends Phaser.Scene {
   public babySkeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public goblin!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public slimes!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
+  public exp: number;
 
   // Firebase variables
   public characterName?: string;
@@ -54,7 +55,7 @@ export default class BossMap extends Phaser.Scene {
   public dataToSend: any = {};
   public updateIterations = 0;
   private enemyCount: number = 0;
-  public playerLevel?: Phaser.GameObjects.Text
+  public playerLevel?: Phaser.GameObjects.Text;
 
   constructor() {
     super("bossMap");
@@ -530,8 +531,8 @@ export default class BossMap extends Phaser.Scene {
             strokeThickness: 2,
           })
           .setOrigin(0.5, 1);
-          // Add text for player level
-          this.playerLevel = this.add
+        // Add text for player level
+        this.playerLevel = this.add
           .text(0, 0, "Level: " + this.characterLevel, {
             fontSize: "12px",
             color: "#FFD700",
@@ -897,9 +898,9 @@ export default class BossMap extends Phaser.Scene {
         }
       }
       this.time.delayedCall(6500, () => {
-        console.log("enemy died")
-        if(this.man || this.barb || this.archer || this.wizard){
-        this.scene.start("endCredits")
+        console.log("enemy died");
+        if (this.man || this.barb || this.archer || this.wizard) {
+          this.scene.start("endCredits");
         }
       });
     }
@@ -943,9 +944,9 @@ export default class BossMap extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
-      if(this.playerLevel){
-      this.playerLevel.x = this.playerName.x;
-      this.playerLevel.y = character.y - 10;
+      if (this.playerLevel) {
+        this.playerLevel.x = this.playerName.x;
+        this.playerLevel.y = character.y - 10;
       }
 
       // Handle collision between knives and baby skeletons
@@ -1063,7 +1064,7 @@ export default class BossMap extends Phaser.Scene {
           entry[1].findTarget(this.otherPlayers, {
             x: character.x,
             y: character.y,
-            isDead: character.isDead
+            isDead: character.isDead,
           });
         }
       }

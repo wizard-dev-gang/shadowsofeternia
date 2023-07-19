@@ -10,13 +10,11 @@ import { Barb } from "../characters/Barb";
 import { Archer } from "../characters/Archer";
 import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
-import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
 import { createPotionAnims } from "../anims/PotionAnims";
 import BabySkeleton from "../enemies/BabySkeleton";
 import { Resurrect } from "../characters/Resurrect";
-import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Skeleton from "../enemies/Skeleton";
 import Goblin from "../enemies/Goblins";
@@ -32,7 +30,6 @@ export default class BossMap extends Phaser.Scene {
   public skeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   public collisionHandler: CollisionHandler;
-  private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private resurrect!: Phaser.Physics.Arcade.Group;
   public potion!: Phaser.Physics.Arcade.Group;
   private collideSound!: Phaser.Sound.BaseSound;
@@ -73,7 +70,6 @@ export default class BossMap extends Phaser.Scene {
     this.load.audio("playerDeadSound", "/music/playerIsDead.mp3");
     this.load.audio("bossFight", "/music/bossFight.mp3");
     this.load.audio("slimeDeathSound", "/music/slimeDeathSound.mp3");
-    this.load.audio("npcHm", "/music/npcHm.mp3");
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
   }
 
@@ -90,8 +86,6 @@ export default class BossMap extends Phaser.Scene {
       this.goblin,
       this.slimes,
       this.time,
-      this.Npc_wizard,
-      this.add,
       this.potion,
       this.playerId,
       this.resurrect,
@@ -187,9 +181,9 @@ export default class BossMap extends Phaser.Scene {
         },
       });
 
-      if (this.characterName === "rogue") {
+      
         this.boss.get(626, 390, "boss");
-      }
+      
 
       sceneEvents.on("boss-stomp", () => {
         const boss = this.enemies.get(1);
@@ -889,7 +883,7 @@ export default class BossMap extends Phaser.Scene {
     this.updateIterations++;
     let character;
 
-    if (this.characterName === "rogue" && !this.enemies.get(1).isAlive) {
+    if (!this.enemies.get(1).isAlive) {
       for (const entry of this.enemies.entries()) {
         if (entry[1].isAlive) {
           // if (entry[1].constructor.name != 'Slime') {
@@ -1015,19 +1009,7 @@ export default class BossMap extends Phaser.Scene {
         undefined,
         this
       );
-      if (
-        Phaser.Input.Keyboard.JustDown(
-          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-        )
-      ) {
-        this.physics.overlap(
-          character,
-          this.Npc_wizard,
-          this.collisionHandler.handlePlayerNpcCollision,
-          undefined,
-          this
-        );
-      }
+      
       if (this.playerRef) {
         update(this.playerRef, {
           x: character.x,

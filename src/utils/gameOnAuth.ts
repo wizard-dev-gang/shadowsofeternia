@@ -1,8 +1,9 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
+import Phaser from "phaser";
 import Game from "../scenes/Game";
 
-export const setupFirebaseAuth = (gameInstance: Game) => {
+export const setupFirebaseAuth = (gameInstance: Phaser.Scene) => {
   const auth = getAuth();
   gameInstance.enemies = new Map();
   onAuthStateChanged(auth, (user) => {

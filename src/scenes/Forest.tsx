@@ -45,7 +45,7 @@ export default class Forest extends Phaser.Scene {
   public miniMapLocation?: Phaser.GameObjects.Arc;
   public exp: number;
 
-  // private game?: Game;
+  private game?: Game;
   public enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;

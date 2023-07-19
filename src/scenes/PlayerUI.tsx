@@ -8,11 +8,13 @@ import { Barb } from "../characters/Barb";
 
 export default class PlayerUI extends Phaser.Scene {
   private bar!: HealthBar;
-  private player?: Player;
-  private archer?: Archer;
-  private wizard?: Wizard;
-  private barb?: Barb;
+  // private player?: Player;
+  // private archer?: Archer;
+  // private wizard?: Wizard;
+  // private barb?: Barb;
+  private currentCharacter?: Player | Archer | Wizard | Barb; // Store the current character
   private fillRatio: number = 1;
+  private characters: Array<Player | Archer | Wizard | Barb> = [];
 
   constructor() {
     super({ key: "player-ui" });
@@ -48,26 +50,21 @@ export default class PlayerUI extends Phaser.Scene {
       .layout();
 
     // Instantiate the players
-    if (this.player) {
-      this.player = new Player(this, 0, 0, "player", 0);
-    }
 
-    if (this.archer) {
-      this.archer = new Archer(this, 0, 0, "archer", 0);
-    }
+    this.characters.push(new Player(this, 0, 0, "player", 0));
 
-    if (this.wizard) {
-      this.wizard = new Wizard(this, 0, 0, "wizard", 0);
-    }
+    this.characters.push(new Archer(this, 0, 0, "archer", 0));
 
-    if (this.barb) {
-      this.barb = new Barb(this, 0, 0, "barb", 0);
-    }
+    this.characters.push(new Wizard(this, 0, 0, "wizard", 0));
+
+    this.characters.push(new Barb(this, 0, 0, "barb", 0));
+
+    this.currentCharacter = this.characters[0]; // Set the current character to the player (or whichever character you want to start with)
   }
 
   private handlePlayerHealthChanged(health: number) {
     console.log("Player health changed", health);
-    const maxHealth = this.player?.maxHealth;
+    const maxHealth = this.currentCharacter?.maxHealth;
     const fillRatio = health / maxHealth!;
     this.bar.animateToFill(fillRatio, 1000);
     this.fillRatio = fillRatio; // Store the fill ratio
@@ -75,10 +72,16 @@ export default class PlayerUI extends Phaser.Scene {
 
   private handlePlayerMaxHealthChanged(maxHealth: number) {
     console.log("Player's max health changed:", maxHealth);
-    if (this.player) {
-      const newFillRatio = this.fillRatio * (this.player.maxHealth / maxHealth); // Calculate the new fill ratio based on the stored fill ratio and the updated max health
+    if (this.currentCharacter) {
+      const newFillRatio =
+        this.fillRatio * (this.currentCharacter.maxHealth / maxHealth); // Calculate the new fill ratio based on the stored fill ratio and the updated max health
       this.bar.animateToFill(newFillRatio, 1000);
-      this.player.maxHealth = maxHealth;
+      this.currentCharacter.maxHealth = maxHealth;
     }
+  }
+
+  // Implement a method to switch characters:
+  public switchCharacter(character: Player | Archer | Wizard | Barb) {
+    this.currentCharacter = character;
   }
 }

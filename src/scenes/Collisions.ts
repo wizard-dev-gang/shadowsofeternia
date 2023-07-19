@@ -390,7 +390,7 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject
   ) {
-    const Npc = npc as Npc_wizard
+    const Npc = npc as Npc_wizard;
     // Check if the player is interacting with the wizard character
     if (
       player instanceof Player ||
@@ -443,7 +443,7 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     dog: Phaser.GameObjects.GameObject
   ) {
-    const dog_npc = dog as Dog
+    const dog_npc = dog as Dog;
     // Check if the player is interacting with the dog
     if (
       player instanceof Player ||

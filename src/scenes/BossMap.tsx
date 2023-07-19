@@ -71,6 +71,7 @@ export default class BossMap extends Phaser.Scene {
     this.load.audio("bossFight", "/music/bossFight.mp3");
     this.load.audio("slimeDeathSound", "/music/slimeDeathSound.mp3");
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
+    this.load.audio("bossDeath", "/music/bossDeathSound2.mp3");
   }
 
   init(data: any) {

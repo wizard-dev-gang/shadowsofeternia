@@ -67,10 +67,6 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  preload() {
-    this.load.audio("goblinDeath", "/music/goblinDeathSound.mp3");
-  }
-
   // Enemies have health, to not die in 1 hit.
   getHealth() {
     return this._health;
@@ -128,7 +124,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  handleDamage(dir: Phaser.Math.Vector2) {
+  handleDamage() {
     if (this._health <= 0) {
       return;
     }

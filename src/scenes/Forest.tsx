@@ -16,7 +16,7 @@ import { Resurrect } from "../characters/Resurrect";
 import "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import { createPotionAnims } from "../anims/PotionAnims";
-import Game from "./Game";
+// import Game from "./Game";
 import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 
@@ -48,7 +48,7 @@ export default class Forest extends Phaser.Scene {
   private babySkeletons?: Phaser.Physics.Arcade.Group;
   private dog?: Phaser.Physics.Arcade.Group;
 
-  private game?: Game;
+  // private game?: Game;
   public enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
@@ -303,7 +303,7 @@ export default class Forest extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.goblins,
-          this.collisionHandler.handlePlayerGoblinCollision as any,
+          collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
         );

@@ -45,24 +45,23 @@ export class CollisionHandler {
   playerRef!: any;
 
   constructor(
-    projectiles?: Phaser.Physics.Arcade.Group,
-    skeletons?: Phaser.Physics.Arcade.Group,
-    boss?: Phaser.Physics.Arcade.Group,
-    slimes?: Phaser.Physics.Arcade.Group,
-    babySkeletons?: Phaser.Physics.Arcade.Group,
-    time?: Phaser.Time.Clock,
-    Npc_wizard?: Phaser.Physics.Arcade.Group,
-    add?: GameObjects.GameObjectFactory,
-    potion?: Potion,
-    playerId?: string | null,
-    dog?: Phaser.Physics.Arcade.Group,
-    goblin?: Phaser.Physics.Arcade.Group,
-    resurrect?: Resurrect,
-    collideSound?: Phaser.Sound.BaseSound,
-    resurrectSound?: Phaser.Sound.BaseSound,
-    potionSound?: Phaser.Sound.BaseSound,
-    dogBark?: Phaser.Sound.BaseSound,
-    npcHm?: Phaser.Sound.BaseSound,
+    projectiles: Phaser.Physics.Arcade.Group,
+    skeletons: Phaser.Physics.Arcade.Group,
+    boss: Phaser.Physics.Arcade.Group,
+    slimes: Phaser.Physics.Arcade.Group,
+    babySkeletons: Phaser.Physics.Arcade.Group,
+    time: Phaser.Time.Clock,
+    Npc_wizard: Phaser.Physics.Arcade.Group,
+    add: GameObjects.GameObjectFactory,
+    potion: Potion,
+    playerId: string | null,
+    dog: Phaser.Physics.Arcade.Group,
+    goblin: Phaser.Physics.Arcade.Group,
+    collideSound: Phaser.Sound.BaseSound,
+    resurrectSound: Phaser.Sound.BaseSound,
+    potionSound: Phaser.Sound.BaseSound,
+    dogBark: Phaser.Sound.BaseSound,
+    npcHm: Phaser.Sound.BaseSound,
     slimeDeathSound?: Phaser.Sound.BaseSound,
     projectileHit?: Phaser.Sound.BaseSound
   ) {
@@ -391,26 +390,27 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     npc: Phaser.GameObjects.GameObject
   ) {
+    const Npc = npc as Npc_wizard
     // Check if the player is interacting with the wizard character
     if (
       player instanceof Player ||
       player instanceof Barb ||
       player instanceof Wizard ||
       player instanceof Archer ||
-      (npc instanceof Npc_wizard && npc instanceof Npc_wizard)
+      (Npc instanceof Npc_wizard && Npc instanceof Npc_wizard)
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
       this.npcHm.play();
 
-      const npcX = npc.x;
-      const npcY = npc.y + 55;
+      const npcX = Npc.x;
+      const npcY = Npc.y + 55;
 
       const textX = npcX;
       const textY = npcY;
 
       // Add text on the screen
-      const text = this.add.text(textX, textY, npc.text, {
+      const text = this.add.text(textX, textY, Npc.text, {
         fontSize: "11px",
         color: "#000000",
         padding: {
@@ -443,6 +443,7 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     dog: Phaser.GameObjects.GameObject
   ) {
+    const dog_npc = dog as Dog
     // Check if the player is interacting with the dog
     if (
       player instanceof Player ||
@@ -460,14 +461,14 @@ export class CollisionHandler {
         dog.isMoving = false;
       }
 
-      const dogX = dog.x;
-      const dogY = dog.y + 50;
+      const dogX = dog_npc.x;
+      const dogY = dog_npc.y + 50;
 
       const textX = dogX;
       const textY = dogY - 30;
 
       // Add text on the screen
-      const text = this.add.text(textX, textY, dog.text, {
+      const text = this.add.text(textX, textY, dog_npc.text, {
         fontSize: "11px",
         color: "#000000",
         padding: {

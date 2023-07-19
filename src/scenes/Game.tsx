@@ -557,9 +557,9 @@ export default class Game extends Phaser.Scene {
     // Add a skeleton to the group
     if (this.characterName === "rogue") {
       console.log("Rogue host is spawning...");
-      this.skeletons.get(2000, 1210, "jacked-skeleton");
-      this.skeletons.get(2000, 1220, "jacked-skeleton");
-      this.skeletons.get(2000, 1230, "jacked-skeleton");
+      // this.skeletons.get(2000, 1210, "jacked-skeleton");
+      // this.skeletons.get(2000, 1220, "jacked-skeleton");
+      // this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
 
     this.miniMapBackground = this.add.rectangle(

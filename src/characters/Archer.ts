@@ -125,10 +125,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     yLoc?: number,
     attackObj?: string
   ) {
-    if (!this.projectiles || this.healthState === HealthState.GHOST) {
-      return;
-    }
-
     const currentTime = this.scene.time.now;
 
     if (
@@ -169,7 +165,13 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     const angle = vec.angle();
 
-    const projectile = this.projectiles.get(
+    //Provide a null check for projectiles object
+    const projectiles = this.projectiles;
+    if (!projectiles) {
+      return;
+    }
+
+    const projectile = projectiles.get(
       xLoc,
       yLoc,
       attackObj
@@ -300,19 +302,19 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
   moveAsGhost() {
     const speed = 150;
     if (this.keys.A?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
     } else {

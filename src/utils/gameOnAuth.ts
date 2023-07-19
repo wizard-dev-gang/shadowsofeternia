@@ -4,7 +4,7 @@ import Game from "../scenes/Game";
 
 export const setupFirebaseAuth = (gameInstance: Game) => {
   const auth = getAuth();
-  gameInstance.enemies = new Map()
+  gameInstance.enemies = new Map();
   onAuthStateChanged(auth, (user) => {
     if (user) {
       gameInstance.playerId = user.uid; // Get the current player's ID

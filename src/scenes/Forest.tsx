@@ -34,8 +34,8 @@ export default class Forest extends Phaser.Scene {
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  public potion!: Potion;
-  public resurrect!: Resurrect;
+  public potion!: Phaser.Physics.Arcade.Group;
+  public resurrect!: Phaser.Physics.Arcade.Group;
   private enemyCount: number = 0;
   public forestEntranceX!: number;
   public forestEntranceY!: number;

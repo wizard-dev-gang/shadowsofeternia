@@ -14,7 +14,7 @@ import "../characters/Npc";
 import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
 import { Dog } from "../characters/Dog";
-import { Goblin } from "../enemies/Goblins";
+import { Goblin } from "../enemies/Goblin";
 
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
@@ -34,7 +34,7 @@ export class CollisionHandler {
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   dog: Phaser.Physics.Arcade.Group;
-  goblin: Phaser.Physics.Arcade.Group;
+  goblins: Phaser.Physics.Arcade.Group;
   private dogBark: Phaser.Sound.BaseSound;
   private npcHm: Phaser.Sound.BaseSound;
   private slimeDeathSound?: Phaser.Sound.BaseSound;
@@ -56,7 +56,7 @@ export class CollisionHandler {
     potion: Potion,
     playerId: string | null,
     dog: Phaser.Physics.Arcade.Group,
-    goblin: Phaser.Physics.Arcade.Group,
+    goblins: Phaser.Physics.Arcade.Group,
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
     potionSound: Phaser.Sound.BaseSound,
@@ -79,7 +79,7 @@ export class CollisionHandler {
     this.resurrectSound = resurrectSound;
     this.potionSound = potionSound;
     this.dog = dog;
-    this.goblin = goblin;
+    this.goblins = goblins;
     this.dogBark = dogBark;
     this.slimeDeathSound = slimeDeathSound;
     this.npcHm = npcHm;
@@ -216,7 +216,7 @@ export class CollisionHandler {
     const projectile = obj1;
     const goblin = obj2 as Goblin;
     // Kill and hide the projectile
-    this.projectiles.killAndHide(projectile);
+    this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
     const dx =
       (goblin as Phaser.GameObjects.Image).x -
@@ -230,8 +230,10 @@ export class CollisionHandler {
     (goblin as Goblin).getHealth();
     (goblin as Goblin).handleDamage();
 
+    this.projectileHit?.play();
+
     if ((goblin as Goblin).getHealth() <= 0) {
-      this.goblin.killAndHide(goblin);
+      this.goblins.killAndHide(goblin);
       (goblin.isAlive = false), goblin.destroy();
 
       // Generate a random number between 0 and 1
@@ -243,8 +245,6 @@ export class CollisionHandler {
         this.potion.get(goblin.x, goblin.y, "potion");
       }
     }
-
-    this.projectileHit?.play();
 
     const playerCharacters = [this.barb, this.archer, this.wizard, this.man];
     playerCharacters.forEach((character) => {

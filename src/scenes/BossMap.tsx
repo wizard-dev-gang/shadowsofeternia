@@ -17,7 +17,7 @@ import BabySkeleton from "../enemies/BabySkeleton";
 import { Resurrect } from "../characters/Resurrect";
 import { createResurrectAnims } from "../anims/ResurrectAnims";
 import Skeleton from "../enemies/Skeleton";
-import Goblin from "../enemies/Goblins";
+import Goblin from "../enemies/Goblin";
 import Slime from "../enemies/Slime";
 
 export default class BossMap extends Phaser.Scene {

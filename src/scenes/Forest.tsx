@@ -4,7 +4,7 @@ import Archer from "../characters/Archer";
 import Wizard from "../characters/Wizard";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { Slime } from "../enemies/Slime";
-import { Goblin } from "../enemies/Goblins";
+import { Goblin } from "../enemies/Goblin";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import { update } from "firebase/database";

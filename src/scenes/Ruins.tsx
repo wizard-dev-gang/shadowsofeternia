@@ -3,7 +3,7 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import { createEnemyAnims } from "../anims/EnemyAnims";
 import { Player } from "../characters/Player";
 import { Skeleton } from "../enemies/Skeleton";
-import { Goblin } from "../enemies/Goblins";
+import { Goblin } from "../enemies/Goblin";
 import { setupFirebaseAuth } from "../utils/gameOnAuth";
 import { update } from "firebase/database";
 import { sceneEvents } from "../events/EventsCenter";

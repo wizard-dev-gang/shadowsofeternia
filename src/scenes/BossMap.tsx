@@ -10,8 +10,6 @@ import { Barb } from "../characters/Barb";
 import { Archer } from "../characters/Archer";
 import "../characters/Archer";
 import { Wizard } from "../characters/Wizard";
-import { createNpcAnims } from "../anims/NpcAnims";
-import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { CollisionHandler } from "./Collisions";
 import { Potion } from "../characters/Potion";
@@ -25,7 +23,6 @@ import Goblin from "../enemies/Goblins";
 import Slime from "../enemies/Slime";
 
 export default class BossMap extends Phaser.Scene {
-  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private man?: Player;
   private barb?: Barb; //Barbarian Character
   private archer?: Archer; //Archer Character
@@ -36,21 +33,20 @@ export default class BossMap extends Phaser.Scene {
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  private resurrect!: Resurrect;
-  public potion!: Potion;
-  private collideSound: Phaser.Sound.BaseSound;
-  private resurrectSound: Phaser.Sound.BaseSound;
-  private potionSound: Phaser.Sound.BaseSound;
-  private slimeDeathSound: Phaser.Sound.BaseSound;
-  private npcHm: Phaser.Sound.BaseSound;
-  private projectileHit: Phaser.Sound.BaseSound;
+  private resurrect!: Phaser.Physics.Arcade.Group;
+  public potion!: Phaser.Physics.Arcade.Group;
+  private collideSound!: Phaser.Sound.BaseSound;
+  private resurrectSound!: Phaser.Sound.BaseSound;
+  private potionSound!: Phaser.Sound.BaseSound;
+  private slimeDeathSound!: Phaser.Sound.BaseSound;
+  private projectileHit!: Phaser.Sound.BaseSound;
   public babySkeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public goblin!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public slimes!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
 
   // Firebase variables
   public characterName?: string;
-  public characterLevel?: number;
+  public characterLevel!: number;
   public playerRef!: any; // Reference to the current player in Firebase
   public playerId!: any; // ID of the current player
   public otherPlayers!: Map<any, any>; // Map to store other players in the game
@@ -71,7 +67,6 @@ export default class BossMap extends Phaser.Scene {
     this.collisionHandler = new CollisionHandler();
   }
   preload() {
-    // this.cursors = this.input.keyboard?.createCursorKeys();
     this.load.audio("enemyCollide", "music/playerDmg2.mp3");
     this.load.audio("resurrect", "music/resurrectSound.mp3");
     this.load.audio("potion", "music/potion.mp3");

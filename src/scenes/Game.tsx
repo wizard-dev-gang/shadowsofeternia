@@ -28,37 +28,37 @@ export default class Game extends Phaser.Scene {
   // Private variables:
   private archer?: Archer;
   private barb?: Barb;
-  private collideSound: Phaser.Sound.BaseSound;
-  private enemyCount: number = 0;
+  private collideSound!: Phaser.Sound.BaseSound;
+  private enemyCount = 0;
 
   private man?: Player;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider;
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
-  private resurrectSound: Phaser.Sound.BaseSound;
-  private potionSound: Phaser.Sound.BaseSound;
+  private resurrectSound!: Phaser.Sound.BaseSound;
+  private potionSound!: Phaser.Sound.BaseSound;
   private skeletons!: Phaser.Physics.Arcade.Group;
   private slimes!: Phaser.Physics.Arcade.Group;
   private wizard?: Wizard;
+  private dog!: Phaser.Physics.Arcade.Group;
+  private goblins!: Phaser.Physics.Arcade.Group;
+  private dogBark!: Phaser.Sound.BaseSound;
+  private slimeDeathSound!: Phaser.Sound.BaseSound;
+  private npcHm!: Phaser.Sound.BaseSound;
+  private projectileHit!: Phaser.Sound.BaseSound;
 
   // Public variables:
   public collisionHandler: CollisionHandler;
-  public exp: number = 0;
+  public exp = 0;
   public map?: Phaser.Tilemaps.Tilemap;
   public miniMapBackground?: Phaser.GameObjects.Rectangle;
   public miniMapForest?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
-  public potion!: Potion;
+  public potion!: Phaser.Physics.Arcade.Group;
   public projectiles!: Phaser.Physics.Arcade.Group;
-  public resurrect!: Resurrect;
+  public resurrect!: Phaser.Physics.Arcade.Group;
   public sceneFrom?: string;
-  private dog!: Phaser.Physics.Arcade.Group;
-  private goblins!: Phaser.Physics.Arcade.Group;
-  private playerGoblinCollider?: Phaser.Physics.Arcade.Collider;
-  private dogBark: Phaser.Sound.BaseSound;
-  private slimeDeathSound: Phaser.Sound.BaseSound;
-  private npcHm: Phaser.Sound.BaseSound;
-  private projectileHit: Phaser.Sound.BaseSound;
+  public interactKey!: Phaser.Input.Keyboard.Key;
 
   // Firebase variables
   public characterName?: string;
@@ -80,7 +80,6 @@ export default class Game extends Phaser.Scene {
     this.playerNames = new Map();
     this.enemies = new Map();
     this.collisionHandler = new CollisionHandler();
-    // this.load.audio("enemyCollide", "audio/playerDmg2.mp3");
   }
 
   preload() {
@@ -97,8 +96,6 @@ export default class Game extends Phaser.Scene {
   }
 
   init(data?: { name: string; from?: string }) {
-    // console.log("init data", data);
-    // console.log(this.input);
     this.characterName = data?.name;
   }
 
@@ -137,8 +134,6 @@ export default class Game extends Phaser.Scene {
     });
     backgroundMusic.play();
 
-    // this.miniMapScene = this.scene.add("mini-map", MiniMapScene, true);
-
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
     setupFirebaseAuth(this);
 
@@ -153,7 +148,6 @@ export default class Game extends Phaser.Scene {
     //Create tilemap and tileset
     const map = this.make.tilemap({ key: "townMapV2" });
     this.map = map;
-    // console.log('map', map.width, map.height, map.widthInPixels, map.heightInPixels)
     const tileset = map.addTilesetImage("Grasslands-Terrain", "terrain");
     const propTiles = map.addTilesetImage("Grasslands-Props", "props");
     const waterTiles = map.addTilesetImage("Grasslands-Water", "water");
@@ -244,6 +238,12 @@ export default class Game extends Phaser.Scene {
           character.setProjectiles(this.projectiles);
         }
       });
+
+      if (this.input && this.input.keyboard) {
+        this.interactKey = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.E
+        );
+      }
 
       // Handle collisions between skeletons and ground layers
       if (this.skeletons && groundLayer) {
@@ -391,7 +391,7 @@ export default class Game extends Phaser.Scene {
       // Handle collisions between player and enemy characters
       if (playerCharacters && this.playerEnemiesCollider) {
         this.playerEnemiesCollider = this.physics.add.collider(
-          this.skeletons || this.goblin,
+          this.skeletons || this.goblins,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler as any,
           undefined,
@@ -480,12 +480,12 @@ export default class Game extends Phaser.Scene {
           // Adjust the hitbox size here
           const hitboxWidth = 70; // Set the desired hitbox width
           const hitboxHeight = 70; // Set the desired hitbox height
-          NpcGo.body.setSize(hitboxWidth, hitboxHeight);
+          NpcGo.body?.setSize(hitboxWidth, hitboxHeight);
 
           // Set the hitbox offset here
           const offsetX = hitboxWidth * -0.25; // Set the desired X offset
           const offsetY = hitboxHeight * -0.25; // Set the desired Y offset
-          NpcGo.body.setOffset(offsetX, offsetY);
+          NpcGo.body?.setOffset(offsetX, offsetY);
         },
       });
 
@@ -521,9 +521,6 @@ export default class Game extends Phaser.Scene {
         "Greetings, traveler! Be warned, the path ahead weaves through an enchanted forest fraught with peril. Once you venture forth, the veil of return shall close behind you, locking away the safety of the town. Be prepared!";
       //#endregion
 
-      this.interactKey = this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.E
-      );
       this.potion = this.physics.add.group({
         classType: Potion,
         createCallback: (go) => {
@@ -545,21 +542,6 @@ export default class Game extends Phaser.Scene {
       });
 
       this.resurrect.get(2060, 1100, "Resurrect");
-
-      // this.slimes.get(2000, 1000, "slime");
-      // this.slimes.get(2000, 1000, "slime");
-      // this.slimes.get(2000, 1000, "slime");
-      // this.slimes.get(2000, 1000, "slime");
-      // this.slimes.get(2000, 1000, "slime");
-      // this.slimes.get(2000, 1000, "slime");
-    }
-    // this.skeletons.get(2000, 1210, "jacked-skeleton");
-    // Add a skeleton to the group
-    if (this.characterName === "rogue") {
-      console.log("Rogue host is spawning...");
-      // this.skeletons.get(2000, 1210, "jacked-skeleton");
-      // this.skeletons.get(2000, 1220, "jacked-skeleton");
-      // this.skeletons.get(2000, 1230, "jacked-skeleton");
     }
 
     this.miniMapBackground = this.add.rectangle(
@@ -617,13 +599,6 @@ export default class Game extends Phaser.Scene {
   // Method to update player's experience
   public updatePlayerExp(exp: number) {
     this.exp = exp;
-
-    // Update the player's exp value in the database
-    // if (this.playerRef) {
-    //   update(this.playerRef, {
-    //     exp: this.exp,
-    //   });
-    // }
   }
 
   private levelUpPlayer(player: Player) {
@@ -647,14 +622,6 @@ export default class Game extends Phaser.Scene {
 
       this.updatePlayerMaxHealth(player.maxHealth);
 
-      // if (this.playerRef) {
-      //   update(this.playerRef, {
-      //     exp: player.exp,
-      //     hp: player._health,
-      //     maxHealth: player.maxHealth,
-      //     level: player.level,
-      //   });
-      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -684,14 +651,6 @@ export default class Game extends Phaser.Scene {
 
       this.updatePlayerMaxHealth(player.maxHealth);
 
-      // if (this.playerRef) {
-      //   update(this.playerRef, {
-      //     exp: player.exp,
-      //     hp: player._health,
-      //     maxHealth: player.maxHealth,
-      //     level: player.level,
-      //   });
-      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -720,15 +679,6 @@ export default class Game extends Phaser.Scene {
       }
 
       this.updatePlayerMaxHealth(player.maxHealth);
-
-      // if (this.playerRef) {
-      //   update(this.playerRef, {
-      //     exp: player.exp,
-      //     hp: player._health,
-      //     maxHealth: player.maxHealth,
-      //     level: player.level,
-      //   });
-      // }
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -757,15 +707,7 @@ export default class Game extends Phaser.Scene {
       }
 
       this.updatePlayerMaxHealth(player.maxHealth);
-
-      // if (this.playerRef) {
-      //   update(this.playerRef, {
-      //     exp: player.exp,
-      //     hp: player._health,
-      //     maxHealth: player.maxHealth,
-      //     level: player.level,
-      //   });
-      // }
+      
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -854,8 +796,10 @@ export default class Game extends Phaser.Scene {
       // Position of the name above the player
       this.playerName.y = character.y - 20;
 
+      if (this.playerLevel) {
       this.playerLevel.x = this.playerName.x;
       this.playerLevel.y = character.y - 10;
+      }
 
       //Handle Collision Between Player and Resurrect
       this.physics.add.overlap(
@@ -899,27 +843,26 @@ export default class Game extends Phaser.Scene {
         undefined,
         this
       );
-      if (
-        Phaser.Input.Keyboard.JustDown(
-          this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
-        )
-      ) {
-        console.log("Player pushed E."),
-          this.physics.overlap(
-            character,
-            this.Npc_wizard,
-            this.collisionHandler.handlePlayerNpcCollision as any,
-            undefined,
-            this
-          );
-        this.physics.overlap(
-          character,
-          this.dog,
-          this.collisionHandler.handlePlayerDogCollision as any,
-          undefined,
-          this
-        );
-      }
+      if (this.input && this.input.keyboard) {
+        const E_Key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        if (Phaser.Input.Keyboard.JustDown(E_Key)) {
+            console.log("Player pushed E."),
+            this.physics.overlap(
+                character,
+                this.Npc_wizard,
+                this.collisionHandler.handlePlayerNpcCollision as any,
+                undefined,
+                this
+            );
+            this.physics.overlap(
+                character,
+                this.dog,
+                this.collisionHandler.handlePlayerDogCollision as any,
+                undefined,
+                this
+            );
+        }
+    }
       // Update the player's data in the database
       if (this.playerRef) {
         update(this.playerRef, {
@@ -1026,3 +969,5 @@ export default class Game extends Phaser.Scene {
     return { x: 0, y: 0 };
   }
 }
+
+

@@ -51,11 +51,10 @@ export const setupFirebaseAuth = (gameInstance: Game) => {
                 case "goblin":
                   enemySelector = "goblin";
               }
-              enemy = gameInstance[enemySelector].get(
-                enemyData.x,
-                enemyData.y,
-                "jacked-skeleton"
-              ); // Create a sprite for the enemy
+              const enemyGroup = gameInstance.enemyDB[enemySelector];
+              if (!enemyGroup) throw new Error(`No enemy group named ${enemySelector}`);
+      
+              enemy = enemyGroup.get(enemyData.x, enemyData.y, "jacked-skeleton");
               gameInstance.enemies.set(enemyId, enemy);
             }
             enemy.x = enemyData.x;

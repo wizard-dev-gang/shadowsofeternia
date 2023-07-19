@@ -45,23 +45,23 @@ export class CollisionHandler {
   playerRef!: any;
 
   constructor(
-    projectiles: Phaser.Physics.Arcade.Group,
-    skeletons: Phaser.Physics.Arcade.Group,
-    boss: Phaser.Physics.Arcade.Group,
-    slimes: Phaser.Physics.Arcade.Group,
-    babySkeletons: Phaser.Physics.Arcade.Group,
-    time: Phaser.Time.Clock,
-    Npc_wizard: Phaser.Physics.Arcade.Group,
-    add: GameObjects.GameObjectFactory,
-    potion: Potion,
-    playerId: string | null,
-    dog: Phaser.Physics.Arcade.Group,
-    goblins: Phaser.Physics.Arcade.Group,
-    collideSound: Phaser.Sound.BaseSound,
-    resurrectSound: Phaser.Sound.BaseSound,
-    potionSound: Phaser.Sound.BaseSound,
-    dogBark: Phaser.Sound.BaseSound,
-    npcHm: Phaser.Sound.BaseSound,
+    projectiles?: Phaser.Physics.Arcade.Group,
+    skeletons?: Phaser.Physics.Arcade.Group,
+    boss?: Phaser.Physics.Arcade.Group,
+    slimes?: Phaser.Physics.Arcade.Group,
+    babySkeletons?: Phaser.Physics.Arcade.Group,
+    time?: Phaser.Time.Clock,
+    Npc_wizard?: Phaser.Physics.Arcade.Group,
+    add?: GameObjects.GameObjectFactory,
+    potion?: Potion,
+    playerId?: string | null,
+    dog?: Phaser.Physics.Arcade.Group,
+    goblins?: Phaser.Physics.Arcade.Group,
+    collideSound?: Phaser.Sound.BaseSound,
+    resurrectSound?: Phaser.Sound.BaseSound,
+    potionSound?: Phaser.Sound.BaseSound,
+    dogBark?: Phaser.Sound.BaseSound,
+    npcHm?: Phaser.Sound.BaseSound,
     slimeDeathSound?: Phaser.Sound.BaseSound,
     projectileHit?: Phaser.Sound.BaseSound
   ) {
@@ -300,34 +300,49 @@ export class CollisionHandler {
     });
   }
 
-  // Method to handle collision between player and enemy characters
-  handlePlayerEnemyCollision(
-    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+// Method to handle collision between player and enemy characters
+handlePlayerEnemyCollision(
+  obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+  obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+) {
+  console.log("handleplayerEnemyCollision");
+
+  // Check for collisions between specific instances of player and enemy classes
+  if (
+    (obj1 instanceof Player || obj1 instanceof Barb || obj1 instanceof Wizard || obj1 instanceof Archer) &&
+    (obj2 instanceof Skeleton)
   ) {
-    console.log("handleplayerEnemyCollision");
-    if (
-      (obj1 instanceof Player || Barb || Wizard || Archer) &&
-      (obj2 instanceof Skeleton || BabySkeleton || Boss)
-    ) {
-      const man = (obj1 as Player) || Barb || Wizard || Archer;
-      const skeleton = (obj2 as Skeleton) || BabySkeleton || Boss;
+    const player = obj1 as Player | Barb | Wizard | Archer;
+    const skeleton = obj2 as Skeleton;
 
-      const dx =
-        (man as Phaser.GameObjects.Image).x -
-        (skeleton as Phaser.GameObjects.Image).x;
-      const dy =
-        (man as Phaser.GameObjects.Image).y -
-        (skeleton as Phaser.GameObjects.Image).y;
+    const dx = player.x - skeleton.x;
+    const dy = player.y - skeleton.y;
 
-      const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
-      this.collideSound.play();
+    const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+
+    if (player instanceof Player) {
+      player.setVelocity(dir.x, dir.y);
+      player.handleDamage(dir);
+      sceneEvents.emit("player-health-changed", player.getHealth());
+    } if (player instanceof Barb) {
+      player.setVelocity(dir.x, dir.y);
+      player.handleDamage(dir);
+      sceneEvents.emit("player-health-changed", player.getHealth());
+    }  if (player instanceof Archer) {
+      player.setVelocity(dir.x, dir.y);
+      player.handleDamage(dir);
+      sceneEvents.emit("player-health-changed", player.getHealth());
+    } if (player instanceof Wizard) {
+        player.setVelocity(dir.x, dir.y);
+        player.handleDamage(dir);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+    } else {
+      player.setVelocity(dir.x, dir.y)
+      player.handleDamage(dir)
     }
+    this.collideSound.play();
   }
+}
 
   handlePlayerSlimeCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
@@ -365,24 +380,37 @@ export class CollisionHandler {
   ) {
     console.log("handleplayerGoblinCollision");
     if (
-      (obj1 instanceof Player || Barb || Wizard || Archer) &&
-      obj2 instanceof Goblin
+      (obj1 instanceof Player || obj1 instanceof Barb || obj1 instanceof Wizard || obj1 instanceof Archer) &&
+      (obj2 instanceof Goblin)
     ) {
-      const man = (obj1 as Player) || Barb || Wizard || Archer;
+      const player = obj1 as Player | Barb | Wizard | Archer;
       const goblin = obj2 as Goblin;
-
-      const dx =
-        (man as Phaser.GameObjects.Image).x -
-        (goblin as Phaser.GameObjects.Image).x;
-      const dy =
-        (man as Phaser.GameObjects.Image).y -
-        (goblin as Phaser.GameObjects.Image).y;
+  
+      const dx = player.x - goblin.x;
+      const dy = player.y - goblin.y;
 
       const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-      man.setVelocity(dir.x, dir.y);
-      man.handleDamage(dir);
-      // console.log(man._health);
-      sceneEvents.emit("player-health-changed", man.getHealth());
+
+      if (player instanceof Player) {
+        player.setVelocity(dir.x, dir.y);
+        player.handleDamage(dir);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+      } if (player instanceof Barb) {
+        player.setVelocity(dir.x, dir.y);
+        player.handleDamage(dir);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+      }  if (player instanceof Archer) {
+        player.setVelocity(dir.x, dir.y);
+        player.handleDamage(dir);
+        sceneEvents.emit("player-health-changed", player.getHealth());
+      } if (player instanceof Wizard) {
+          player.setVelocity(dir.x, dir.y);
+          player.handleDamage(dir);
+          sceneEvents.emit("player-health-changed", player.getHealth());
+      } else {
+        player.setVelocity(dir.x, dir.y)
+        player.handleDamage(dir)
+      }
       this.collideSound.play();
     }
   }

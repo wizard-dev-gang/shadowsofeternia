@@ -80,9 +80,6 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  preload() {
-    this.load.audio("bossDeath", "/music/bossDeathSound2.mp3");
-  }
   // Enemies have health, to not die in 1 hit.
   getHealth() {
     return this._health;

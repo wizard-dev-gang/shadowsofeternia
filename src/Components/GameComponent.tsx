@@ -27,7 +27,7 @@ function GameComponent() {
         default: "arcade", // The default physics system
         arcade: {
           gravity: { y: 0 }, // The gravity configuration (no gravity in this case)
-          debug: true, // Enable physics debugging (collider outlines, etc.)
+          debug: false, // Enable physics debugging (collider outlines, etc.)
         },
       }, 
       

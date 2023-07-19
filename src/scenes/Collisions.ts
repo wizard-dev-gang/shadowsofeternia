@@ -13,13 +13,9 @@ import { Npc_wizard } from "../characters/Npc";
 import "../characters/Npc";
 import { Potion } from "../characters/Potion";
 import { Resurrect } from "../characters/Resurrect";
-import { update } from "firebase/database";
 import { Dog } from "../characters/Dog";
 import { Goblin } from "../enemies/Goblins";
 
-// import { getDatabase, ref, onValue } from "firebase/database";
-// import { useRef } from "react";
-// import { setupFirebaseAuth } from "../utils/gameOnAuth";
 
 export class CollisionHandler {
   projectiles: Phaser.Physics.Arcade.Group;
@@ -62,7 +58,6 @@ export class CollisionHandler {
     playerId: string | null,
     dog: Phaser.Physics.Arcade.Group,
     goblin: Phaser.Physics.Arcade.Group,
-    resurrect: Resurrect,
     collideSound: Phaser.Sound.BaseSound,
     resurrectSound: Phaser.Sound.BaseSound,
     potionSound: Phaser.Sound.BaseSound,

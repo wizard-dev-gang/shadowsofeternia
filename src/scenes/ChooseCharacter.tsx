@@ -339,37 +339,37 @@ export default class ChooseCharacterScene extends Phaser.Scene {
       //    char1Text.setText("Rogue (Selected)");
       //    hasChosenCharacter = true;
       //  }
-      //}
+      // }
     });
     character2.on("pointerdown", async () => {
-      this.startGame("barb");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("barb", this);
-      //   if (isCharacterAvailable) {
-      //     char2Text.setText("Barbarian (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      // this.startGame("barb");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("barb", this);
+        if (isCharacterAvailable) {
+          char2Text.setText("Barbarian (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character3.on("pointerdown", async () => {
-      this.startGame("archer");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("archer", this);
-      //   if (isCharacterAvailable) {
-      //     char3Text.setText("Archer (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      // this.startGame("archer");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("archer", this);
+        if (isCharacterAvailable) {
+          char3Text.setText("Archer (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
     character4.on("pointerdown", async () => {
-      this.startGame("wizard");
-      // if (!hasChosenCharacter) {
-      //   const isCharacterAvailable = await writeUserData("wizard", this);
-      //   if (isCharacterAvailable) {
-      //     char4Text.setText("Wizard (Selected)");
-      //     hasChosenCharacter = true;
-      //   }
-      // }
+      // this.startGame("wizard");
+      if (!hasChosenCharacter) {
+        const isCharacterAvailable = await writeUserData("wizard", this);
+        if (isCharacterAvailable) {
+          char4Text.setText("Wizard (Selected)");
+          hasChosenCharacter = true;
+        }
+      }
     });
   }
 

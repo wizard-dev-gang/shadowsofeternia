@@ -34,8 +34,8 @@ export default class Forest extends Phaser.Scene {
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  public potion!: Potion;
-  public resurrect!: Resurrect;
+  public potion!: Phaser.Physics.Arcade.Group;
+  public resurrect!: Phaser.Physics.Arcade.Group;
   private enemyCount: number = 0;
   public forestEntranceX!: number;
   public forestEntranceY!: number;
@@ -44,8 +44,11 @@ export default class Forest extends Phaser.Scene {
   public miniMapRuins?: Phaser.GameObjects.Arc;
   public miniMapLocation?: Phaser.GameObjects.Arc;
   public exp: number;
+  private boss?: Phaser.Physics.Arcade.Group;
+  private babySkeletons?: Phaser.Physics.Arcade.Group;
+  private dog?: Phaser.Physics.Arcade.Group;
 
-  // private game?: Game;
+  private game?: Game;
   public enemiesSpawned = false;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
@@ -97,18 +100,22 @@ export default class Forest extends Phaser.Scene {
     const collisionHandler = new CollisionHandler(
       this.projectiles,
       this.skeletons,
+      this.boss,
       this.slimes,
+      this.babySkeletons,
       this.time,
       this.Npc_wizard,
       this.add,
       this.potion,
       this.playerId,
+      this.dog,
+      this.goblins,
       this.resurrect,
       this.collideSound,
       this.resurrectSound,
       this.potionSound,
-      this.slimeDeathSound,
       this.npcHm,
+      this.slimeDeathSound,
       this.projectileHit
     );
     this.scene.run("player-ui");

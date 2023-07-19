@@ -104,7 +104,7 @@ export class CollisionHandler {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const boss = obj2;
+    const boss = obj2 as Boss;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
@@ -140,7 +140,7 @@ export class CollisionHandler {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const skeleton = obj2 as Phaser.GameObjects.Image;
+    const skeleton = obj2 as Skeleton;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile as GameObjects.Image);
     projectile.destroy();
@@ -154,7 +154,7 @@ export class CollisionHandler {
     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
     (skeleton as Skeleton).setVelocity(dir.x, dir.y);
     (skeleton as Skeleton).getHealth();
-    (skeleton as Skeleton).handleDamage(dir);
+    (skeleton as Skeleton).handleDamage();
 
     this.projectileHit?.play();
 
@@ -215,7 +215,7 @@ export class CollisionHandler {
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
     const projectile = obj1;
-    const goblin = obj2;
+    const goblin = obj2 as Goblin;
     // Kill and hide the projectile
     this.projectiles.killAndHide(projectile);
     projectile.destroy();
@@ -229,10 +229,10 @@ export class CollisionHandler {
     const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
     (goblin as Goblin).setVelocity(dir.x, dir.y);
     (goblin as Goblin).getHealth();
-    (goblin as Goblin).handleDamage(dir);
+    (goblin as Goblin).handleDamage();
 
     if ((goblin as Goblin).getHealth() <= 0) {
-      this.goblins.killAndHide(goblin);
+      this.goblin.killAndHide(goblin);
       (goblin.isAlive = false), goblin.destroy();
 
     // Generate a random number between 0 and 1

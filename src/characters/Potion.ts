@@ -9,7 +9,11 @@ class Potion extends Phaser.Physics.Arcade.Sprite {
 
     destroy(fromScene?: boolean) {
         super.destroy(fromScene);
-      }
+    }
+
+    get(x:number, y:number, texture:string){
+      console.log(x, y, texture)
+    }
   }
 
 export { Potion }

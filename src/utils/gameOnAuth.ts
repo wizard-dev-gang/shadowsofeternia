@@ -1,5 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue } from "firebase/database";
+import Phaser from "phaser";
 import Game from "../scenes/Game";
 import Ruins from "../scenes/Ruins";
 import Forest from "../scenes/Forest";

@@ -211,23 +211,22 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    this.projectiles
-      ?.getChildren()
-      .forEach((projectile: Phaser.Physics.Arcade.Image) => {
-        const initialX = projectile.getData("initialX");
-        const initialY = projectile.getData("initialY");
+    const projectiles = this.projectiles?.getChildren();
 
-        const distanceX = Math.abs(projectile.x - initialX);
-        const distanceY = Math.abs(projectile.y - initialY);
-        const distance = Math.sqrt(
-          distanceX * distanceX + distanceY * distanceY
-        );
+    projectiles?.forEach((projectile: Phaser.GameObjects.GameObject) => {
+      const projectileImage = projectile as Phaser.Physics.Arcade.Image;
+      const initialX = projectileImage.getData("initialX");
+      const initialY = projectileImage.getData("initialY");
 
-        const maxDistance = 16; //Sets max distance the projectile can travel
-        if (distance >= maxDistance) {
-          this.projectiles?.remove(projectile, true, true);
-        }
-      });
+      const distanceX = Math.abs(projectileImage.x - initialX);
+      const distanceY = Math.abs(projectileImage.y - initialY);
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      const maxDistance = 16; //Sets max distance the projectile can travel
+      if (distance >= maxDistance) {
+        this.projectiles?.remove(projectileImage, true, true);
+      }
+    });
 
     const speed = 185;
     let isMoving = false;
@@ -278,19 +277,19 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
   moveAsGhost() {
     const speed = 150;
     if (this.keys.A?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
     } else {

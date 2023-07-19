@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { Game } from "phaser";
 
 export interface WASDKeys {
   W?: Phaser.Input.Keyboard.Key;
@@ -128,15 +127,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     xLoc?: number,
     yLoc?: number,
     attackObj?: string,
-    gameInstance?: Game
+    time?: number
   ) {
     if (!this.projectiles) {
       return;
     }
 
-    const currentTime = gameInstance
-      ? gameInstance.time.now
-      : this.scene.time.now;
+    const currentTime = time || this.scene.time.now;
 
     if (
       this.lastProjectileTime &&
@@ -286,19 +283,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   moveAsGhost() {
     const speed = 150;
     if (this.keys.A?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(-speed, 0);
       this.lastMove = "left";
     } else if (this.keys.D?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(speed, 0);
       this.lastMove = "right";
     } else if (this.keys.W?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(0, -speed);
       this.lastMove = "up";
     } else if (this.keys.S?.isDown) {
-      this.anims.play(this.anims.currentAnim, true);
+      this.anims.play(this.anims.currentAnim!, true);
       this.setVelocity(0, speed);
       this.lastMove = "down";
     } else {

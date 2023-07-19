@@ -31,17 +31,20 @@ export default class Dog extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   public isAlive:boolean = true
   public isMoving = true;
+  public text?: string
 
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
     texture: string,
-    frame?: string | number
+    frame?: string | number,
+    text?: string
   ) {
     super(scene, x, y, texture, frame);
     this._health = 3;
     this.anims.play("Dog-idle-down");
+    this.text = text
 
     scene.physics.world.on(
       Phaser.Physics.Arcade.Events.TILE_COLLIDE,

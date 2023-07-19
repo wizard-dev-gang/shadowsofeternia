@@ -398,20 +398,20 @@ export class CollisionHandler {
       player instanceof Barb ||
       player instanceof Wizard ||
       player instanceof Archer ||
-      (npc instanceof Npc_wizard && npc instanceof Npc_wizard)
+      (Npc instanceof Npc_wizard && Npc instanceof Npc_wizard)
     ) {
       // Perform actions for interacting with the NPC
       console.log("Interacting with the NPC Wizard");
       this.npcHm.play();
 
-      const npcX = npc.x;
-      const npcY = npc.y + 55;
+      const npcX = Npc.x;
+      const npcY = Npc.y + 55;
 
       const textX = npcX;
       const textY = npcY;
 
       // Add text on the screen
-      const text = this.add.text(textX, textY, npc.text, {
+      const text = this.add.text(textX, textY, Npc.text, {
         fontSize: "11px",
         color: "#000000",
         padding: {
@@ -444,6 +444,7 @@ export class CollisionHandler {
     player: Phaser.GameObjects.GameObject,
     dog: Phaser.GameObjects.GameObject
   ) {
+    const dog_npc = dog as Dog
     // Check if the player is interacting with the dog
     if (
       player instanceof Player ||
@@ -461,14 +462,14 @@ export class CollisionHandler {
         dog.isMoving = false;
       }
 
-      const dogX = dog.x;
-      const dogY = dog.y + 50;
+      const dogX = dog_npc.x;
+      const dogY = dog_npc.y + 50;
 
       const textX = dogX;
       const textY = dogY - 30;
 
       // Add text on the screen
-      const text = this.add.text(textX, textY, dog.text, {
+      const text = this.add.text(textX, textY, dog_npc.text, {
         fontSize: "11px",
         color: "#000000",
         padding: {

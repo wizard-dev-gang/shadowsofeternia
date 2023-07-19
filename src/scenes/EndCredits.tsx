@@ -7,8 +7,7 @@ export default class Credits extends Phaser.Scene{
     }
     create() {
 
-        const x = this.scale.width * 0.5
-		const y = this.scale.height * 0.5
+
 
         const textie = `Thanks for playing Shadows Of Eternia! We hope you enjoyed playing as much as we did making it!\n
         This game was made as a way for us all to experience a little bit of fun and nostalgia in a modern way.\n
@@ -25,8 +24,6 @@ export default class Credits extends Phaser.Scene{
         //   color: '#47BF31',
           wordWrap: { width: 400 },
           align: 'center',
-          padding: 10,
-        //   lineSpacing: 20
         });
     
         for (let i = 0; i < arrayText.length - 1; i++) {

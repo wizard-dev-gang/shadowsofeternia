@@ -30,7 +30,7 @@ export class CollisionHandler {
   time: Phaser.Time.Clock;
   Npc_wizard!: Phaser.Physics.Arcade.Group;
   add: GameObjects.GameObjectFactory;
-  potion: Potion;
+  public potion: Potion;
   private man?: Player; //Rogue Character
   private barb?: Barb; //Barbarian Character
   private archer?: Archer; //Archer Character
@@ -50,24 +50,24 @@ export class CollisionHandler {
   playerRef!: any;
 
   constructor(
-    projectiles: Phaser.Physics.Arcade.Group,
-    skeletons: Phaser.Physics.Arcade.Group,
-    boss: Phaser.Physics.Arcade.Group,
-    slimes: Phaser.Physics.Arcade.Group,
-    babySkeletons: Phaser.Physics.Arcade.Group,
-    time: Phaser.Time.Clock,
-    Npc_wizard: Phaser.Physics.Arcade.Group,
-    add: GameObjects.GameObjectFactory,
-    potion: Potion,
-    playerId: string | null,
-    dog: Phaser.Physics.Arcade.Group,
-    goblin: Phaser.Physics.Arcade.Group,
-    resurrect: Resurrect,
-    collideSound: Phaser.Sound.BaseSound,
-    resurrectSound: Phaser.Sound.BaseSound,
-    potionSound: Phaser.Sound.BaseSound,
-    dogBark: Phaser.Sound.BaseSound,
-    npcHm: Phaser.Sound.BaseSound,
+    projectiles?: Phaser.Physics.Arcade.Group,
+    skeletons?: Phaser.Physics.Arcade.Group,
+    boss?: Phaser.Physics.Arcade.Group,
+    slimes?: Phaser.Physics.Arcade.Group,
+    babySkeletons?: Phaser.Physics.Arcade.Group,
+    time?: Phaser.Time.Clock,
+    Npc_wizard?: Phaser.Physics.Arcade.Group,
+    add?: GameObjects.GameObjectFactory,
+    potion?: Potion,
+    playerId?: string | null,
+    dog?: Phaser.Physics.Arcade.Group,
+    goblin?: Phaser.Physics.Arcade.Group,
+    resurrect?: Resurrect,
+    collideSound?: Phaser.Sound.BaseSound,
+    resurrectSound?: Phaser.Sound.BaseSound,
+    potionSound?: Phaser.Sound.BaseSound,
+    dogBark?: Phaser.Sound.BaseSound,
+    npcHm?: Phaser.Sound.BaseSound,
     slimeDeathSound?: Phaser.Sound.BaseSound,
     projectileHit?: Phaser.Sound.BaseSound
   ) {
@@ -240,14 +240,14 @@ export class CollisionHandler {
       this.goblins.killAndHide(goblin);
       (goblin.isAlive = false), goblin.destroy();
 
-    // Generate a random number between 0 and 1
-    const dropChance = Math.random();
-    console.log("THIS IS THE DROP CHANCE VALUE", dropChance);
-    // Check if the drop chance is less than or equal to 0.2 (20%)
-    if (dropChance <= 0.2) {
-    // Drop a potion at the goblin's position
-    this.potion.get(goblin.x, goblin.y, "potion");
-    }
+      // Generate a random number between 0 and 1
+      const dropChance = Math.random();
+      console.log("THIS IS THE DROP CHANCE VALUE", dropChance);
+      // Check if the drop chance is less than or equal to 0.2 (20%)
+      if (dropChance <= 0.2) {
+        // Drop a potion at the goblin's position
+        this.potion.get(goblin.x, goblin.y, "potion");
+      }
     }
 
     this.projectileHit?.play();

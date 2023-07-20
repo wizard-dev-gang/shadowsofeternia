@@ -623,7 +623,7 @@ export default class BossMap extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.goblin,
-          this.collisionHandler.handlePlayerEnemyCollision as any,
+          this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
         );
@@ -701,7 +701,7 @@ export default class BossMap extends Phaser.Scene {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.slimes,
-          this.collisionHandler.handlePlayerEnemyCollision as any,
+          this.collisionHandler.handlePlayerSlimeCollision as any,
           undefined,
           this
         );

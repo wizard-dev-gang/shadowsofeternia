@@ -9,6 +9,7 @@ type SceneType = Game | Ruins | Forest | BossMap;
 
 export const setupFirebaseAuth = (gameInstance: SceneType) => {
   const auth = getAuth();
+  const otherPlayers = new Map();
   gameInstance.enemies = new Map();
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -86,6 +87,7 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
       onValue(otherPlayersRef, (snapshot) => {
         const playersData = snapshot.val();
         playerScene = playersData[gameInstance.playerId].scene;
+        gameInstance.otherPlayers = otherPlayers;
         gameInstance.otherPlayers.forEach((otherPlayer, playerId) => {
           const playerData = playersData[playerId];
 
@@ -113,18 +115,17 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
           // if (playerData.scene == undefined) continue;
           if (playerData.scene != playerScene) continue;
-          console.log(playerData, playerScene);
+          // console.log(playerData, playerScene);
           // Create or update other players
           if (!otherPlayer) {
-            otherPlayer = gameInstance.add.player(
+            otherPlayer = gameInstance.add.sprite(
               playerData.x,
               playerData.y,
-              "man",
-              console.log(otherPlayer)
+              "man"
             ); // Create a sprite for the other player
             gameInstance.otherPlayers.set(playerId, otherPlayer);
           }
-          console.log("OtherPlayer: ", otherPlayer);
+          // console.log("OtherPlayer: ", otherPlayer);
           otherPlayer.x = playerData.x;
           otherPlayer.y = playerData.y;
 

@@ -42,7 +42,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   public projectileCooldown?: number = 1000; // cooldown in milliseconds
   public projectileLife?: number = 800; // projectile is removed after this amount of time
   public isDead: boolean = false;
-  public scene: Phaser.Scene;
 
   public keys: WASDKeys = {
     W: undefined,
@@ -322,13 +321,13 @@ Phaser.GameObjects.GameObjectFactory.register(
     texture: string,
     frame?: string | number
   ) {
-    console.log("Scene: ", this.scene);
-    console.log("Physics: ", this.scene.physics);
-    console.log("Physics World: ", this.scene.physics.world);
-    if (!this.scene || !this.scene.physics || !this.scene.physics.world) {
-      console.error("Scene or physics system not ready yet!");
-      return null;
-    }
+    // console.log("Scene: ", this.scene);
+    // console.log("Physics: ", this.scene.physics);
+    // console.log("Physics World: ", this.scene.physics.world);
+    // if (!this.scene || !this.scene.physics || !this.scene.physics.world) {
+    //   console.error("Scene or physics system not ready yet!");
+    //   return null;
+    // }
 
     const sprite = new Player(this.scene, x, y, texture, frame);
 

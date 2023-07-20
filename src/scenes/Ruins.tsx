@@ -32,9 +32,9 @@ export default class Ruins extends Phaser.Scene {
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider; // Collider between player and enemies
   // private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
   public collisionHandler: CollisionHandler;
-  private resurrect!: Resurrect;
+  private resurrect!: Phaser.Physics.Arcade.Group;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
-  public potion!: Potion;
+  public potion!: Phaser.Physics.Arcade.Group;
   private collideSound: Phaser.Sound.BaseSound;
   private resurrectSound: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
@@ -48,7 +48,7 @@ export default class Ruins extends Phaser.Scene {
   public miniMapLocation?: Phaser.GameObjects.Arc;
   private boss?: Phaser.Physics.Arcade.Group;
   private babySkeletons?: Phaser.Physics.Arcade.Group;
-  private dog?: Phaser.Physics.Arcade.Group;
+  // private dog?: Phaser.Physics.Arcade.Group;
   private dogBark: Phaser.Sound.BaseSound;
   public exp: number;
   private health?: number;
@@ -108,7 +108,6 @@ export default class Ruins extends Phaser.Scene {
       this.add,
       this.potion,
       this.playerId,
-      this.dog,
       this.goblins,
       this.resurrect,
       this.collideSound,
@@ -137,7 +136,7 @@ export default class Ruins extends Phaser.Scene {
     this.backgroundMusic.play();
 
     // Set up Firebase authentication state change listener(/utils/gameOnAuth.ts)
-    setupFirebaseAuth(Ruins);
+    setupFirebaseAuth(this);
 
     // Create animations for the characters
     createCharacterAnims(this.anims);

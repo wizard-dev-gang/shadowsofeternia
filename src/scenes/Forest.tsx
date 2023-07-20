@@ -174,18 +174,26 @@ export default class Forest extends Phaser.Scene {
       if (this.characterName === "barb") {
         this.barb = this.add.barb(800, 3100, "barb");
         this.barb.level = this.characterLevel;
+        this.barb.setHealth(this.health);
+        this.barb.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(800, 3100, "archer");
         this.cameras.main.startFollow(this.archer);
+        this.archer.setHealth(this.health);
+        this.archer.setMaxHealth(this.maxHealth);
         this.archer.level = this.characterLevel;
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(800, 3100, "wizard");
         this.cameras.main.startFollow(this.wizard);
+        this.wizard.setHealth(this.health);
+        this.wizard.setMaxHealth(this.maxHealth);
         this.wizard.level = this.characterLevel;
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(800, 3100, "man");
         this.man.level = this.characterLevel;
+        this.man.setHealth(this.health);
+        this.man.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.man);
       }
 

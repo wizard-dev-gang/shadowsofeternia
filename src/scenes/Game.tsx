@@ -776,6 +776,8 @@ export default class Game extends Phaser.Scene {
         characterName: this.characterName,
         level: character.level,
         game: this,
+        health: character._health,
+        maxHealth: character.maxHealth,
       });
       update(this.playerRef, {
         x: character.x,

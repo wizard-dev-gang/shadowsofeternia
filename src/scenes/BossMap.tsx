@@ -38,7 +38,7 @@ export default class BossMap extends Phaser.Scene {
   private slimeDeathSound!: Phaser.Sound.BaseSound;
   private projectileHit!: Phaser.Sound.BaseSound;
   public babySkeletons!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
-  public goblin!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
+  public goblins!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public slimes!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public exp: number;
   private health?: number;
@@ -90,7 +90,7 @@ export default class BossMap extends Phaser.Scene {
       this.projectiles,
       this.skeletons,
       this.babySkeletons,
-      this.goblin,
+      this.goblins,
       this.slimes,
       this.time,
       this.potion,
@@ -211,14 +211,14 @@ export default class BossMap extends Phaser.Scene {
       });
 
       sceneEvents.on("boss-spin", () => {
-        const boss = this.enemies.get(1);
+        const currentBoss = this.enemies.get(1);
 
         for (let i = 0; i < 3; i++) {
           if (this.enemies.size < 12) {
-            this.babySkeletons.get(boss.x + 100, boss.y, "baby-skeleton");
-            this.slimes.get(boss.x - 100, boss.y, "slime");
-            this.skeletons.get(boss.x + 100, boss.y, "jacked-skeleton");
-            this.goblin.get(boss.x - 100, boss.y, "goblin");
+            this.babySkeletons.get(currentBoss.x + 100, currentBoss.y, "baby-skeleton");
+            this.slimes.get(currentBoss.x - 100, currentBoss.y, "slime");
+            this.skeletons.get(currentBoss.x + 100, currentBoss.y, "jacked-skeleton");
+            this.goblins.get(currentBoss.x - 100, currentBoss.y, "goblin");
           }
         }
       });
@@ -563,7 +563,7 @@ export default class BossMap extends Phaser.Scene {
       });
       this.potion.get(800, 2800, "Potion");
 
-      this.goblin = this.physics.add.group({
+      this.goblins = this.physics.add.group({
         classType: Goblin,
         createCallback: (go) => {
           const skeleGo = go as Goblin;
@@ -586,8 +586,8 @@ export default class BossMap extends Phaser.Scene {
       });
 
       // Handle collisions between skeletons and house layers
-      if (this.goblin && groundLayer) {
-        this.physics.add.collider(this.goblin, groundLayer);
+      if (this.goblins && groundLayer) {
+        this.physics.add.collider(this.goblins, groundLayer);
         this.physics.add.collider(
           this.projectiles,
           groundLayer,
@@ -597,8 +597,8 @@ export default class BossMap extends Phaser.Scene {
         );
       }
       // Handle collisions between skeletons and fences
-      if (this.goblin && platformLayer) {
-        this.physics.add.collider(this.goblin, platformLayer);
+      if (this.goblins && platformLayer) {
+        this.physics.add.collider(this.goblins, platformLayer);
         this.physics.add.collider(
           this.projectiles,
           platformLayer,
@@ -608,8 +608,8 @@ export default class BossMap extends Phaser.Scene {
         );
       }
       // Handle collisions between skeletons and trees
-      if (this.goblin && wallsLayer) {
-        this.physics.add.collider(this.goblin, wallsLayer);
+      if (this.goblins && wallsLayer) {
+        this.physics.add.collider(this.goblins, wallsLayer);
         this.physics.add.collider(
           this.projectiles,
           wallsLayer,
@@ -619,10 +619,10 @@ export default class BossMap extends Phaser.Scene {
         );
       }
 
-      if (playerCharacters && this.goblin) {
+      if (playerCharacters && this.goblins) {
         this.physics.add.collider(
           playerCharacters as Phaser.GameObjects.GameObject[],
-          this.goblin,
+          this.goblins,
           this.collisionHandler.handlePlayerGoblinCollision as any,
           undefined,
           this
@@ -633,7 +633,7 @@ export default class BossMap extends Phaser.Scene {
       if (playerCharacters && this.playerEnemiesCollider) {
         console.log("create playerenemiescollider");
         this.playerEnemiesCollider = this.physics.add.collider(
-          this.goblin,
+          this.goblins,
           playerCharacters as Phaser.GameObjects.GameObject[],
           this.collisionHandler.handlePlayerEnemyCollision as any,
           undefined,
@@ -978,10 +978,10 @@ export default class BossMap extends Phaser.Scene {
         this
       );
 
-      // Handle collision between knives and goblin
+      // Handle collision between knives and goblins
       this.physics.overlap(
         this.projectiles,
-        this.goblin,
+        this.goblins,
         this.collisionHandler.handleProjectileGoblinCollision as any,
         undefined,
         this

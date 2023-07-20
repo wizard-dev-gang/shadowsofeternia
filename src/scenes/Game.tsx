@@ -46,8 +46,8 @@ export default class Game extends Phaser.Scene {
   private slimeDeathSound!: Phaser.Sound.BaseSound;
   private npcHm!: Phaser.Sound.BaseSound;
   private projectileHit!: Phaser.Sound.BaseSound;
-  private health!: number;
-  private maxHealth!: number;
+  private health: number;
+  private maxHealth: number;
 
   // Public variables:
   public collisionHandler: CollisionHandler;
@@ -82,6 +82,8 @@ export default class Game extends Phaser.Scene {
     this.playerNames = new Map();
     this.enemies = new Map();
     this.collisionHandler = new CollisionHandler();
+    this.health = 10;
+    this.maxHealth = 10;
   }
 
   preload() {
@@ -184,6 +186,8 @@ export default class Game extends Phaser.Scene {
           spawnPosition.y + 40,
           "barb"
         );
+        this.barb.setHealth(this.health);
+        this.barb.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.barb);
       } else if (this.characterName === "archer") {
         this.archer = this.add.archer(
@@ -191,6 +195,8 @@ export default class Game extends Phaser.Scene {
           spawnPosition.y + 80,
           "archer"
         );
+        this.archer.setHealth(this.health);
+        this.archer.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.archer);
       } else if (this.characterName === "wizard") {
         this.wizard = this.add.wizard(
@@ -198,9 +204,13 @@ export default class Game extends Phaser.Scene {
           spawnPosition.y + 120,
           "wizard"
         );
+        this.wizard.setHealth(this.health);
+        this.wizard.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.wizard);
       } else if (this.characterName === "rogue") {
         this.man = this.add.player(spawnPosition.x, spawnPosition.y, "man");
+        this.man.setHealth(this.health);
+        this.man.setMaxHealth(this.maxHealth);
         this.cameras.main.startFollow(this.man);
       }
 

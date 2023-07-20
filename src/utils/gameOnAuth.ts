@@ -4,6 +4,7 @@ import Game from "../scenes/Game";
 import Ruins from "../scenes/Ruins";
 import Forest from "../scenes/Forest";
 import BossMap from "../scenes/BossMap";
+import Player from "../characters/Player";
 
 type SceneType = Game | Ruins | Forest | BossMap;
 
@@ -130,15 +131,16 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
           otherPlayer.y = playerData.y;
 
           if (playerData.projectilesFromDB)
-            otherPlayer.setProjectiles(gameInstance.projectiles);
+            otherPlayer.projectiles = gameInstance.projectiles;
           for (const projectileId in playerData.projectilesFromDB) {
             const projectileData = playerData.projectilesFromDB[projectileId];
-            otherPlayer.throwProjectile(
+            Player.prototype.throwProjectile(
               projectileData.direction,
               projectileData.x,
               projectileData.y,
               projectileData.attackObj,
-              gameInstance
+              gameInstance,
+              otherPlayer.projectiles
             );
           }
 

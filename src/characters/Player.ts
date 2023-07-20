@@ -132,18 +132,20 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  private throwProjectile(
+  public throwProjectile(
     direction?: string,
     xLoc?: number,
     yLoc?: number,
     attackObj?: string,
-    time?: number
+    currentScene?: Phaser.Scene,
+    otherProjectiles?:Phaser.Physics.Arcade.Group
   ) {
-    if (!this.projectiles) {
+    console.log("in throw", otherProjectiles)
+    if (!this.projectiles && !otherProjectiles) {
       return;
     }
-
-    const currentTime = time || this.scene.time.now;
+    console.log("after check")
+    const currentTime = currentScene? currentScene.time.now: this.scene.time.now;
 
     if (
       this.lastProjectileTime &&
@@ -156,7 +158,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // update lastProjectileTime
     this.lastProjectileTime = currentTime;
 
-    if (this.anims.currentAnim) {
+    if (this.anims?.currentAnim) {
       const parts = this.anims.currentAnim.key.split("-");
       direction = direction ? direction : parts[2];
       xLoc = xLoc ? xLoc : this.x;
@@ -184,11 +186,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     const angle = vec.angle();
 
-    const projectile = this.projectiles.get(
-      xLoc,
-      yLoc,
-      attackObj
-    ) as Phaser.Physics.Arcade.Image;
+    const projectile = otherProjectiles?
+        otherProjectiles.get(
+          xLoc,
+          yLoc,
+          attackObj
+      ) as Phaser.Physics.Arcade.Image
+    :
+        this.projectiles.get(
+          xLoc,
+          yLoc,
+          attackObj
+      ) as Phaser.Physics.Arcade.Image;
+    
     if (!projectile) {
       return;
     }
@@ -200,14 +210,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     projectile.x += vec.x * 16;
     projectile.y += vec.y * 16;
     projectile.setVelocity(vec.x * 300, vec.y * 300);
-    this.projectilesToSend[this.projectileCount] = {
-      id: this.projectileCount,
-      direction: direction,
-      x: xLoc,
-      y: yLoc,
-      attackObj: attackObj,
-    };
-    this.projectileCount++;
+    if (!otherProjectiles) {
+        this.projectilesToSend[this.projectileCount] = {
+        id: this.projectileCount,
+        direction: direction,
+        x: xLoc,
+        y: yLoc,
+        attackObj: attackObj,
+      };
+      this.projectileCount++;
+    }
 
     if (this.projectileLife) {
       this.scene.time.addEvent({

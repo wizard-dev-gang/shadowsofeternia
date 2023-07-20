@@ -722,6 +722,7 @@ export default class Forest extends Phaser.Scene {
       this.scene.start("ruins", {
         characterName: this.characterName,
         level: character.level,
+        game: this,
         health: character._health,
         maxHealth: character.maxHealth,
       });

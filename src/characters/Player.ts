@@ -21,7 +21,8 @@ declare global {
         x: number,
         y: number,
         texture: string,
-        frame?: string | number
+        frame?: string | number,
+        scene?: Phaser.Scene
       ): Player;
     }
   }
@@ -41,6 +42,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   public projectileCooldown?: number = 1000; // cooldown in milliseconds
   public projectileLife?: number = 800; // projectile is removed after this amount of time
   public isDead: boolean = false;
+  public scene: Phaser.Scene;
 
   public keys: WASDKeys = {
     W: undefined,
@@ -64,6 +66,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.isDead = false;
     this._health = 10;
     this.maxHealth = 10;
+    this.scene = scene;
     this.playerDeadSound = scene.sound.add("playerDeadSound");
     if (this.scene && this.scene.input && this.scene.input.keyboard) {
       this.keys = this.scene.input.keyboard.addKeys({
@@ -249,18 +252,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (this.keys.Space?.isDown) {
       this.throwProjectile();
-      // if (this.activeChest)
-      // {
-      //     const coins = this.activeChest.open()
-      //     this._coins += coins
-
-      //     sceneEvents.emit('player-coins-changed', this._coins)
-      // }
-      // else
-      // {
-      //     this.throwKnife()
-      // }
-      // return
     }
 
     const speed = 175;
@@ -331,6 +322,14 @@ Phaser.GameObjects.GameObjectFactory.register(
     texture: string,
     frame?: string | number
   ) {
+    console.log("Scene: ", this.scene);
+    console.log("Physics: ", this.scene.physics);
+    console.log("Physics World: ", this.scene.physics.world);
+    if (!this.scene || !this.scene.physics || !this.scene.physics.world) {
+      console.error("Scene or physics system not ready yet!");
+      return null;
+    }
+
     const sprite = new Player(this.scene, x, y, texture, frame);
 
     this.displayList.add(sprite);

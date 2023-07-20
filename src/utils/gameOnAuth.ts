@@ -111,18 +111,20 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
           if (!playerData.online) continue;
           //console.log(playerScene,playerData.scene)
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
-          if (playerData.scene == undefined) continue;
+          // if (playerData.scene == undefined) continue;
           if (playerData.scene != playerScene) continue;
-          //console.log(playerData, playerScene)
+          console.log(playerData, playerScene);
           // Create or update other players
           if (!otherPlayer) {
             otherPlayer = gameInstance.add.player(
               playerData.x,
               playerData.y,
-              "man"
+              "man",
+              console.log(otherPlayer)
             ); // Create a sprite for the other player
             gameInstance.otherPlayers.set(playerId, otherPlayer);
           }
+          console.log("OtherPlayer: ", otherPlayer);
           otherPlayer.x = playerData.x;
           otherPlayer.y = playerData.y;
 

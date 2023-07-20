@@ -137,6 +137,7 @@ function App() {
             y: 0,
             mp: 100,
             gold: 0,
+            scene: "game",
             inventory: [],
             equipped: {
               weapon: "None(Placeholder)",

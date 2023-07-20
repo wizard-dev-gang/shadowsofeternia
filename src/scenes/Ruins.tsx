@@ -70,7 +70,7 @@ export default class Ruins extends Phaser.Scene {
   public playerLevel?: Phaser.GameObjects.Text;
 
   constructor() {
-    super("ruins");
+    super();
     this.otherPlayers = new Map();
     this.playerNames = new Map();
     this.enemies = new Map();
@@ -93,6 +93,7 @@ export default class Ruins extends Phaser.Scene {
     this.characterName = data.characterName;
     this.characterLevel = data.level;
     this.health = data.health;
+    this.game = data.game;
     this.maxHealth = data.maxHealth;
   }
 
@@ -970,6 +971,7 @@ export default class Ruins extends Phaser.Scene {
                 ? entry[1].anims.currentFrame.frame.name
                 : null,
               isAlive: entry[1].isAlive,
+              level: character.level,
             };
           } else {
             this.dataToSend[entry[0]] = {

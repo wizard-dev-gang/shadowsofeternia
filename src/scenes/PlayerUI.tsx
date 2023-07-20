@@ -8,10 +8,6 @@ import { Barb } from "../characters/Barb";
 
 export default class PlayerUI extends Phaser.Scene {
   private bar!: HealthBar;
-  // private player?: Player;
-  // private archer?: Archer;
-  // private wizard?: Wizard;
-  // private barb?: Barb;
   private currentCharacter?: Player | Archer | Wizard | Barb; // Store the current character
   private fillRatio: number = 1;
   private characters: Array<Player | Archer | Wizard | Barb> = [];

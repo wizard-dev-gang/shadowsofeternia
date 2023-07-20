@@ -51,6 +51,8 @@ export default class Ruins extends Phaser.Scene {
   private dog?: Phaser.Physics.Arcade.Group;
   private dogBark: Phaser.Sound.BaseSound;
   public exp: number;
+  private health?: number;
+  private maxHealth?: number;
 
   // Firebase variables
   public characterName?: string;
@@ -85,12 +87,13 @@ export default class Ruins extends Phaser.Scene {
     this.load.audio("slimeDeath", "/music/slimeDeathSound.mp3");
     this.load.audio("npcHm", "/music/npcHm.mp3");
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
-    this.load.audio("bossMusic", "/music/bossScene.mp3");
   }
 
   init(data: any) {
     this.characterName = data.characterName;
     this.characterLevel = data.level;
+    this.health = data.health;
+    this.maxHealth = data.maxHealth;
   }
 
   create() {
@@ -714,6 +717,8 @@ export default class Ruins extends Phaser.Scene {
       this.scene.start("bossMap", {
         characterName: this.characterName,
         level: character.level,
+        health: character._health,
+        maxHealth: character.maxHealth,
       });
       update(this.playerRef, {
         x: character.x,
@@ -728,6 +733,8 @@ export default class Ruins extends Phaser.Scene {
         projectilesFromDB: character.projectilesToSend,
         scene: "bossMap",
         level: character.level,
+        hp: character._health,
+        maxHealth: character.maxHealth,
       });
       this.sound.stopAll();
       return;
@@ -934,6 +941,8 @@ export default class Ruins extends Phaser.Scene {
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
           level: character.level,
+          hp: character._health,
+          maxHealth: character.maxHealth,
         });
         character.projectilesToSend = {};
       }

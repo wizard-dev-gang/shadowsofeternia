@@ -47,6 +47,8 @@ export default class Forest extends Phaser.Scene {
   private boss?: Phaser.Physics.Arcade.Group;
   private babySkeletons?: Phaser.Physics.Arcade.Group;
   private dog?: Phaser.Physics.Arcade.Group;
+  private health?: number;
+  private maxHealth?: number;
 
   // private game?: Game;
   public enemiesSpawned = false;
@@ -95,7 +97,10 @@ export default class Forest extends Phaser.Scene {
     this.characterName = data.characterName;
     this.characterLevel = data.level;
     this.game = data.game;
+    this.health = data.health;
+    this.maxHealth = data.maxHealth;
   }
+
   create() {
     const collisionHandler = new CollisionHandler(
       this.projectiles,
@@ -367,6 +372,7 @@ export default class Forest extends Phaser.Scene {
           })
           .setOrigin(0.5, 1);
       }
+
       this.potion = this.physics.add.group({
         classType: Potion,
         createCallback: (go) => {
@@ -388,6 +394,7 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
+
       if (this.resurrect instanceof Phaser.Physics.Arcade.Group) {
         this.resurrect.get(820, 2800, "Resurrect");
         this.resurrect.get(1690, 2640, "Resurrect");
@@ -712,6 +719,8 @@ export default class Forest extends Phaser.Scene {
       this.scene.start("ruins", {
         characterName: this.characterName,
         level: character.level,
+        health: character._health,
+        maxHealth: character.maxHealth,
       });
       update(this.playerRef, {
         x: character.x,
@@ -726,6 +735,8 @@ export default class Forest extends Phaser.Scene {
         projectilesFromDB: character.projectilesToSend,
         scene: "ruins",
         level: character.level,
+        hp: character._health,
+        maxHealth: character.maxHealth,
       });
       return;
     }
@@ -818,6 +829,8 @@ export default class Forest extends Phaser.Scene {
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
           level: character.level,
+          hp: character._health,
+          maxHealth: character.maxHealth,
         });
         character.projectilesToSend = {};
       }

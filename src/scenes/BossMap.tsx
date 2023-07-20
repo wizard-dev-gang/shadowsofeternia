@@ -41,6 +41,8 @@ export default class BossMap extends Phaser.Scene {
   public goblin!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public slimes!: Phaser.Physics.Arcade.Group; // Group to manage skeleton enemies
   public exp: number;
+  private health?: number;
+  private maxHealth?: number;
 
   // Firebase variables
   public characterName?: string;
@@ -78,6 +80,9 @@ export default class BossMap extends Phaser.Scene {
   init(data: any) {
     this.characterName = data.characterName;
     this.characterLevel = data.level;
+    this.game = data.game;
+    this.health = data.health;
+    this.maxHealth = data.maxHealth;
   }
 
   create() {
@@ -183,9 +188,7 @@ export default class BossMap extends Phaser.Scene {
         },
       });
 
-      
-        this.boss.get(626, 390, "boss");
-      
+      this.boss.get(626, 390, "boss");
 
       sceneEvents.on("boss-stomp", () => {
         const boss = this.enemies.get(1);
@@ -1011,7 +1014,7 @@ export default class BossMap extends Phaser.Scene {
         undefined,
         this
       );
-      
+
       if (this.playerRef) {
         update(this.playerRef, {
           x: character.x,

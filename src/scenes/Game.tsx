@@ -101,8 +101,8 @@ export default class Game extends Phaser.Scene {
 
   init(data?: any) {
     this.characterName = data?.name;
-    this.health = data.health;
-    this.maxHealth = data.maxHealth;
+    this.health = 10;
+    this.maxHealth = 10;
   }
 
   create() {

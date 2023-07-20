@@ -60,10 +60,6 @@ export default class Dog extends Phaser.Physics.Arcade.Sprite {
         loop: true,
       });
   }
-  // Enemies have health, to not die in 1 hit.
-  getHealth() {
-    return this._health;
-  }
 
   handleDamage(dir: Phaser.Math.Vector2) {
     if (this._health <= 0) {

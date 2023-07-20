@@ -324,8 +324,6 @@ export default class Game extends Phaser.Scene {
         },
       });
 
-      // Add a slime to the group
-      // this.slimes.get(414, 90, "slime");
       if (playerCharacters && this.slimes) {
         // Add colliders between man and slimes
         this.physics.add.collider(
@@ -381,8 +379,6 @@ export default class Game extends Phaser.Scene {
           }
         },
       });
-
-      // this.goblins.get(2080, 1110, "Goblin");
       if (playerCharacters && this.goblins) {
         // Handle collisions between goblins and layers
         if (waterLayer) this.physics.add.collider(this.goblins, waterLayer);
@@ -607,7 +603,6 @@ export default class Game extends Phaser.Scene {
         this.miniMapForest.setVisible(false);
       }
     });
-    this.skeletons.get(2060, 1100, "skeleton");
   }
 
   // Method to update player's experience

@@ -46,6 +46,8 @@ export default class Game extends Phaser.Scene {
   private slimeDeathSound!: Phaser.Sound.BaseSound;
   private npcHm!: Phaser.Sound.BaseSound;
   private projectileHit!: Phaser.Sound.BaseSound;
+  private health!: number;
+  private maxHealth!: number;
 
   // Public variables:
   public collisionHandler: CollisionHandler;
@@ -95,8 +97,10 @@ export default class Game extends Phaser.Scene {
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
   }
 
-  init(data?: { name: string; from?: string }) {
+  init(data?: any) {
     this.characterName = data?.name;
+    this.health = data.health;
+    this.maxHealth = data.maxHealth;
   }
 
   create() {
@@ -531,6 +535,7 @@ export default class Game extends Phaser.Scene {
         },
       });
       this.potion.get(1075, 950, "Potion");
+
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
         createCallback: (go) => {
@@ -594,7 +599,7 @@ export default class Game extends Phaser.Scene {
         this.miniMapForest.setVisible(false);
       }
     });
-    this.skeletons.get(2060, 1100, "skeleton")
+    this.skeletons.get(2060, 1100, "skeleton");
   }
 
   // Method to update player's experience
@@ -708,7 +713,7 @@ export default class Game extends Phaser.Scene {
       }
 
       this.updatePlayerMaxHealth(player.maxHealth);
-      
+
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -798,8 +803,8 @@ export default class Game extends Phaser.Scene {
       this.playerName.y = character.y - 20;
 
       if (this.playerLevel) {
-      this.playerLevel.x = this.playerName.x;
-      this.playerLevel.y = character.y - 10;
+        this.playerLevel.x = this.playerName.x;
+        this.playerLevel.y = character.y - 10;
       }
 
       //Handle Collision Between Player and Resurrect
@@ -845,25 +850,27 @@ export default class Game extends Phaser.Scene {
         this
       );
       if (this.input && this.input.keyboard) {
-        const E_Key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        const E_Key = this.input.keyboard.addKey(
+          Phaser.Input.Keyboard.KeyCodes.E
+        );
         if (Phaser.Input.Keyboard.JustDown(E_Key)) {
-            console.log("Player pushed E."),
+          console.log("Player pushed E."),
             this.physics.overlap(
-                character,
-                this.Npc_wizard,
-                this.collisionHandler.handlePlayerNpcCollision as any,
-                undefined,
-                this
+              character,
+              this.Npc_wizard,
+              this.collisionHandler.handlePlayerNpcCollision as any,
+              undefined,
+              this
             );
-            this.physics.overlap(
-                character,
-                this.dog,
-                this.collisionHandler.handlePlayerDogCollision as any,
-                undefined,
-                this
-            );
+          this.physics.overlap(
+            character,
+            this.dog,
+            this.collisionHandler.handlePlayerDogCollision as any,
+            undefined,
+            this
+          );
         }
-    }
+      }
       // Update the player's data in the database
       if (this.playerRef) {
         update(this.playerRef, {
@@ -970,5 +977,3 @@ export default class Game extends Phaser.Scene {
     return { x: 0, y: 0 };
   }
 }
-
-

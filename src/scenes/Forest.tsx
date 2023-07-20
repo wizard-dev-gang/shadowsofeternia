@@ -390,7 +390,7 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
-      if (this.potion instanceof Phaser.Physics.Arcade.Group){
+      if (this.potion instanceof Phaser.Physics.Arcade.Group) {
         this.potion.get(800, 2800, "Potion");
       }
       this.resurrect = this.physics.add.group({
@@ -837,8 +837,8 @@ export default class Forest extends Phaser.Scene {
           projectilesFromDB: character.projectilesToSend,
           scene: this.scene.key,
           level: character.level,
-          hp: character._health,
-          maxHealth: character.maxHealth,
+          // hp: character._health,
+          // maxHealth: character.maxHealth,
         });
         character.projectilesToSend = {};
       }

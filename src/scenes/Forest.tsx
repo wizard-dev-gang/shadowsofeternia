@@ -46,7 +46,6 @@ export default class Forest extends Phaser.Scene {
   public exp: number;
   private boss?: Phaser.Physics.Arcade.Group;
   private babySkeletons?: Phaser.Physics.Arcade.Group;
-  private dog?: Phaser.Physics.Arcade.Group;
   private health?: number;
   private maxHealth?: number;
 
@@ -111,17 +110,13 @@ export default class Forest extends Phaser.Scene {
       this.time,
       this.Npc_wizard,
       this.add,
-      this.potion,
       this.playerId,
-      this.dog,
-      this.goblins,
-      this.resurrect,
-      this.collideSound,
-      this.resurrectSound,
-      this.potionSound,
-      this.npcHm,
-      this.slimeDeathSound,
-      this.projectileHit
+      this.collideSound as any,
+      this.resurrectSound as any,
+      this.potionSound as any,
+      this.slimeDeathSound as any,
+      this.npcHm as any,
+      this.projectileHit as any
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
@@ -132,7 +127,7 @@ export default class Forest extends Phaser.Scene {
     this.projectileHit = this.sound.add("projectileHit");
 
     const backgroundMusic = this.sound.add("forestScene", {
-      volume: 0.5,
+      volume: 0.3,
       loop: true,
     });
     backgroundMusic.play();

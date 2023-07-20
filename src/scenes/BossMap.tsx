@@ -95,12 +95,12 @@ export default class BossMap extends Phaser.Scene {
       this.time,
       this.potion,
       this.playerId,
-      this.resurrect,
-      this.collideSound,
-      this.resurrectSound,
-      this.potionSound,
-      this.slimeDeathSound,
-      this.projectileHit
+      this.resurrect as any,
+      this.collideSound as any,
+      this.resurrectSound as any,
+      this.potionSound as any,
+      this.slimeDeathSound as any,
+      this.projectileHit as any
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");

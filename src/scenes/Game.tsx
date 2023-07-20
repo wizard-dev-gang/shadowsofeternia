@@ -110,20 +110,18 @@ export default class Game extends Phaser.Scene {
       this.projectiles,
       this.skeletons,
       this.slimes,
-      this.time,
       this.Npc_wizard,
-      this.add,
       this.potion,
       this.playerId,
       this.resurrect,
-      this.collideSound,
-      this.resurrectSound,
-      this.potionSound,
-      this.dog,
-      this.dogBark,
-      this.slimeDeathSound,
-      this.npcHm,
-      this.projectileHit
+      this.collideSound as any,
+      this.resurrectSound as any,
+      this.potionSound as any,
+      this.dog as any,
+      this.dogBark as any,
+      this.slimeDeathSound as any,
+      this.npcHm as any,
+      this.projectileHit as any
     );
     this.scene.run("player-ui");
     this.collideSound = this.sound.add("enemyCollide");
@@ -135,7 +133,7 @@ export default class Game extends Phaser.Scene {
     this.projectileHit = this.sound.add("projectileHit");
 
     const backgroundMusic = this.sound.add("townScene", {
-      volume: 0.5,
+      volume: 0.3,
       loop: true,
     });
     backgroundMusic.play();

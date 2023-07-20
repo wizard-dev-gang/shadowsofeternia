@@ -35,8 +35,8 @@ export default class Ruins extends Phaser.Scene {
   private resurrect!: Phaser.Physics.Arcade.Group;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   public potion!: Phaser.Physics.Arcade.Group;
-  private collideSound: Phaser.Sound.BaseSound;
-  private resurrectSound: Phaser.Sound.BaseSound;
+  private collideSound!: Phaser.Sound.BaseSound;
+  private resurrectSound!: Phaser.Sound.BaseSound;
   private potionSound: Phaser.Sound.BaseSound;
   private backgroundMusic: Phaser.Sound.BaseSound;
   private slimeDeathSound: Phaser.Sound.BaseSound;
@@ -106,7 +106,7 @@ export default class Ruins extends Phaser.Scene {
       this.time,
       this.Npc_wizard,
       this.add,
-      this.potion,
+      this.potion as any,
       this.playerId,
       this.goblins,
       this.resurrect,
@@ -128,7 +128,7 @@ export default class Ruins extends Phaser.Scene {
     this.projectileHit = this.sound.add("projectileHit");
 
     this.backgroundMusic = this.sound.add("ruinsScene", {
-      volume: 0.5,
+      volume: 0.4,
       loop: true,
     });
 

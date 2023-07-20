@@ -28,11 +28,10 @@ export default class Game extends Phaser.Scene {
   // Private variables:
   private archer?: Archer;
   private barb?: Barb;
-  private wizard?: Wizard;
-  private man?: Player;
   private collideSound!: Phaser.Sound.BaseSound;
   private enemyCount = 0;
 
+  private man?: Player;
   private Npc_wizard!: Phaser.Physics.Arcade.Group;
   private playerEnemiesCollider?: Phaser.Physics.Arcade.Collider;
   private playerSlimeCollider?: Phaser.Physics.Arcade.Collider;
@@ -40,14 +39,13 @@ export default class Game extends Phaser.Scene {
   private potionSound!: Phaser.Sound.BaseSound;
   private skeletons!: Phaser.Physics.Arcade.Group;
   private slimes!: Phaser.Physics.Arcade.Group;
+  private wizard?: Wizard;
   private dog!: Phaser.Physics.Arcade.Group;
   private goblins!: Phaser.Physics.Arcade.Group;
   private dogBark!: Phaser.Sound.BaseSound;
   private slimeDeathSound!: Phaser.Sound.BaseSound;
   private npcHm!: Phaser.Sound.BaseSound;
   private projectileHit!: Phaser.Sound.BaseSound;
-  private health: number;
-  private maxHealth: number;
 
   // Public variables:
   public collisionHandler: CollisionHandler;
@@ -97,10 +95,8 @@ export default class Game extends Phaser.Scene {
     this.load.audio("projectileHit", "/music/projectileHit.mp3");
   }
 
-  init(data?: any) {
+  init(data?: { name: string; from?: string }) {
     this.characterName = data?.name;
-    this.health = data.health;
-    this.maxHealth = data.maxHealth;
   }
 
   create() {
@@ -598,7 +594,7 @@ export default class Game extends Phaser.Scene {
         this.miniMapForest.setVisible(false);
       }
     });
-    this.skeletons.get(2060, 1100, "skeleton");
+    this.skeletons.get(2060, 1100, "skeleton")
   }
 
   // Method to update player's experience
@@ -712,7 +708,7 @@ export default class Game extends Phaser.Scene {
       }
 
       this.updatePlayerMaxHealth(player.maxHealth);
-
+      
       if (this.playerLevel) {
         this.playerLevel.text = "Level: " + player.level;
       }
@@ -775,8 +771,6 @@ export default class Game extends Phaser.Scene {
         characterName: this.characterName,
         level: character.level,
         game: this,
-        health: character._health,
-        maxHealth: character.maxHealth,
       });
       update(this.playerRef, {
         x: character.x,
@@ -791,8 +785,6 @@ export default class Game extends Phaser.Scene {
         projectilesFromDB: character.projectilesToSend,
         scene: "forest",
         level: character.level,
-        hp: character._health,
-        maxHealth: character.maxHealth,
       });
       this.sound.stopAll();
       return;
@@ -806,8 +798,8 @@ export default class Game extends Phaser.Scene {
       this.playerName.y = character.y - 20;
 
       if (this.playerLevel) {
-        this.playerLevel.x = this.playerName.x;
-        this.playerLevel.y = character.y - 10;
+      this.playerLevel.x = this.playerName.x;
+      this.playerLevel.y = character.y - 10;
       }
 
       //Handle Collision Between Player and Resurrect
@@ -853,27 +845,25 @@ export default class Game extends Phaser.Scene {
         this
       );
       if (this.input && this.input.keyboard) {
-        const E_Key = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.E
-        );
+        const E_Key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
         if (Phaser.Input.Keyboard.JustDown(E_Key)) {
-          console.log("Player pushed E."),
+            console.log("Player pushed E."),
             this.physics.overlap(
-              character,
-              this.Npc_wizard,
-              this.collisionHandler.handlePlayerNpcCollision as any,
-              undefined,
-              this
+                character,
+                this.Npc_wizard,
+                this.collisionHandler.handlePlayerNpcCollision as any,
+                undefined,
+                this
             );
-          this.physics.overlap(
-            character,
-            this.dog,
-            this.collisionHandler.handlePlayerDogCollision as any,
-            undefined,
-            this
-          );
+            this.physics.overlap(
+                character,
+                this.dog,
+                this.collisionHandler.handlePlayerDogCollision as any,
+                undefined,
+                this
+            );
         }
-      }
+    }
       // Update the player's data in the database
       if (this.playerRef) {
         update(this.playerRef, {
@@ -980,3 +970,5 @@ export default class Game extends Phaser.Scene {
     return { x: 0, y: 0 };
   }
 }
+
+

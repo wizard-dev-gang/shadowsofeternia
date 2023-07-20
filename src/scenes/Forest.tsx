@@ -390,9 +390,9 @@ export default class Forest extends Phaser.Scene {
           }
         },
       });
-      if (this.potion instanceof Phaser.Physics.Arcade.Group)
+      if (this.potion instanceof Phaser.Physics.Arcade.Group){
         this.potion.get(800, 2800, "Potion");
-
+      }
       this.resurrect = this.physics.add.group({
         classType: Resurrect,
         createCallback: (go) => {

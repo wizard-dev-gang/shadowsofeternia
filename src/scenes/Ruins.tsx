@@ -70,7 +70,7 @@ export default class Ruins extends Phaser.Scene {
   public playerLevel?: Phaser.GameObjects.Text;
 
   constructor() {
-    super();
+    super("ruins");
     this.otherPlayers = new Map();
     this.playerNames = new Map();
     this.enemies = new Map();

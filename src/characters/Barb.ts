@@ -255,7 +255,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       }
     });
 
-    const speed = 420;
+    const speed = 165;
     let isMoving = false;
 
     if (this.keys.A?.isDown) {

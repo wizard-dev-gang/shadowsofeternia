@@ -502,7 +502,7 @@ export default class Game extends Phaser.Scene {
       // Create an instance of Npc_wizard with specific text
       const npc1 = this.Npc_wizard.get(1880, 1142, "npcWizard");
       npc1.text =
-        "Greetings, traveler! Welcome to the realm of Eternia. Seek my bretheren to learn the ways of this world.";
+        "Greetings, traveler! Welcome to the realm of Eternia. Seek my brethren to learn the ways of this world.";
 
       const npc2 = this.Npc_wizard.get(1526, 1045, "npcWizard");
       npc2.text =
@@ -518,7 +518,7 @@ export default class Game extends Phaser.Scene {
 
       const npc5 = this.Npc_wizard.get(1770, 442, "npcWizard");
       npc5.text =
-        "Within the forest's heart lie ancient ruins. Tread cautiously, the forgotten souls there do not take kindly to intrusion.";
+        "In the forgotten tales, whispers abound that the elusive Resurrection Flask bestows a chance at rebirth to those who dare seek it, though its glimmer remains veiled, visible only to the departed souls.";
 
       const npc6 = this.Npc_wizard.get(1193, 505, "npcWizard");
       npc6.text =
@@ -774,7 +774,7 @@ export default class Game extends Phaser.Scene {
     const forestX = character.x >= 2058 && character.x <= 2101;
     const forestY = character.y <= 35 && character.y >= 28.8;
     if (forestX && forestY) {
-      // this.scene.start("endCredits")
+      // this.scene.start("endCredits");
       this.scene.start("forest", {
         characterName: this.characterName,
         level: character.level,

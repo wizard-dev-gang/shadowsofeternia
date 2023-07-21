@@ -1,5 +1,12 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  onDisconnect,
+  remove,
+} from "firebase/database";
 import Game from "../scenes/Game";
 import Ruins from "../scenes/Ruins";
 import Forest from "../scenes/Forest";
@@ -7,6 +14,8 @@ import BossMap from "../scenes/BossMap";
 import Player from "../characters/Player";
 
 type SceneType = Game | Ruins | Forest | BossMap;
+
+const SESSION_TIMEOUT = 1000 * 60 * 1; // 5 minutes
 
 export const setupFirebaseAuth = (gameInstance: SceneType) => {
   const auth = getAuth();
@@ -17,7 +26,41 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
       gameInstance.playerId = user.uid; // Get the current player's ID
       const db = getDatabase(); // Get the Firebase database object
       gameInstance.playerRef = ref(db, `players/${gameInstance.playerId}`); // Reference to the current player in Firebase
+      onDisconnect(gameInstance.playerRef).remove(); // Remove the current player when they disconnect
       gameInstance.enemyDB = ref(db, `enemies`); // Reference to enemies in Firebase
+      // Set up session timeout
+      const sessionTimeoutRef = ref(
+        db,
+        `sessionTimeouts/${gameInstance.playerId}`
+      );
+      let sessionTimeout: any;
+
+      const updateSessionTimeout = () => {
+        // Clear the old timeout
+        clearTimeout(sessionTimeout);
+        // Set a new timeout
+        sessionTimeout = setTimeout(() => {
+          // Update the database
+          set(sessionTimeoutRef, false);
+        }, SESSION_TIMEOUT);
+        // Specify what should happen if the client disconnects before the timeout
+        onDisconnect(sessionTimeoutRef).set(false);
+        // If still connected, set to true
+        set(sessionTimeoutRef, true);
+      };
+
+      // Update the session timeout whenever the player does something
+      gameInstance.events.on("playerAction", updateSessionTimeout);
+
+      onValue(sessionTimeoutRef, (snapshot) => {
+        if (snapshot.val() === false) {
+          // The session has timed out, so we remove the player
+          remove(gameInstance.playerRef);
+          remove(sessionTimeoutRef);
+        }
+      });
+
+      updateSessionTimeout();
       let playerScene: any;
       const otherPlayersRef = ref(db, "players"); // Reference to other players in Firebase
 
@@ -111,7 +154,18 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
           const playerData = playersData[playerId];
 
           // Skip if player is not online
-          if (!playerData.online) continue;
+          if (!playerData.online) {
+            let otherPlayer = gameInstance.otherPlayers.get(playerId);
+            if (otherPlayer) {
+              otherPlayer.destroy(); // Remove sprite of other player
+              gameInstance.otherPlayers.delete(playerId); // Remove other player from map
+            }
+            const playerName = gameInstance.playerNames.get(playerId);
+            if (playerName) {
+              playerName.destroy(); // Remove player name
+              gameInstance.playerNames.delete(playerId); // Remove player name from map
+            }
+          }
           //console.log(playerScene,playerData.scene)
           let otherPlayer = gameInstance.otherPlayers.get(playerId);
           // if (playerData.scene == undefined) continue;

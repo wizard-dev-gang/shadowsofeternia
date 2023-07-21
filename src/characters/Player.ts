@@ -138,14 +138,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     yLoc?: number,
     attackObj?: string,
     currentScene?: Phaser.Scene,
-    otherProjectiles?:Phaser.Physics.Arcade.Group
+    otherProjectiles?: Phaser.Physics.Arcade.Group
   ) {
-    console.log("in throw", otherProjectiles)
+    console.log("in throw", otherProjectiles);
     if (!this.projectiles && !otherProjectiles) {
       return;
     }
-    console.log("after check")
-    const currentTime = currentScene? currentScene.time.now: this.scene.time.now;
+    console.log("after check");
+    const currentTime = currentScene
+      ? currentScene.time.now
+      : this.scene.time.now;
 
     if (
       this.lastProjectileTime &&
@@ -186,19 +188,18 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     const angle = vec.angle();
 
-    const projectile = otherProjectiles?
-        otherProjectiles.get(
+    const projectile = otherProjectiles
+      ? (otherProjectiles.get(
           xLoc,
           yLoc,
           attackObj
-      ) as Phaser.Physics.Arcade.Image
-    :
-        this.projectiles.get(
+        ) as Phaser.Physics.Arcade.Image)
+      : (this.projectiles.get(
           xLoc,
           yLoc,
           attackObj
-      ) as Phaser.Physics.Arcade.Image;
-    
+        ) as Phaser.Physics.Arcade.Image);
+
     if (!projectile) {
       return;
     }
@@ -211,7 +212,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     projectile.y += vec.y * 16;
     projectile.setVelocity(vec.x * 300, vec.y * 300);
     if (!otherProjectiles) {
-        this.projectilesToSend[this.projectileCount] = {
+      this.projectilesToSend[this.projectileCount] = {
         id: this.projectileCount,
         direction: direction,
         x: xLoc,

@@ -225,18 +225,37 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
       const projectileImage = projectile as Phaser.Physics.Arcade.Image;
       const initialX = projectileImage.getData("initialX");
       const initialY = projectileImage.getData("initialY");
+      const hitboxRadius = 22;
+      const hitboxOffsetX = -7;
+      const hitboxOffsetY = -7;
 
       const distanceX = Math.abs(projectileImage.x - initialX);
       const distanceY = Math.abs(projectileImage.y - initialY);
       const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+      projectileImage.body.setCircle(
+        hitboxRadius,
+        hitboxOffsetX,
+        hitboxOffsetY
+      );
 
-      const maxDistance = 16; //Sets max distance the projectile can travel
+      const maxDistance = 8; //Sets max distance the projectile can travel
       if (distance >= maxDistance) {
-        this.projectiles?.remove(projectileImage, true, true);
+        projectileImage.setVelocity(0, 0);
+
+        this.scene.tweens.add({
+          targets: projectileImage,
+          alpha: { from: 1, to: 0 },
+          ease: "Linear", // 'Cubic', 'Elastic', 'Bounce', 'Back'
+          duration: 50,
+          repeat: 0, // -1 = infinity
+          yoyo: false,
+          onComplete: () =>
+            this.projectiles?.remove(projectileImage, true, true),
+        });
       }
     });
 
-    const speed = 1050;
+    const speed = 420;
     let isMoving = false;
 
     if (this.keys.A?.isDown) {
@@ -266,7 +285,7 @@ export default class Barb extends Phaser.Physics.Arcade.Sprite {
 
     const now = Date.now();
     const timeSinceLastThrow = now - this.lastThrowTime;
-    const throwCooldown = 1000; // Cooldown time to attack again
+    const throwCooldown = 850; // Cooldown time to attack again
 
     if (this.keys.Space?.isDown && timeSinceLastThrow > throwCooldown) {
       const slash = `barb-attack-${this.lastMove}`;

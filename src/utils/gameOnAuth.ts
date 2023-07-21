@@ -99,7 +99,7 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
                   enemySelector = "skeletons";
                   break;
                 case "goblin":
-                  enemySelector = "goblin";
+                  enemySelector = "goblins";
               }
               const enemyGroup = gameInstance.enemyDB[enemySelector];
               if (!enemyGroup)
@@ -130,15 +130,16 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
 
       onValue(otherPlayersRef, (snapshot) => {
         const playersData = snapshot.val();
-        playerScene = playersData[gameInstance.playerId].scene;
+
+        
         gameInstance.otherPlayers = otherPlayers;
         gameInstance.otherPlayers.forEach((otherPlayer, playerId) => {
           const playerData = playersData[playerId];
-
+          
           if (!playerData || !playerData.online) {
             otherPlayer.destroy(); // Remove sprite of other player
             gameInstance.otherPlayers.delete(playerId); // Remove other player from map
-
+            
             const playerName = gameInstance.playerNames.get(playerId);
             if (playerName) {
               playerName.destroy(); // Remove player name
@@ -146,7 +147,8 @@ export const setupFirebaseAuth = (gameInstance: SceneType) => {
             }
           }
         });
-
+        if (playersData[gameInstance.playerId] && playersData[gameInstance.playerId].online) playerScene = playersData[gameInstance.playerId].scene;
+        
         // Now handle the remaining players in Firebase
         for (const playerId in playersData) {
           if (playerId === gameInstance.playerId) continue; // Skip the current player

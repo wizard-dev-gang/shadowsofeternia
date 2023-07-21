@@ -36,6 +36,11 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("temple", "/tiles/Ancient-Temple.png");
     this.load.image("redWater", "/tiles/Ruins-Blood.png");
 
+     // Boss map prelaod
+     this.load.image("bossStructures", "/tiles/Ruins-Structures.png");
+     this.load.image("bossRuinsTerrain", "/tiles/Ruins-Terrain.png");
+     this.load.image("bossRuinsProps", "/tiles/Ruins-Props.png");
+
     // Character assets
     this.load.atlas("man", "character/man.png", "character/man.json");
     this.load.atlas("slime", "character/slime.png", "character/slime.json");

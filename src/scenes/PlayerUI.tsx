@@ -59,7 +59,7 @@ export default class PlayerUI extends Phaser.Scene {
   }
 
   private handlePlayerHealthChanged(health: number) {
-    console.log("Player health changed", health);
+    //console.log("Player health changed", health);
     const maxHealth = this.currentCharacter?.maxHealth;
     const fillRatio = health / maxHealth!;
     this.bar.animateToFill(fillRatio, 1000);
@@ -67,7 +67,7 @@ export default class PlayerUI extends Phaser.Scene {
   }
 
   private handlePlayerMaxHealthChanged(maxHealth: number) {
-    console.log("Player's max health changed:", maxHealth);
+    //console.log("Player's max health changed:", maxHealth);
     if (this.currentCharacter) {
       const newFillRatio =
         this.fillRatio * (this.currentCharacter.maxHealth / maxHealth); // Calculate the new fill ratio based on the stored fill ratio and the updated max health
